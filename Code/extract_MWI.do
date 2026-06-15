@@ -194,6 +194,7 @@ forvalues w = 1/4 {
 
     mi set wide
     mi register imputed plot_area_GPS
+    mi tsset, clear     // clear any stale tsset so mi impute doesn't error (r111)
     mi impute pmm plot_area_GPS area_self_reported i.admin_3, ///
         add(1) rseed(12345) force knn(5) bootstrap
     mi unset
