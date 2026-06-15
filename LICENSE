@@ -21,8 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ----------------------------------------------------------------------------
-NOTE: This MIT License covers the CODE and documentation in this repository.
-It does NOT cover the underlying LSMS-ISA survey microdata, which are the
-property of the World Bank and the respective national statistical offices
-and are governed by their own terms of use. No survey data are redistributed
-in this repository (see DATA_SOURCES.md).
+NOTE ON SCOPE:
+- This MIT License covers the CODE in this repository (the `Code/` directory).
+- Documentation in the `Reference/` directory is licensed separately under
+  Creative Commons Attribution 4.0 (CC-BY-4.0); see `Reference/LICENSE`.
+- Neither license covers the underlying LSMS-ISA survey microdata, which are
+  the property of the World Bank and the respective national statistical
+  offices and are governed by their own terms of use. No survey data are
+  redistributed in this repository (see DATA_SOURCES.md).

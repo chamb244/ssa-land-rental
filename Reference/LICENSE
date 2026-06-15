@@ -1,0 +1,28 @@
+Documentation license — Creative Commons Attribution 4.0 International (CC BY 4.0)
+SPDX-License-Identifier: CC-BY-4.0
+
+The documentation in this directory (Reference/), including the variable
+provenance tables and accompanying notes, is licensed under the Creative
+Commons Attribution 4.0 International License.
+
+You are free to:
+  - Share — copy and redistribute the material in any medium or format
+  - Adapt — remix, transform, and build upon the material for any purpose,
+    even commercially
+
+Under the following terms:
+  - Attribution — You must give appropriate credit, provide a link to the
+    license, and indicate if changes were made. You may do so in any reasonable
+    manner, but not in any way that suggests the licensor endorses you or your use.
+
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+Suggested attribution:
+  "LSMS-ISA land-tenure & rental-market descriptives — variable provenance
+   documentation," Jordan Chamberlin and co-authors, 2026, CC BY 4.0.
+
+Note: This license applies only to the documentation. The Stata code (Code/)
+is licensed under the MIT License (see ../LICENSE). The underlying LSMS-ISA
+survey microdata are not covered by this license and are not redistributed
+here (see ../DATA_SOURCES.md).

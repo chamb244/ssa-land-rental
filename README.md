@@ -70,6 +70,10 @@ variable are documented per country and wave in
 ## Citation & license
 
 If you use this code, please cite the forthcoming ARRE paper (citation TBA).
-Code is released under the MIT License (see `LICENSE`). The underlying survey
-data are © the World Bank / national statistical offices and subject to their
-own terms; this repository redistributes none of it.
+
+- **Code** (everything under `Code/`) is released under the **MIT License** (see `LICENSE`).
+- **Documentation** (everything under `Reference/`, including the provenance tables)
+  is released under **CC-BY-4.0** (see `Reference/LICENSE`).
+
+The underlying survey data are © the World Bank / national statistical offices
+and subject to their own terms; this repository redistributes none of it.

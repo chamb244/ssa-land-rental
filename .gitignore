@@ -8,9 +8,11 @@
 *.sav
 *.7z
 
-# Generated outputs (rebuilt by running the code)
-Output/Temp/
-Output/Final/
+# Generated outputs (rebuilt by running the code) — keep the dirs, ignore contents
+Output/Temp/*
+Output/Final/*
+!Output/Temp/.gitkeep
+!Output/Final/.gitkeep
 *.gph
 
 # Stata / R / OS scratch
@@ -25,6 +27,3 @@ Output/Final/
 .DS_Store
 Thumbs.db
 
-# Keep the folder structure (empty dirs) so the workflow runs out of the box
-!Output/Temp/.gitkeep
-!Output/Final/.gitkeep
