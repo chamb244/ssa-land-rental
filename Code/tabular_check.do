@@ -56,3 +56,5 @@ foreach c of local countries {
     capture mdesc parcel_rentedin parcel_rentedout parcel_certificate ///
         parcel_purchased parcel_area_ha weight if country=="`c'"
 }
+
+exit   // stop cleanly at end-of-file; ignore anything after this line
