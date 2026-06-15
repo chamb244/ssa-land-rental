@@ -69,14 +69,8 @@ do "${Do}/extract_MWI.do"
 * Append all country files into one harmonised rental/tenure dataset
 *--------------------------------------------------------------------------------
 clear
-tempfile pooled
-gen byte _init = .
-save `pooled', replace emptyok
 foreach c in ETH MWI MLI NER NGA TZA UGA {
     capture confirm file "${Final}/rental_`c'.dta"
-    if _rc == 0 {
-        append using "${Final}/rental_`c'.dta"
-    }
+    if _rc == 0 append using "${Final}/rental_`c'.dta"
 }
-drop _init
 save "${Final}/rental_tenure_ALL.dta", replace

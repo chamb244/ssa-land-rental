@@ -58,6 +58,11 @@ program define _ethfinal
     label var n_fields           "Number of cultivated fields on parcel"
     label var ea_id              "Enumeration area (survey PSU)"
     label var strataid           "Survey design stratum"
+    * harmonise id types to string so country files append cleanly into the pool
+    capture confirm string variable parcel_id
+    if _rc tostring parcel_id, replace force
+    capture confirm string variable holder_id
+    if _rc tostring holder_id, replace force
     order country wave year weight strataid ea_id hh_id holder_id parcel_id ///
           parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased ///
           parcel_area_ha n_fields
