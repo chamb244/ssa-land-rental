@@ -146,10 +146,23 @@ have missing area and `n_fields==0`.
   acquisition category, so purchase is unmeasured (`.`), not a structural zero.
   *Estimate this variable separately:* a joint `mean`/`svy: mean` with the other
   variables uses casewise deletion and silently drops all of 2012–2014.
-- **Rented-in / rented-out definitions widen over time.** Rented-in = "rent" in w1–2
-  vs "rent + sharecrop-in" in w3–5; rented-out = a yes/no "any fields" item in w1–3 vs
-  whole-parcel disposal ("all rented / all sharecropped out") in w4–5. Mind cross-wave
-  level comparisons.
+- **Rental scope: both cash/fixed rental AND sharecropping are counted - read with
+  care across waves.** Rented-in is built from the parcel-acquisition question, where
+  "Rent" (code 3) and "Shared crop in" (code 6) are separate categories; we include
+  both. But the "shared crop in" category only existed from wave 3 (2016) onward - in
+  waves 1-2 (2012, 2014) the questionnaire had no separate sharecropping-in option, so
+  those years capture rent only (any sharecropping-in fell under "Other"). This is part
+  of why rented-in ticks up from 2014 to 2016.
+  Rented-out also includes both, but the explicit split appears only from wave 4 (2019):
+  `s2q13` distinguishes "all rented out" (1) vs "all sharecropped out" (2), and we count
+  both. In waves 1-3 (2012-2016) rented-out comes from a single yes/no item ("were any
+  fields rented out?") that does not separately label sharecropping, so it is captured
+  broadly rather than itemized.
+  Excluded on both sides: "borrowed for free" (acquisition code 4) and "given out for
+  free" (disposal code 3 in 2019/2022) - i.e., free / non-market transfers are not
+  counted as renting. And because "Rent" (code 3) is not itself split into cash vs fixed
+  in-kind rent, "rented in/out" here means cash-or-fixed rental plus sharecropping, not
+  cash-only.
 - **Area** is cultivated GPS area summed from fields, with missing GPS imputed by
   predictive-mean matching from self-reported area within `admin_3` (region×zone×woreda).
   The `admin_3` stratifier is built inline rather than from the pipeline's `admin3.dta`.
@@ -264,8 +277,13 @@ Rent amounts `ag_d19a-d` / `ag_b219a-d` = cash/in-kind received (already / still
   uses a payment-based proxy (`ag_brentedin` / paid-owner) rather than an acquisition code.
 - **Rented-in** = leasehold/rent/tenant (codes 6,7,8); "borrowed for free" (9) is
   excluded as non-market access.
-- **Rented-out** relies on positive rent received (no clean yes/no gate in w1-3); the
-  2010 rate is very low and likely undercounts (heavy skip/missing on the amount items).
+- **Rented-out is NOT comparable across waves - do not read the trend.** It is captured
+  differently by wave: 2010 and 2013 identify rented-out only via positive rent
+  *received* (`ag_d19a-d`), with heavy skip/missing on those amount items, whereas 2019
+  has an explicit yes/no flag (`ag_brentedout`). As a result the weighted rate is ~0.2%
+  in 2010 versus ~1.3-1.5% in 2016/2019. The early levels almost certainly understate
+  rented-out, so the apparent increase over time is largely a measurement artifact
+  rather than a real change in behavior.
 - **Purchase** is genuinely measurable here (codes 4-5), unlike Ethiopia w1-2.
 - **Strata**: baseline `stratum` (w1-2) vs `group(region reside)` (w3-4).
 - **Year map** follows the IHPS rounds (2010/2013/2016/2019); the shocks do-file used
