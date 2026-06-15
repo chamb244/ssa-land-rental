@@ -40,10 +40,10 @@ set seed 12345
 * alternatively set: global root "C:/DATA/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
 global root   "/Users/jchamberlin/Library/CloudStorage/Dropbox/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
 
-global Do     "${root}/Reproduction_rental_260615/Code"
+global Do     "${root}/ssa-land-rental/Code"
 global Input  "${root}/Reproduction_v2/Folder_structures/Input data"      // reuse existing raw inputs
-global Temp   "${root}/Reproduction_rental_260615/Output/Temp"
-global Final  "${root}/Reproduction_rental_260615/Output/Final"
+global Temp   "${root}/ssa-land-rental/Output/Temp"
+global Final  "${root}/ssa-land-rental/Output/Final"
 
 *--------------------------------------------------------------------------------
 * Packages used (for convenience / QC; core estimation uses base Stata)

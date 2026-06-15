@@ -1,6 +1,6 @@
 /*********************************************************************************
 * extract_ETH.do  -- Ethiopia (ESS waves 1-5)  -- PARCEL-LEVEL  -- TEMPLATE
-* Part of Reproduction_rental_260615.  Run via MASTER.do (needs globals set).
+* Part of ssa-land-rental.  Run via MASTER.do (needs globals set).
 * Paths use forward slashes (work in Stata on Mac and Windows).
 *--------------------------------------------------------------------------------
 * UNIT = PARCEL. The universe is every parcel in the parcel roster, so parcels

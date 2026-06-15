@@ -1,9 +1,14 @@
-# LSMS-ISA land-tenure & rental-market descriptives
+# ssa-land-rental
+
+**Land-tenure & rental-market descriptives for Sub-Saharan Africa.**
 
 Reproducible Stata workflow that builds parcel-level land-tenure and
-rental-market descriptive statistics from the World Bank
-**LSMS-ISA** household surveys, for an invited paper in the
-*Annual Review of Resource Economics* (ARRE).
+rental-market descriptive statistics from farm-household surveys, for an invited
+paper in the *Annual Review of Resource Economics* (ARRE).
+
+Coverage is currently the World Bank **LSMS-ISA** surveys (Ethiopia, Malawi,
+Mali, with more in progress); an additional non-LSMS multi-wave panel will be
+added on the same parcel-level template.
 
 The workflow is deliberately **slim**: rather than reproducing the full
 harmonized panel, it extracts only the variables needed for the tenure

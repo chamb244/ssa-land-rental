@@ -1,6 +1,6 @@
 /*********************************************************************************
 * extract_MWI.do  -- Malawi (IHPS waves 1-4)  -- PARCEL-LEVEL
-* Part of Reproduction_rental_260615.  Run via MASTER.do (needs globals set).
+* Part of ssa-land-rental.  Run via MASTER.do (needs globals set).
 * Paths use forward slashes (work in Stata on Mac/Windows/Linux).
 *--------------------------------------------------------------------------------
 * SOURCE: the four-wave IHPS *panel* release MWI_2010-2019_IHPS_v06, extracted flat

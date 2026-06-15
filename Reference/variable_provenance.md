@@ -1,7 +1,7 @@
 # Variable Provenance & Construction Reference
 ### LSMS-ISA land-tenure / rental-market descriptives (parcel level)
 
-**Project:** `Reproduction_rental_260615` — slim parcel-level extractor for the
+**Project:** `ssa-land-rental` — slim parcel-level extractor for the
 land-tenure descriptives in the invited *Annual Review of Resource Economics*
 (ARRE) paper.
 **Purpose of this document:** for every final variable, record the exact source

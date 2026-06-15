@@ -1,6 +1,6 @@
 /*********************************************************************************
 * extract_MLI.do  -- Mali (EACI 2014 & 2017)  -- PARCEL-LEVEL
-* Part of Reproduction_rental_260615.  Run via MASTER.do (needs globals set).
+* Part of ssa-land-rental.  Run via MASTER.do (needs globals set).
 * Paths use forward slashes (work in Stata on Mac/Windows/Linux).
 *--------------------------------------------------------------------------------
 * SOURCE: two separate EACI rounds (Enquete Agricole de Conjoncture Integree),
