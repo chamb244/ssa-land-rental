@@ -17,7 +17,7 @@ descriptives, country by country, directly from the raw survey files.
 | `parcel_rentedout` | Parcel rented or sharecropped OUT (0/1) |
 | `parcel_certificate` | Parcel has a land certificate / document (0/1) |
 | `parcel_purchased` | Parcel acquired through purchase (0/1; `.` where not asked) |
-| `parcel_area_ha` | Cultivated parcel area, ha (Σ field GPS, pmm-imputed) |
+| `parcel_area_ha` | Cultivated parcel area, ha (Σ field GPS, else self-reported) |
 | `n_fields` | Number of cultivated fields on the parcel |
 | `weight`, `ea_id`, `strataid` | Survey weight, PSU, design stratum |
 | `country`, `wave`, `year`, `hh_id`, `holder_id`, `parcel_id` | Identifiers |

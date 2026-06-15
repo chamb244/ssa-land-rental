@@ -24,7 +24,7 @@ they appear in `Reproduction_v2/Folder_structures/Input data/<Country>/<round>/`
 | `parcel_rentedout` | Parcel rented or sharecropped OUT | 0/1 |
 | `parcel_certificate` | Parcel has a land certificate / document | 0/1 |
 | `parcel_purchased` | Parcel acquired through purchase | 0/1 (`.` if not asked) |
-| `parcel_area_ha` | Cultivated parcel area (Σ field GPS, pmm-imputed) | hectares |
+| `parcel_area_ha` | Cultivated parcel area (Σ field GPS, else self-reported) | hectares |
 | `n_fields` | Number of cultivated fields on the parcel | count |
 | `weight` | Household survey weight | analytic/probability |
 | `ea_id` | Enumeration area (survey PSU) | id |
@@ -79,20 +79,21 @@ All four are built on the **parcel roster** (`sect2_pp_w*.dta`); key = `holder_i
 ### 3. Parcel area (`parcel_area_ha`)
 
 Built on the **field roster** (`sect3_pp_w*.dta`) at field level, then summed to the
-parcel (`collapse (sum) … by(holder_id parcel_id)`). `n_fields` = count of fields with
-a (possibly imputed) area. Parcels with no cultivated field (e.g. fully rented out)
-have missing area and `n_fields==0`.
+parcel (`collapse (sum) … by(holder_id parcel_id)`). Field area = **GPS where
+measured, else self-reported** (both in ha); no model-based imputation, so the measure
+is deterministic and reproducible across languages. `n_fields` = count of fields with a
+non-missing area. Parcels with no cultivated field (e.g. fully rented out) have missing
+area and `n_fields==0`.
 
 | Component | Wave | Source file | Source var(s) | Notes |
 |------------------|------|----------------|----------------|----------------------------|
-| GPS area | 1 | `sect3_pp_w1.dta` | `pp_s3q05_a` | × 0.0001 → ha; keep if > 0 |
-| GPS area | 2 | `sect3_pp_w2.dta` | `pp_s3q05_a` | × 0.0001 → ha |
-| GPS area | 3 | `sect3_pp_w3.dta` | `pp_s3q05_a` | × 0.0001 → ha |
-| GPS area | 4 | `sect3_pp_w4.dta` | `s3q08` (flag `s3q07`) | × 0.0001 if `s3q07==1` |
-| GPS area | 5 | `sect3_pp_w5.dta` | `s3q08` (flag `s3q07`) | × 0.0001 if `s3q07∈{1,2}` |
-| Self-reported area (imputation input) | 1–3 | `sect3_pp_w*.dta` | `pp_s3q02_a`, unit `pp_s3q02_c` | converted to ha via `ET_local_area_unit_conversion.dta` |
-| Self-reported area (imputation input) | 4–5 | `sect3_pp_w*.dta` | `s3q02a`, unit `s3q02b` | converted to ha (w5 uses ESS 18 conversion file) |
-| Imputation stratifier | 1–5 | `sect3_pp_w*.dta` | `saq01` `saq02` `saq03` (region/zone/woreda) | `admin_3` built inline; `mi impute pmm plot_area_GPS area_self_reported i.admin_3_num` |
+| GPS area (primary) | 1 | `sect3_pp_w1.dta` | `pp_s3q05_a` | × 0.0001 → ha; keep if > 0 |
+| GPS area (primary) | 2 | `sect3_pp_w2.dta` | `pp_s3q05_a` | × 0.0001 → ha |
+| GPS area (primary) | 3 | `sect3_pp_w3.dta` | `pp_s3q05_a` | × 0.0001 → ha |
+| GPS area (primary) | 4 | `sect3_pp_w4.dta` | `s3q08` (flag `s3q07`) | × 0.0001 if `s3q07==1` |
+| GPS area (primary) | 5 | `sect3_pp_w5.dta` | `s3q08` (flag `s3q07`) | × 0.0001 if `s3q07∈{1,2}` |
+| Self-reported area (fallback when GPS missing) | 1–3 | `sect3_pp_w*.dta` | `pp_s3q02_a`, unit `pp_s3q02_c` | converted to ha via `ET_local_area_unit_conversion.dta` |
+| Self-reported area (fallback when GPS missing) | 4–5 | `sect3_pp_w*.dta` | `s3q02a`, unit `s3q02b` | converted to ha (w5 uses ESS 18 conversion file) |
 
 ### 4. Design variables & identifiers
 
@@ -163,12 +164,13 @@ have missing area and `n_fields==0`.
   counted as renting. And because "Rent" (code 3) is not itself split into cash vs fixed
   in-kind rent, "rented in/out" here means cash-or-fixed rental plus sharecropping, not
   cash-only.
-- **Area** is cultivated GPS area summed from fields, with missing GPS imputed by
-  predictive-mean matching from self-reported area within `admin_3` (region×zone×woreda).
-  The `admin_3` stratifier is built inline rather than from the pipeline's `admin3.dta`.
+- **Area** is cultivated field area summed to the parcel, using GPS where measured and
+  self-reported area as a fallback where GPS is missing. The published pipeline instead
+  model-imputes missing GPS (pmm); we use the deterministic GPS-else-self-reported
+  measure so area reproduces exactly across Stata/R/Python. Tenure variables are unaffected.
 - **ESS21 area** omits the `sect12c` ag-extension self-reported supplement used in the
   full pipeline, because its source merge key is inconsistent (`household_id+field_id`
-  vs `holder_id+parcel_id+field_id`). w5 area uses the field-roster GPS+SR imputation.
+  vs `holder_id+parcel_id+field_id`). w5 area uses the field-roster GPS-else-self-reported measure.
 - **Weights** are taken from the household cover file; design-based estimates use
   `svyset ea_id [pw=weight], strata(strataid)` (PSU/strata interacted with wave when pooling).
 
@@ -216,10 +218,11 @@ Household cover (weight, `ea_id`, strata): `hh_mod_a_filt_<yy>.dta`.
 
 ### 3. Parcel area (`parcel_area_ha`)
 
-Field roster `ag_mod_c_<yy>` (+ perennial `ag_mod_o2_<yy>` for w2-4). GPS area
-`ag_c04c` and self-reported `ag_c04a` (unit `ag_c04b`: 1=acre, 2=ha, 3=m²);
-acres→ha via ×0.404686. Missing GPS imputed by `mi impute pmm … i.admin_3`
-(stratifier = district, built inline). Summed to the parcel: garden in w3-4;
+Field roster `ag_mod_c_<yy>` (+ perennial `ag_mod_o2_<yy>` for w2-4). Field area =
+GPS (`ag_c04c`) where measured, else self-reported (`ag_c04a`, unit `ag_c04b`:
+1=acre, 2=ha, 3=m²); acres→ha via ×0.404686. No model-based imputation (the published
+pipeline pmm-imputes missing GPS; we use the deterministic GPS-else-self-reported
+measure for cross-language reproducibility). Summed to the parcel: garden in w3-4;
 in w1-2 each plot is its own parcel. `n_fields` = cultivated fields per parcel.
 
 ### 4. Design variables & identifiers

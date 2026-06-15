@@ -5,12 +5,12 @@
 * Purpose: Build a lightweight, plot-level dataset of land-tenure descriptives,
 *          country by country, WITHOUT running the full harmonisation pipeline.
 *
-* Target variables (per plot):
-*     plot_rentedin    - parcel rented/sharecropped IN   (0/1)
-*     plot_rentedout   - parcel rented/sharecropped OUT  (0/1)
-*     plot_certificate - parcel has certificate/document (0/1)
-*     plot_purchased   - parcel acquired through PURCHASE (0/1; . where not asked)
-*     plot_area_ha     - plot (field) area in hectares (GPS, pmm-imputed)
+* Target variables (per parcel):
+*     parcel_rentedin    - parcel rented/sharecropped IN   (0/1)
+*     parcel_rentedout   - parcel rented/sharecropped OUT  (0/1)
+*     parcel_certificate - parcel has certificate/document (0/1; . where not asked)
+*     parcel_purchased   - parcel acquired through PURCHASE (0/1; . where not asked)
+*     parcel_area_ha     - cultivated parcel area, ha (field GPS, else self-reported)
 *
 * Identifiers carried on every row:
 *     country  wave  year  weight   + household / plot / parcel IDs
@@ -46,7 +46,7 @@ global Temp   "${root}/Reproduction_rental_260615/Output/Temp"
 global Final  "${root}/Reproduction_rental_260615/Output/Final"
 
 *--------------------------------------------------------------------------------
-* Packages used (mi impute is core Stata; these are for convenience/QC)
+* Packages used (for convenience / QC; core estimation uses base Stata)
 *--------------------------------------------------------------------------------
 foreach pkg in mdesc fre distinct {
     capture which `pkg'

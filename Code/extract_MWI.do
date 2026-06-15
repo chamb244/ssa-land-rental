@@ -45,7 +45,9 @@
 * DECISIONS / CAVEATS to confirm:
 *   - "rented-in" excludes "borrowed for free" (code 9) - non-market access.
 *   - "rented-out" relies on positive rent received (no clean yes/no gate in w1-3).
-*   - Area imputation stratifier = district (built inline; upstream used admin3.dta).
+*   - Plot area = GPS where measured, else self-reported (deterministic; the
+*     published pipeline model-imputes missing GPS area, which we drop for
+*     cross-language reproducibility). Tenure variables are unaffected.
 *   - strataid: waves 1-2 use the baseline `stratum` (region x urban/rural);
 *     waves 3-4 build group(region reside) (their cover has no `stratum`).
 *   - Year map 2010/2013/2016/2019 follows the IHPS rounds; the shocks do-file
@@ -64,7 +66,7 @@ program define _mwifinal
     label var parcel_rentedout   "Parcel rented OUT (0/1)"
     label var parcel_certificate "Parcel has certificate/title (0/1; . if not asked)"
     label var parcel_purchased   "Parcel acquired through purchase (0/1; . if not asked)"
-    label var parcel_area_ha     "Cultivated parcel area, ha (field GPS, pmm-imputed)"
+    label var parcel_area_ha     "Cultivated parcel area, ha (field GPS, else self-reported)"
     label var n_fields           "Number of cultivated fields on parcel"
     label var ea_id              "Enumeration area (survey PSU)"
     label var strataid           "Survey design stratum"
@@ -137,18 +139,14 @@ forvalues w = 1/4 {
     else {
         egen strataid = group(region reside)
     }
-    * district for the area imputation (kept as a string label)
-    capture confirm string variable `distvar'
-    if _rc tostring `distvar', gen(_diststr) force
-    else  gen _diststr = `distvar'
-    keep `hhid' weight ea_id strataid _diststr
+    keep `hhid' weight ea_id strataid
     duplicates drop
     bys `hhid' (weight): keep if _n==1     // one row per household
     tempfile hhattr
     save `hhattr', replace
 
     *==========================================================================
-    * (A) AREA  -- field level, GPS with pmm imputation
+    * (A) AREA  -- field level, GPS else self-reported
     *==========================================================================
     use "`mwidir'/`cfile'", clear
 
@@ -188,25 +186,18 @@ forvalues w = 1/4 {
     }
     replace plot_area_GPS = . if plot_area_GPS<=0
 
-    * imputation stratifier from district (inline; see header)
-    merge m:1 `hhid' using `hhattr', keep(master match) keepusing(_diststr) nogen
-    encode _diststr, gen(admin_3)
-
-    mi set wide
-    mi register imputed plot_area_GPS
-    mi tsset, clear     // clear any stale tsset so mi impute doesn't error (r111)
-    mi impute pmm plot_area_GPS area_self_reported i.admin_3, ///
-        add(1) rseed(12345) force knn(5) bootstrap
-    mi unset
-    replace plot_area_GPS = plot_area_GPS_1_ if mi(plot_area_GPS)
+    * deterministic plot area: GPS where measured, else self-reported
+    * (no model-based imputation; fully reproducible across Stata/R/Python)
+    gen plot_area_ha = plot_area_GPS
+    replace plot_area_ha = area_self_reported if missing(plot_area_ha)
 
     * aggregate to the PARCEL unit (plot for w1-2; garden for w3-4)
     if "`pattern'"=="D" {
-        collapse (sum) parcel_area_ha = plot_area_GPS (count) n_fields = plot_area_GPS, ///
+        collapse (sum) parcel_area_ha = plot_area_ha (count) n_fields = plot_area_ha, ///
             by(`hhid' unit)
     }
     else {
-        collapse (sum) parcel_area_ha = plot_area_GPS (count) n_fields = plot_area_GPS, ///
+        collapse (sum) parcel_area_ha = plot_area_ha (count) n_fields = plot_area_ha, ///
             by(`hhid' gardenid)
     }
     tempfile area

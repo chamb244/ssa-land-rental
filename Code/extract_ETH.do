@@ -11,7 +11,7 @@
 *
 * Produces, per ESS wave, a PARCEL-level file with:
 *   parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased
-*   parcel_area_ha  (= sum of cultivated-field GPS areas, pmm-imputed)  n_fields
+*   parcel_area_ha  (= sum of field areas: GPS where measured, else self-reported)  n_fields
 *   + country wave year weight + household/holder/parcel IDs
 * then appends waves 1-5 into:  ${Final}/rental_ETH.dta
 *
@@ -35,12 +35,14 @@
 *    with no cultivated fields (e.g. fully rented out) get MISSING area, not 0.
 *
 * DEVIATIONS (documented):
-*  (a) admin_3 imputation stratifier built inline from region/zone/woreda
-*      (saq01-03) rather than the pipeline's admin3.dta. Same granularity.
+*  (a) Plot area is GPS where measured, else self-reported (both in ha) - a
+*      deterministic measure. The published pipeline instead model-imputes missing
+*      GPS area (pmm); we drop that so area is fully reproducible across languages
+*      and does not depend on an RNG. Tenure variables are unaffected.
 *  (b) Weight taken from the household cover file (hhid + wave weight).
 *  (c) ESS21 ag-extension area supplement (sect12c) omitted: its source merge key
 *      is inconsistent (household_id+field_id vs holder_id+parcel_id+field_id).
-*      w5 area uses plot-roster GPS+SR imputation like w4. TODO once key confirmed.
+*      w5 area uses the plot-roster GPS/self-reported measure like w4.
 *********************************************************************************/
 
 * ---- helper program: label & order the harmonised output vars ----------------
@@ -54,7 +56,7 @@ program define _ethfinal
     label var parcel_rentedout   "Parcel rented/sharecropped OUT (0/1)"
     label var parcel_certificate "Parcel has certificate/document (0/1)"
     label var parcel_purchased   "Parcel acquired through purchase (0/1; . if not asked)"
-    label var parcel_area_ha     "Cultivated parcel area, ha (sum of field GPS, imputed)"
+    label var parcel_area_ha     "Cultivated parcel area, ha (field GPS, else self-reported)"
     label var n_fields           "Number of cultivated fields on parcel"
     label var ea_id              "Enumeration area (survey PSU)"
     label var strataid           "Survey design stratum"
@@ -227,7 +229,7 @@ forvalues w = 1/5 {
     save "${Temp}/eth_strataid_w`w'.dta", replace
 
     *==========================================================================
-    * (A) CULTIVATED PLOT AREA (ha) at FIELD level, GPS with pmm imputation,
+    * (A) CULTIVATED PLOT AREA (ha) at FIELD level, GPS else self-reported,
     *     then AGGREGATED to the parcel (sum of field areas).
     *     Transcribed per wave from ETH_ESS`w'.do (area block).
     *==========================================================================
@@ -274,22 +276,13 @@ forvalues w = 1/5 {
         * (ESS21 ag-extension supplement omitted - see header note c.)
     }
 
-    * --- admin_3 stratifier for imputation (built inline; see header note a) ---
-    egen admin_3 = concat(region zone woreda), punct("-")
-    encode admin_3, gen(admin_3_num)
-
-    sort `hhid' plot_id
-
-    * --- pmm imputation of GPS area from self-reported area + admin3 -----------
-    mi set wide
-    mi register imputed plot_area_GPS
-    mi impute pmm plot_area_GPS area_self_reported i.admin_3_num, ///
-        add(1) rseed(12345) force knn(5) bootstrap
-    mi unset
-    replace plot_area_GPS = plot_area_GPS_1_ if mi(plot_area_GPS)
+    * --- deterministic plot area: GPS where measured, else self-reported -------
+    *     (no model-based imputation; fully reproducible across Stata/R/Python)
+    gen plot_area_ha = plot_area_GPS
+    replace plot_area_ha = area_self_reported if missing(plot_area_ha)
 
     * --- aggregate field area up to the parcel ---------------------------------
-    collapse (sum) parcel_area_ha = plot_area_GPS (count) n_fields = plot_area_GPS, ///
+    collapse (sum) parcel_area_ha = plot_area_ha (count) n_fields = plot_area_ha, ///
         by(holder_id parcel_id)
     * (count) ignores missing, so n_fields = # fields with a (possibly imputed) area
     tempfile area
