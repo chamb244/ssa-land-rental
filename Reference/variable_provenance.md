@@ -33,6 +33,29 @@ they appear in `Reproduction_v2/Folder_structures/Input data/<Country>/<round>/`
 
 ---
 
+## Missing by design (read this before interpreting the tables)
+
+Some variables are **missing (`.`) for entire country-years**. These are
+**structural** missings: the survey simply did not ask the relevant question that
+round, so the concept is *unmeasured*, not zero and not item non-response. A `.`
+here means "not collected this wave," and these country-years must be **excluded**
+(not treated as 0) when computing rates or trends. This is why the QC estimates one
+variable at a time - a joint `mean`/`svy: mean` would casewise-drop these whole
+country-years from the *other* variables too.
+
+| Country | Variable | Missing year(s) | Why |
+|---------|--------------------|-----------------|--------------------------------------------------|
+| Ethiopia | `parcel_purchased` | 2012, 2014 | ESS11/ESS13 acquisition question had **no "purchased" category**; "Purchased" (code 7) is first offered in wave 3 (2016). |
+| Malawi | `parcel_certificate` | 2010 | IHPS 2010 has **no title/ownership-document question** for the plot. |
+| Malawi | `parcel_certificate` | 2019 | The 2019 round **dropped** the title/document question. |
+| Malawi | `parcel_purchased` | 2019 | The 2019 round **dropped the categorical "how acquired" question** entirely (only "from whom" and "year acquired" remain), so acquisition mode - including purchase - is not identifiable. |
+
+All other variables are populated in every country-year shown. (Within a populated
+country-year, ordinary item non-response is handled the usual way - e.g. a parcel
+with no usable area is missing on `parcel_area_ha` only.)
+
+---
+
 ## ETHIOPIA — Ethiopia Socioeconomic Survey (ESS)
 
 ### 1. Survey & wave key

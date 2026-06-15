@@ -75,4 +75,12 @@ preserve
         using "${Final}/qc_means_by_country_year.csv", replace
 restore
 
+di as txt _n "{hline 70}"
+di as txt "Structural missings ('.' = question not asked that round; exclude, do NOT treat as 0):"
+di as txt "  Ethiopia parcel_purchased   : 2012, 2014  (no 'purchased' category until 2016)"
+di as txt "  Malawi   parcel_certificate : 2010, 2019  (no title/document question those rounds)"
+di as txt "  Malawi   parcel_purchased   : 2019        ('how acquired' question dropped in 2019)"
+di as txt "See Reference/variable_provenance.md - 'Missing by design' - for details."
+di as txt "{hline 70}"
+
 exit   // stop cleanly at end-of-file; ignore anything after this line
