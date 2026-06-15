@@ -59,7 +59,7 @@ foreach pkg in mdesc fre distinct {
 *--------------------------------------------------------------------------------
 do "${Do}/extract_ETH.do"
 do "${Do}/extract_MWI.do"
-* do "${Do}/extract_MLI.do"
+do "${Do}/extract_MLI.do"
 * do "${Do}/extract_NER.do"
 * do "${Do}/extract_NGA.do"
 * do "${Do}/extract_TZA.do"

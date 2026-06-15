@@ -60,8 +60,9 @@ auto-installed by `MASTER.do`.
 | Country | Survey | Waves | Status |
 |---|---|---|---|
 | Ethiopia | ESS | 1-5 (2012-2022) | ✅ built & validated |
-| Malawi | IHPS | 1-4 (2010-2019/20) | 🚧 in progress (see DATA_SOURCES.md) |
-| Mali, Niger, Nigeria, Tanzania, Uganda | EACI / ECVMA / GHS / NPS / UNPS | — | ⏳ planned |
+| Malawi | IHPS | 1-4 (2010-2019) | ✅ built & validated |
+| Mali | EACI | 2014, 2017 | ✅ built & validated |
+| Niger, Nigeria, Tanzania, Uganda | ECVMA / GHS / NPS / UNPS | — | ⏳ planned |
 
 Construction choices, exact source variables, and value-label codes for every
 variable are documented per country and wave in

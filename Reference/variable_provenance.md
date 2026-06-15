@@ -49,6 +49,7 @@ country-years from the *other* variables too.
 | Malawi | `parcel_certificate` | 2010 | IHPS 2010 has **no title/ownership-document question** for the plot. |
 | Malawi | `parcel_certificate` | 2019 | The 2019 round **dropped** the title/document question. |
 | Malawi | `parcel_purchased` | 2019 | The 2019 round **dropped the categorical "how acquired" question** entirely (only "from whom" and "year acquired" remain), so acquisition mode - including purchase - is not identifiable. |
+| Mali | `parcel_rentedout` | 2014, 2017 | EACI surveys only the parcels a household **operates**, so land rented/lent **out** is out of frame (no rented-out code in 2014; the 2017 "Louee/Pretee" code flags only 5 of ~24,250 parcels). |
 
 All other variables are populated in every country-year shown. (Within a populated
 country-year, ordinary item non-response is handled the usual way - e.g. a parcel
@@ -317,6 +318,94 @@ Rent amounts `ag_d19a-d` / `ag_b219a-d` = cash/in-kind received (already / still
 
 ---
 
-*Built from `Reproduction_v2/Code/Cleaning_code/ETH_ESS1–5.do` and the IHPS v06 raw
-modules (Malawi), with all source variables, codes, and value labels verified against
-the raw data. Extend with one new country section (1–6) per country as the workflow grows.*
+## MALI — Enquete Agricole de Conjoncture Integree (EACI)
+
+Two separate cross-sectional rounds (not a panel): EACI 2014 and EACI 2017.
+The 2017 files use a different naming scheme (`eaci17_sNNpY`) and variable prefix
+(`s11b…`) than 2014 (`EACI…_p1`, `s1b…`).
+
+> **Unit note.** Everything we use - tenure, acquisition, disposition, and area -
+> sits in the single parcel/exploitation roster, so the `parcel` is that roster
+> record and no cross-module merge is needed.
+
+### 1. Survey & wave key
+
+| Wave | Round folder | Year | HH id | Parcel roster |
+|------|--------------|--------|---------------------|----------------------|
+| 1 | `Mali/EACI 14` | 2014 | `grappe`-`menage` | `EACIEXPLOI_p1.dta` (`s1b…`) |
+| 2 | `Mali/EACI 17` | 2017 | `grappe`-`exploitation` | `eaci17_s11bp1.dta` (`s11b…`) |
+
+Weights: 2014 `EACIPOIDS.dta` (`poids_menage`); 2017 `EACI17_ECHANTILLON.dta`
+(`poids_leger`, and the official `strate`). Cover (2014 strata): `EACICONTROLE_p1.dta`.
+
+### 2. Tenure indicators
+
+| Variable | Wave | Source var | Construction |
+|--------------------|------|----------------|----------------------------------------------|
+| `parcel_rentedin` | 1 | `s1bq17` | `inlist(s1bq17,4,5)` - Location + Metayage |
+| `parcel_rentedin` | 2 | `s11bq17` | `inlist(s11bq17,4,5)` - Location + Metayage |
+| `parcel_certificate` | 1 | `s1bq17` | `s1bq17==1` - owned with formal title |
+| `parcel_certificate` | 2 | `s11bq17` | `s11bq17==1` - owned with formal title |
+| `parcel_purchased` | 1 | `s1bq22` | `s1bq22==7` - Achat |
+| `parcel_purchased` | 2 | `s11bq22` | `s11bq22==7` - Achat |
+| `parcel_rentedout` | 1-2 | — | **missing** - not measurable (see §6) |
+
+### 3. Parcel area (`parcel_area_ha`)
+
+GPS where measured, else self-reported (deterministic; no imputation). 2014: GPS
+`s1bq05a`, self-reported `s1bq10` (both treated as ha; value 99 = missing). 2017:
+GPS `s11bq07`, self-reported `s11bq11a` (× 0.0001 where unit `s11bq11b==2`). `n_fields`
+= parcel records aggregated to the parcel id (typically 1).
+
+### 4. Design variables & identifiers
+
+| Variable | Wave | Source | Construction |
+|----------------|------|--------------------------|------------------------------------------|
+| `weight` | 1 | `EACIPOIDS.dta` | `poids_menage` |
+| `weight` | 2 | `EACI17_ECHANTILLON.dta` | `poids_leger` |
+| `ea_id` | 1-2 | parcel roster | `grappe` (cluster / PSU) |
+| `strataid` | 1 | `EACICONTROLE_p1.dta` | `group(s00q01 s00q04)` (region × milieu) |
+| `strataid` | 2 | `EACI17_ECHANTILLON.dta` | official `strate` |
+| `parcel_id` | 1 | parcel roster | `grappe-menage-s1bq01-s1bq02` |
+| `parcel_id` | 2 | parcel roster | `grappe-exploitation-s11bq01-s11bq02` |
+| `year` | 1-2 | — | 2014 / 2017 |
+
+### 5. Value labels of key source variables (verified)
+
+**Occupation mode** - `s1bq17` (2014) / `s11bq17` (2017), *"Mode d'occupation / propriete de la parcelle"*:
+1 Propriete avec titre · 2 Propriete sans titre · 3 Pret gratuit · **4 Location** ·
+**5 Metayage** · 6 Gage · 7 Autre · (9 / 99 = missing).
+
+**Acquisition mode** - `s1bq22` (2014) / `s11bq22` (2017), *"Mode d'acquisition de la parcelle"*:
+1 Heritage · 2 Par mariage · 3 Attribution coutumiere · 4 Don · 5 Attribution ODR ·
+6 Appropriation · **7 Achat** · 8 Autre.
+
+**Disposition** - `s1bq32` (2014): 1 En jachere, 2 Exploitee, 9 missing (no rented-out code).
+`s11bq32` (2017): 1 Jachere, 2 Louee/Pretee, 3 Exploitee.
+
+### 6. Harmonization decisions & caveats (Mali)
+
+- **Rental variables derived here, not inherited** - the upstream pipeline built only
+  `plot_owned`/`plot_certificate` for Mali. Rented-in and purchased are constructed
+  from the occupation (`*q17`) and acquisition (`*q22`) questions.
+- **Rented-out is NOT measurable in EACI (missing both waves).** The roster covers the
+  parcels a household *operates* (its exploitation), so land rented/lent OUT is out of
+  frame. 2014 has no rented-out code in the disposition item; 2017's "Louee/Pretee"
+  code flags only 5 of ~24,250 parcels - a structural undercount, not a real ~0% rate.
+- **Rented-in** = Location (4) + Metayage (5); "Pret gratuit" (3, borrowed free) and
+  "Gage" (6, pledge/collateral) are excluded as non-market arrangements.
+- **Certificate** here means *owned with a formal title* (`*q17==1`), the closest EACI
+  analog; a non-owned parcel cannot carry a household title.
+- **Purchase is measurable in both waves** (acquisition code 7 = Achat) - unlike Ethiopia
+  (w1-2) and Malawi (2019).
+- **Strata**: 2017 uses the official `strate`; 2014 has none in its own files, so we
+  build `group(region milieu)` = `group(s00q01 s00q04)` from the cover as a self-contained
+  design-stratum proxy.
+- **Encoding**: the 2017 files are Latin-1 (French accents); numeric codes are
+  unaffected, but read with the right encoding outside Stata (e.g. `encoding="latin1"`).
+
+---
+
+*Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2)
+and the raw survey modules, with all source variables, codes, and value labels verified
+against the data. Extend with one new country section (1-6) per country as the workflow grows.*

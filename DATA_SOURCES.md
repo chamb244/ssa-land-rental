@@ -105,13 +105,37 @@ Derivation (to be finalized in `extract_MWI.do`):
 
 ---
 
+## Mali — Enquête Agricole de Conjoncture Intégrée (EACI)  ✅ built
+
+Two separate cross-sectional rounds, extracted to:
+
+| Wave | Round folder | Year | Source zip |
+|---|---|---|---|
+| 1 | `Mali/EACI 14` | 2014 | `MLI_2014_EACI_v03_M_STATA11.zip` |
+| 2 | `Mali/EACI 17` | 2017 | `MLI_2017_EAC-I_v03_M_STATA.zip` |
+
+The 2017 round uses a different file-naming scheme (`eaci17_sNNpY.dta`) and variable
+prefix (`s11b…`) than 2014 (`EACI…_p1.dta`, `s1b…`), and its `.dta` files are Latin-1
+encoded. Files consumed:
+
+| Role | 2014 | 2017 | Used for |
+|---|---|---|---|
+| Parcel roster | `EACIEXPLOI_p1.dta` (`s1bq*`) | `eaci17_s11bp1.dta` (`s11bq*`) | tenure (`*q17`), acquisition (`*q22`), disposition (`*q32`), area |
+| Weights | `EACIPOIDS.dta` (`poids_menage`) | `EACI17_ECHANTILLON.dta` (`poids_leger`, `strate`) | survey weight, PSU (`grappe`), 2017 strata |
+| Cover | `EACICONTROLE_p1.dta` | `eaci17_s00p1.dta` | 2014 strata (`s00q01` region × `s00q04` milieu) |
+
+> Note: EACI surveys only the parcels a household **operates**, so land rented/lent
+> **out** is out of frame - `parcel_rentedout` is set missing for Mali (see the
+> provenance doc, Mali §6). Purchase **is** measurable (acquisition code 7 = Achat).
+
+---
+
 ## Planned countries
 
 To be documented (survey files + WB catalog links) as each extractor is built:
 
 | Country | Survey | Rounds |
 |---|---|---|
-| Mali | Enquête Agricole de Conjoncture (EACI) | 2014, 2017 |
 | Niger | Enquête Nationale sur les Conditions de Vie (ECVMA) | 2011, 2014 |
 | Nigeria | General Household Survey – Panel (GHS) | 2010/11, 2012/13, 2015/16, 2018/19, 2023 |
 | Tanzania | National Panel Survey (NPS) | 2008/09, 2010/11, 2012/13, 2014/15, 2019/20 |
