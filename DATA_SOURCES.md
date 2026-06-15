@@ -52,33 +52,56 @@ Files consumed per wave (`w` = 1…5):
 
 ## Malawi — Integrated Household Panel Survey (IHPS)  🚧 in progress
 
-Microdata Library (search "Malawi Integrated Household Panel Survey"):
-<https://microdata.worldbank.org/index.php/catalog/lsms>
+**Source:** the four-wave IHPS **panel** release
+`MWI_2010-2019_IHPS_v06_M_Stata.zip` (World Bank Microdata Library; search
+"Malawi Integrated Household Panel Survey"). The standalone IHS-IV (2016) and
+IHS-V (2019) cross-sections are *different surveys* with incompatible household
+IDs and are **not** used here.
 
-| Wave | Round folder | Survey year | Status on this machine |
+Extracted flat (all four waves in one folder; filenames carry the year suffix
+`_10` / `_13` / `_16` / `_19`) to:
+
+```
+Malawi/IHPS_panel_v6/MWI_2010-2019_IHPS_v06_M_Stata/
+```
+
+The extractor points all four waves at this single folder (no per-wave subfolders).
+
+| Wave | Survey year | HH id |
+|---|---|---|
+| 1 | 2010 | `case_id` |
+| 2 | 2013 | `y2_hhid` |
+| 3 | 2016 | `y3_hhid` |
+| 4 | 2019/20 | `y4_hhid` |
+
+Files consumed (year suffix `yy` ∈ {10,13,16,19}; names lowercase in v06):
+
+| Role | Wave 1-2 | Wave 3-4 | Used for |
 |---|---|---|---|
-| 1 | `Malawi/IHPS 10` | 2010 | present (cloud-synced) |
-| 2 | `Malawi/IHPS 13` | 2013 | present, but files currently sit **inside the `IHPS 10` folder** |
-| 3 | `Malawi/IHPS 16` | 2016 | **MISSING — folder empty** |
-| 4 | `Malawi/IHPS 19` | 2019/20 | **MISSING — folder empty** |
+| Tenure / acquisition | `ag_mod_d_yy.dta` (`ag_d03`) | `ag_mod_b2_yy.dta` (`ag_b203…`) | rented-in/out, certificate, purchased |
+| Field roster | `ag_mod_c_yy.dta` | `ag_mod_c_yy.dta` | plot area |
+| Perennial roster | `ag_mod_o2_13.dta` (w2) | `ag_mod_o2_yy.dta` | plot area (perennial gardens) |
+| Household cover | `hh_mod_a_filt_yy.dta` | `hh_mod_a_filt_yy.dta` | weight (`hh_wgt`/`panelweight_*`), `ea_id`, `stratum` |
 
-Files this workflow needs per wave:
+**Acquisition codes (verified against the raw value labels)** —
+`ag_d03` (w1-2) / `ag_b203` (w3) "How did your household acquire this plot/garden?":
+1 granted by local leaders · 2 inherited · 3 bride price · **4 purchased (with title)** ·
+**5 purchased (no title; w1-2 only)** · 6 leasehold · 7 rent short-term ·
+8 farming as a tenant · 9 borrowed for free · 10 moved in w/o permission ·
+11 other · (w3+:) 12 allocated by family member · 13 gift from non-HH member.
 
-| Role | Wave 1-2 file | Wave 3-4 file | Used for |
-|---|---|---|---|
-| Tenure / acquisition | `AG_MOD_D_<yy>.dta` (`ag_d03`) | `AG_MOD_B2_<yy>.dta` (`ag_b203…`) | rented-in/out, certificate, purchased |
-| Field roster | `AG_MOD_C_<yy>.dta` | `AG_MOD_C_<yy>.dta` | plot area |
-| Perennial roster | — | `AG_MOD_O2_<yy>.dta` | plot area (perennial gardens) |
-| Household cover | `HH_MOD_A_FILT_<yy>.dta` | `HH_MOD_A_FILT_<yy>.dta` | weight (`hh_wgt`/`panelweight*`), `ea_id`, `stratum` |
+Derivation (to be finalized in `extract_MWI.do`):
+- `parcel_purchased` = acquisition ∈ {4,5}  (measurable all waves)
+- `parcel_rentedin`  = acquisition ∈ {6,7,8} (leasehold / rent / tenant)
+- `parcel_rentedout` = rent **received** (`ag_d19*`/`ag_b219*`; wave 4 has explicit
+  `ag_brentedout`). Malawi's garden roster includes rented-out gardens, so — unlike
+  Ethiopia — rented-out is observable without base-frame loss.
+- `parcel_certificate` = w2 `ag_d03_1` (title y/n); w3 `ag_b204_1` (codes 1-3 = yes);
+  w1 not asked (missing); w4 TBD.
 
-> ⚠️ **Open blockers for Malawi** (see project notes):
-> 1. The rental variables were never built in the upstream pipeline, so
->    `parcel_rentedin`/`parcel_rentedout` (and `parcel_purchased`) must be
->    derived from the acquisition question (`ag_d03` / `ag_b203`); the exact
->    rent/sharecrop/purchase codes still need verification against the raw value labels.
-> 2. The 2016 (`IHPS 16`) and 2019 (`IHPS 19`) raw files are not present locally,
->    and the 2013 files are nested in the `IHPS 10` folder. These must be obtained /
->    reorganized before Malawi can be built and validated.
+> Note: wave 4's acquisition method is not in `ag_b203` (that slot is "year
+> acquired" in 2019); the w4 acquisition variable and certificate handling are
+> being confirmed against the raw data during extractor construction.
 
 ---
 
