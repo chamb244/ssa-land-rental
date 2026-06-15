@@ -58,7 +58,7 @@ foreach pkg in mdesc fre distinct {
 * ETH is the validated template; uncomment others as they are built & checked.
 *--------------------------------------------------------------------------------
 do "${Do}/extract_ETH.do"
-* do "${Do}/extract_MWI.do"
+do "${Do}/extract_MWI.do"
 * do "${Do}/extract_MLI.do"
 * do "${Do}/extract_NER.do"
 * do "${Do}/extract_NGA.do"
@@ -68,9 +68,15 @@ do "${Do}/extract_ETH.do"
 *--------------------------------------------------------------------------------
 * Append all country files into one harmonised rental/tenure dataset
 *--------------------------------------------------------------------------------
-* clear
-* foreach c in ETH MWI MLI NER NGA TZA UGA {
-*     capture confirm file "${Final}/rental_`c'.dta"
-*     if _rc == 0 append using "${Final}/rental_`c'.dta"
-* }
-* save "${Final}/rental_tenure_ALL.dta", replace
+clear
+tempfile pooled
+gen byte _init = .
+save `pooled', replace emptyok
+foreach c in ETH MWI MLI NER NGA TZA UGA {
+    capture confirm file "${Final}/rental_`c'.dta"
+    if _rc == 0 {
+        append using "${Final}/rental_`c'.dta"
+    }
+}
+drop _init
+save "${Final}/rental_tenure_ALL.dta", replace

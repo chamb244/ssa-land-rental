@@ -161,6 +161,118 @@ have missing area and `n_fields==0`.
 
 ---
 
-*Built from `Reproduction_v2/Code/Cleaning_code/ETH_ESS1–5.do`, with all source
-variables, codes, and value labels verified against the raw rosters.
-Extend with one new country section (1–6) per country as the workflow grows.*
+## MALAWI — Integrated Household Panel Survey (IHPS)
+
+Source: the four-wave IHPS **panel** release `MWI_2010-2019_IHPS_v06`, extracted
+flat to `Malawi/IHPS_panel_v6/MWI_2010-2019_IHPS_v06_M_Stata/` (all waves point at
+this one folder; filenames carry the year suffix).
+
+> **Unit note.** The survey's land unit changed: in 2010/2013 tenure is asked at the
+> **plot** level (no garden grouping), so `parcel` := plot; in 2016/2019 tenure is
+> asked at the **garden** level and `parcel` := garden (area summed from its plots).
+
+### 1. Survey & wave key
+
+| Wave | Round | Year | HH id | Tenure module (unit) | Area module |
+|------|--------|--------|----------------|--------------------------|----------------------------|
+| 1 | IHS3/IHPS | 2010 | `case_id` | `ag_mod_d_10` (plot) | `ag_mod_c_10` |
+| 2 | IHPS | 2013 | `y2_hhid` | `ag_mod_d_13` (plot) | `ag_mod_c_13` + `ag_mod_o2_13` |
+| 3 | IHPS | 2016 | `y3_hhid` | `ag_mod_b2_16` (garden) | `ag_mod_c_16` + `ag_mod_o2_16` |
+| 4 | IHPS | 2019/20 | `y4_hhid` | `ag_mod_b2_19` (garden) | `ag_mod_c_19` + `ag_mod_o2_19` |
+
+Household cover (weight, `ea_id`, strata): `hh_mod_a_filt_<yy>.dta`.
+
+### 2. Tenure indicators
+
+| Variable | Wave | Source file | Source var | Construction |
+|------------------|------|----------------|--------------|--------------------------------|
+| `parcel_rentedin` | 1 | `ag_mod_d_10` | `ag_d03` | `inlist(ag_d03,6,7,8)` — leasehold/rent/tenant |
+| `parcel_rentedin` | 2 | `ag_mod_d_13` | `ag_d03` | `inlist(ag_d03,6,7,8)` |
+| `parcel_rentedin` | 3 | `ag_mod_b2_16` | `ag_b203` | `inlist(ag_b203,6,7,8)` |
+| `parcel_rentedin` | 4 | `ag_mod_b2_19` | `ag_brentedin`, `ag_b211a/b` | `ag_brentedin==1` OR paid owner `ag_b211a/b>0` (no acq. question in 2019) |
+| `parcel_rentedout` | 1-2 | `ag_mod_d_<yy>` | `ag_d19a-d` | rent received >0 (cash/in-kind, already/still) |
+| `parcel_rentedout` | 3 | `ag_mod_b2_16` | `ag_b219a-d` | rent received >0 |
+| `parcel_rentedout` | 4 | `ag_mod_b2_19` | `ag_brentedout`, `ag_b219a-d` | `ag_brentedout==1` OR `ag_b219a-d>0` |
+| `parcel_certificate` | 1 | — | — | **missing** — not asked |
+| `parcel_certificate` | 2 | `ag_mod_d_13` | `ag_d03_1` | `ag_d03_1==1` (has title) |
+| `parcel_certificate` | 3 | `ag_mod_b2_16` | `ag_b204_1` | `inlist(ag_b204_1,1,2,3)` (lease offer / title deed / lease cert) |
+| `parcel_certificate` | 4 | — | — | **missing** — not asked |
+| `parcel_purchased` | 1-2 | `ag_mod_d_<yy>` | `ag_d03` | `inlist(ag_d03,4,5)` — purchased w/ or w/o title |
+| `parcel_purchased` | 3 | `ag_mod_b2_16` | `ag_b203` | `ag_b203==4` — purchased |
+| `parcel_purchased` | 4 | — | — | **missing** — acquisition question dropped in 2019 |
+
+### 3. Parcel area (`parcel_area_ha`)
+
+Field roster `ag_mod_c_<yy>` (+ perennial `ag_mod_o2_<yy>` for w2-4). GPS area
+`ag_c04c` and self-reported `ag_c04a` (unit `ag_c04b`: 1=acre, 2=ha, 3=m²);
+acres→ha via ×0.404686. Missing GPS imputed by `mi impute pmm … i.admin_3`
+(stratifier = district, built inline). Summed to the parcel: garden in w3-4;
+in w1-2 each plot is its own parcel. `n_fields` = cultivated fields per parcel.
+
+### 4. Design variables & identifiers
+
+| Variable | Wave | Source file | Source var(s) | Construction |
+|----------------|------|----------------|----------------|------------------------------|
+| `weight` | 1 | `hh_mod_a_filt_10` | `hh_wgt` | baseline sampling weight |
+| `weight` | 2 | `hh_mod_a_filt_13` | `panelweight` | panel weight 2013 |
+| `weight` | 3 | `hh_mod_a_filt_16` | `panelweight_2016` | panel weight 2016 |
+| `weight` | 4 | `hh_mod_a_filt_19` | `panelweight_2019` | panel weight 2019 |
+| `ea_id` | 1-4 | `hh_mod_a_filt_<yy>` | `ea_id` | enumeration area (PSU) |
+| `strataid` | 1-2 | `hh_mod_a_filt_<yy>` | `stratum` | baseline stratum (region × urban/rural) |
+| `strataid` | 3-4 | `hh_mod_a_filt_<yy>` | `region`, `reside` | `group(region reside)` (no `stratum` in cover) |
+| `parcel_id` | 1-2 | tenure module | `hh_id` + plot no. (`ag_d00`) | concatenated |
+| `parcel_id` | 3-4 | tenure module | `hh_id` + `gardenid` | concatenated |
+| `year` | 1-4 | — | — | 2010 / 2013 / 2016 / 2019 |
+
+### 5. Value labels of key source variables (verified)
+
+**Acquisition** — `ag_d03` (w1-2) / `ag_b203` (w3): *"How did your household acquire this [plot/garden]?"*
+
+| Code | w1-2 (ag_d03) | w3 (ag_b203) |
+|------|---------------|--------------|
+| 1 | Granted by local leaders | Granted by local leaders |
+| 2 | Inherited | Inherited |
+| 3 | Bride price | Bride price |
+| 4 | **Purchased (with title)** | **Purchased** |
+| 5 | **Purchased (no title)** | — |
+| 6 | Leasehold | Leasehold |
+| 7 | Rent short-term | Rent short-term |
+| 8 | Farming as a tenant | Farming as a tenant |
+| 9 | Borrowed for free | Borrowed for free |
+| 10 | Moved in w/o permission | Moved in w/o permission |
+| 11 | Other | Other |
+| 12 / 13 | — | Allocated by family / Gift from non-HH |
+
+*(Wave 4 has no acquisition-method question — only "from whom" and "year acquired".)*
+
+**Rented out / in (w4 flags)** — `ag_brentedin` ("gave output as rent" → rented in),
+`ag_brentedout` ("received output as rent" → rented out): `1 = Yes`, `2 = No`.
+Rent amounts `ag_d19a-d` / `ag_b219a-d` = cash/in-kind received (already / still due).
+
+**Certificate** — `ag_d03_1` (w2, has title): `1 = Yes`, `2 = No`.
+`ag_b204_1` (w3): `1` offer of lease · `2` title deed · `3` certificate of lease · `4` no · `96` other.
+
+### 6. Harmonization decisions & caveats (Malawi)
+
+- **Rental variables were derived here, not inherited** — the upstream pipeline never
+  built `plot_rentedin/out` for Malawi. They are constructed from the acquisition
+  question (rented-in) and the rent-received variables (rented-out).
+- **Land unit changes across waves** — plot (2010/2013) vs garden (2016/2019). Counts
+  and mean areas are not strictly unit-comparable across that break.
+- **Wave 4 (2019)**: the categorical acquisition question was dropped, so
+  `parcel_purchased` and `parcel_certificate` are **missing** in 2019, and rented-in
+  uses a payment-based proxy (`ag_brentedin` / paid-owner) rather than an acquisition code.
+- **Rented-in** = leasehold/rent/tenant (codes 6,7,8); "borrowed for free" (9) is
+  excluded as non-market access.
+- **Rented-out** relies on positive rent received (no clean yes/no gate in w1-3); the
+  2010 rate is very low and likely undercounts (heavy skip/missing on the amount items).
+- **Purchase** is genuinely measurable here (codes 4-5), unlike Ethiopia w1-2.
+- **Strata**: baseline `stratum` (w1-2) vs `group(region reside)` (w3-4).
+- **Year map** follows the IHPS rounds (2010/2013/2016/2019); the shocks do-file used
+  2017/2020 for w3/w4 — change `year` in `extract_MWI.do` if you prefer that labeling.
+
+---
+
+*Built from `Reproduction_v2/Code/Cleaning_code/ETH_ESS1–5.do` and the IHPS v06 raw
+modules (Malawi), with all source variables, codes, and value labels verified against
+the raw data. Extend with one new country section (1–6) per country as the workflow grows.*
