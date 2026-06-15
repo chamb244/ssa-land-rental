@@ -401,6 +401,16 @@ GPS `s11bq07`, self-reported `s11bq11a` (× 0.0001 where unit `s11bq11b==2`). `n
 - **Strata**: 2017 uses the official `strate`; 2014 has none in its own files, so we
   build `group(region milieu)` = `group(s00q01 s00q04)` from the cover as a self-contained
   design-stratum proxy.
+- **Cross-wave comparability - read levels, not the 2014->2017 change.** EACI 2014 and
+  2017 are *independent cross-sections* (not a panel) with very different sample sizes
+  and frames: 2,299 households / 9,658 parcels in 2014 vs 6,293 / 24,250 in 2017, the
+  latter even more dominated by owner-cultivators (untitled ownership 87% -> 93% of
+  parcels). The *absolute* count of rented-in parcels is essentially unchanged
+  (116 -> 106), so the fall in the rented-in *rate* (1.3% -> 0.4%) is mechanical dilution
+  by a larger, more owner-heavy denominator, not a behavioral decline. Rental is also a
+  rare event (~100 parcels/wave), so the estimates carry wide confidence intervals -
+  check CI overlap before interpreting any cross-wave difference. The robust takeaway is
+  that Mali's land-rental market is thin (<2% of parcels), consistent with customary tenure.
 - **Encoding**: the 2017 files are Latin-1 (French accents); numeric codes are
   unaffected, but read with the right encoding outside Stata (e.g. `encoding="latin1"`).
 
