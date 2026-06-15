@@ -227,7 +227,7 @@ forvalues w = 1/4 {
         collapse (max) parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased, ///
             by(`hhid' unit)
         merge 1:1 `hhid' unit using `area', keep(master match) nogen
-        gen parcel_id = `hhid' + "-" + string(unit)
+        egen parcel_id = concat(`hhid' unit), punct("-")
     }
     else {
         use "`mwidir'/`bfile'", clear
@@ -249,7 +249,7 @@ forvalues w = 1/4 {
         collapse (max) parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased, ///
             by(`hhid' gardenid)
         merge 1:1 `hhid' gardenid using `area', keep(master match) nogen
-        gen parcel_id = `hhid' + "-" + string(gardenid)
+        egen parcel_id = concat(`hhid' gardenid), punct("-")
     }
     replace n_fields = 0 if missing(n_fields)
 
