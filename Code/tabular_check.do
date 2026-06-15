@@ -57,4 +57,22 @@ foreach c of local countries {
         parcel_purchased parcel_area_ha weight if country=="`c'"
 }
 
+*--------------------------------------------------------------------------------
+* COMPACT country x year means table (weighted point estimates = svy means),
+* easy to scan for plausibility. Also written to CSV.
+*--------------------------------------------------------------------------------
+preserve
+    gen byte _n1 = 1
+    collapse (mean) parcel_rentedin parcel_rentedout parcel_certificate ///
+        parcel_purchased parcel_area_ha (rawsum) n_parcels = _n1 [aw=weight], ///
+        by(country year)
+    format parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased %6.3f
+    format parcel_area_ha %7.3f
+    list country year n_parcels parcel_rentedin parcel_rentedout ///
+        parcel_certificate parcel_purchased parcel_area_ha, sepby(country) noobs abbrev(16)
+    export delimited country year n_parcels parcel_rentedin parcel_rentedout ///
+        parcel_certificate parcel_purchased parcel_area_ha ///
+        using "${Final}/qc_means_by_country_year.csv", replace
+restore
+
 exit   // stop cleanly at end-of-file; ignore anything after this line
