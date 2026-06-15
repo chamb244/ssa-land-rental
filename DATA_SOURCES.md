@@ -148,13 +148,26 @@ some files are Latin-1 encoded. Files consumed:
 
 ---
 
+## Nigeria — General Household Survey-Panel (GHS)  ✅ built
+
+Five GHS-Panel waves in `Nigeria/GHS 10|12|15|18|23` (2010/11 → 2023). Files consumed
+per wave: tenure module `sect11b_plantingwN`/`sect11b1_plantingwN` (acquisition,
+rented-out, certificate), plot roster `sect11a1_plantingwN` (area), cover
+`secta_plantingwN` (zone/lga/ea), and the consumption/cover weight file
+(`cons_agg_*` for w1-3, `totcons_final` for w4, `wt_cross_wave5` in the cover for w5).
+
+> Notes: purchase is recovered from "How was [PLOT] acquired?" (code 1 = outright
+> purchase). Area uses Nigeria's region-specific local-unit conversions. Most complex
+> country - first Stata run is a shakedown (see provenance, Nigeria §6).
+
+---
+
 ## Planned countries
 
 To be documented (survey files + WB catalog links) as each extractor is built:
 
 | Country | Survey | Rounds |
 |---|---|---|
-| Nigeria | General Household Survey – Panel (GHS) | 2010/11, 2012/13, 2015/16, 2018/19, 2023 |
 | Tanzania | National Panel Survey (NPS) | 2008/09, 2010/11, 2012/13, 2014/15, 2019/20 |
 | Uganda | National Panel Survey (UNPS) | 2009/10 → 2019/20 |
 

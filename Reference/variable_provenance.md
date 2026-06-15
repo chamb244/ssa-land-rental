@@ -50,6 +50,7 @@ country-years from the *other* variables too.
 | Malawi | `parcel_certificate` | 2019 | The 2019 round **dropped** the title/document question. |
 | Malawi | `parcel_purchased` | 2019 | The 2019 round **dropped the categorical "how acquired" question** entirely (only "from whom" and "year acquired" remain), so acquisition mode - including purchase - is not identifiable. |
 | Mali | `parcel_rentedout` | 2014, 2017 | EACI surveys only the parcels a household **operates**, so land rented/lent **out** is out of frame (no rented-out code in 2014; the 2017 "Louee/Pretee" code flags only 5 of ~24,250 parcels). |
+| Nigeria | `parcel_certificate` | 2011 | GHS wave 1 has **no certificate-of-occupancy question** in the tenure module (added from wave 2). |
 
 All other variables are populated in every country-year shown. (Within a populated
 country-year, ordinary item non-response is handled the usual way - e.g. a parcel
@@ -508,7 +509,97 @@ All in m² (× 0.0001 → ha); 999999 = missing; GPS 0 = missing.
 
 ---
 
+## NIGERIA — General Household Survey-Panel (GHS)
+
+Five GHS-Panel waves (2010/11, 2012/13, 2015/16, 2018/19, 2023). Plot id =
+`hhid-plotid`. Tenure (acquisition, rented-out, certificate) is in the tenure
+module; area is in the plot roster - the two are merged on `hhid-plotid`.
+
+> **Unit note.** The `parcel` is the plot record. Tenure variable names shift:
+> wave 1 uses `s11bq*`; waves 2-5 use `s11b1q*`.
+
+### 1. Survey & wave key
+
+| Wave | Round folder | Year | Tenure module | Plot roster |
+|------|--------------|--------|----------------------------|----------------------|
+| 1 | `Nigeria/GHS 10` | 2011 | `sect11b_plantingw1` (`s11bq*`) | `sect11a1_plantingw1` |
+| 2 | `Nigeria/GHS 12` | 2013 | `sect11b1_plantingw2` (`s11b1q*`) | `sect11a1_plantingw2` |
+| 3 | `Nigeria/GHS 15` | 2016 | `sect11b1_plantingw3` | `sect11a1_plantingw3` |
+| 4 | `Nigeria/GHS 18` | 2019 | `sect11b1_plantingw4` | `sect11a1_plantingw4` |
+| 5 | `Nigeria/GHS 23` | 2023 | `sect11b1_plantingw5` | `sect11a1_plantingw5` |
+
+### 2. Tenure indicators
+
+| Variable | Wave | Source var | Construction |
+|--------------------|------|----------------|----------------------------------------------|
+| `parcel_purchased` | 1 | `s11bq4` | `s11bq4==1` - outright purchase |
+| `parcel_purchased` | 2-5 | `s11b1q4` | `s11b1q4==1` - outright purchase |
+| `parcel_rentedin` | 1 | `s11bq4` | `s11bq4==2` - rented for cash/in-kind |
+| `parcel_rentedin` | 2-4 | `s11b1q4` | `s11b1q4==2` |
+| `parcel_rentedin` | 5 | `s11b1q4` | `inlist(s11b1q4,2,6)` |
+| `parcel_rentedout` | 1 | `s11bq17` | `s11bq17==2` - main use = rented out |
+| `parcel_rentedout` | 2-4 | `s11b1q28` | `inlist(s11b1q28,2,3)` |
+| `parcel_rentedout` | 5 | `s11b1q44` | `inlist(s11b1q44,2,3)` |
+| `parcel_certificate` | 1 | — | **missing** - not asked |
+| `parcel_certificate` | 2-4 | `s11b1q7` | `s11b1q7==1` (0 if not owned) |
+| `parcel_certificate` | 5 | `s11b1q8` | `s11b1q8==1` (0 if not owned) |
+
+### 3. Parcel area (`parcel_area_ha`)
+
+GPS where measured (`plot_area` × 0.0001, m² → ha), else self-reported. Self-reported
+is in local units with **region-specific** conversion factors (heaps/ridges/stands ×
+the survey zone `admin_1` 1-6; plus acres/m²/plot factors). Wave 1-4 self-reported =
+`s11aq4a`/`s11aq4aa` with unit `s11aq4b`; wave 5 = `s11aq3_number` with unit
+`s11aq3_unit` (different simple-unit codes). The region factors are identical across
+waves and transcribed verbatim from the upstream pipeline.
+
+### 4. Design variables & identifiers
+
+| Variable | Wave | Source | Construction |
+|----------------|------|----------------------------------|------------------------------------|
+| `weight` | 1-3 | `cons_agg_waveN_visit1/2.dta` | `hhweight` |
+| `weight` | 4 | `totcons_final.dta` | `wt_wave4` |
+| `weight` | 5 | `secta_plantingw5.dta` | `wt_cross_wave5` |
+| `ea_id` | 1-5 | `secta_planting*` (+ GHS10 fallback) | `lga-ea` |
+| `strataid` | 1-5 | `secta_planting*` (+ GHS10 fallback) | `zone` |
+| `parcel_id` | 1-5 | tenure / roster | `hhid-plotid` |
+| `year` | 1-5 | — | 2011 / 2013 / 2016 / 2019 / 2023 |
+
+### 5. Value labels of key source variables (verified for GHS10; consistent instrument)
+
+**Acquisition** - `s11bq4` (w1) / `s11b1q4` (w2-5), *"How was [PLOT] acquired?"*:
+**1 outright purchase** · **2 rented for cash/in-kind** · 3 used free of charge ·
+4 distributed by community/family · (w3+ add code 5 = other ownership; w5 adds further
+non-owned codes incl. 6 = another rental arrangement).
+
+**Rented-out** - w1 `s11bq17` ("main use of plot"): 1 left fallow, 2 rented out.
+w2-4 `s11b1q28` / w5 `s11b1q44` (codes 2,3 = rented/leased out).
+
+**Certificate** - `s11b1q7` (w2-4) / `s11b1q8` (w5): 1 yes, 2 no, 3 = missing.
+
+### 6. Harmonization decisions & caveats (Nigeria)
+
+- **Purchase recovered from the acquisition question** (`*q4==1`, outright purchase) -
+  the upstream pipeline built owned/rented but not purchase. Verified against the GHS10
+  value labels; applied to later waves under the consistent GHS instrument (the owned
+  recode `{1,4}`/`{1,4,5}` is consistent with 1 = purchase across waves).
+- **Rented-out likely UNDERCOUNTS in wave 1** - it comes from the "main use of plot"
+  item, and since most plots are cultivated, only ~0.15% are flagged rented out.
+  Waves 2-5 use a dedicated rented-out item (`s11b1q28`/`s11b1q44`) that should capture
+  more; treat the wave-1 level as a lower bound and mind cross-wave comparability.
+- **Certificate not asked in wave 1** -> missing in 2011 (added from wave 2); coded 0
+  for non-owned parcels in later waves (a certificate applies to owned land).
+- **Area** uses GPS (`plot_area` × 0.0001) else self-reported with Nigeria's
+  region-specific local-unit conversions; deterministic (no imputation).
+- **Strata/PSU**: `strataid = zone`, `ea_id = lga-ea`, taken from each wave's cover with
+  the GHS10 cover as a panel fallback (the panel covers drop ea/lga for non-refresh HHs).
+- **Most complex country** - 5 waves, region-specific area conversions, panel geography.
+  The first Stata run is a shakedown: confirm the area GPS source (`plot_area`) and the
+  per-wave cover/weight merges resolve as expected.
+
+---
+
 *Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2,
-NER ECVMA1-2) and the raw survey modules, with all source variables, codes, and value
-labels verified against the data. Extend with one new country section (1-6) per country
-as the workflow grows.*
+NER ECVMA1-2, NGA GHS1-5) and the raw survey modules, with source variables, codes, and
+value labels verified against the data. Extend with one new country section (1-6) per
+country as the workflow grows.*
