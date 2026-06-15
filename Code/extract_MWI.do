@@ -156,7 +156,7 @@ forvalues w = 1/4 {
         * ---- waves 1-2: plot-level area (module C); unit id = plot number ----
         if `w'==2 {
             rename ag_c00 ag_o00
-            merge m:1 `hhid' ag_o00 using "`mwidir'/`peren'", nogen
+            merge m:1 `hhid' ag_o00 using "`mwidir'/`peren'", gen(_pmerge)
             rename ag_o00 unit
             * perennial self-reported/GPS come in as ag_o04*
         }
@@ -167,24 +167,24 @@ forvalues w = 1/4 {
         replace area_self_reported = ag_c04a * 0.0001 if ag_c04b==3   // m^2 -> ha
         gen plot_area_GPS = ag_c04c * 0.404686                  // GPS acres -> ha
         if `w'==2 {
-            replace area_self_reported = ag_o04a * 0.404686 if ag_o04b==1 & _merge==2
-            replace area_self_reported = ag_o04a            if ag_o04b==2 & _merge==2
-            replace area_self_reported = ag_o04a * 0.0001   if ag_o04b==3 & _merge==2
-            capture replace plot_area_GPS = ag_o04c if _merge==2
+            replace area_self_reported = ag_o04a * 0.404686 if ag_o04b==1 & _pmerge==2
+            replace area_self_reported = ag_o04a            if ag_o04b==2 & _pmerge==2
+            replace area_self_reported = ag_o04a * 0.0001   if ag_o04b==3 & _pmerge==2
+            capture replace plot_area_GPS = ag_o04c if _pmerge==2
         }
     }
     else {
         * ---- waves 3-4: plot-in-garden area (module C + perennial) ----
-        merge m:1 `hhid' gardenid plotid using "`mwidir'/`peren'", nogen
+        merge m:1 `hhid' gardenid plotid using "`mwidir'/`peren'", gen(_pmerge)
         gen area_self_reported = ag_c04a * 0.404686
         replace area_self_reported = ag_c04a          if ag_c04b==2
         replace area_self_reported = ag_c04a * 0.0001 if ag_c04b==3
         capture replace area_self_reported = ag_c04a * 0.0001 if ag_c04b_oth=="METERS"
         gen plot_area_GPS = ag_c04c * 0.404686
-        replace area_self_reported = ag_o04a * 0.404686 if ag_o04b==1 & _merge==2
-        replace area_self_reported = ag_o04a            if ag_o04b==2 & _merge==2
-        replace area_self_reported = ag_o04a * 0.0001   if ag_o04b==3 & _merge==2
-        capture replace plot_area_GPS = ag_o04c if _merge==2
+        replace area_self_reported = ag_o04a * 0.404686 if ag_o04b==1 & _pmerge==2
+        replace area_self_reported = ag_o04a            if ag_o04b==2 & _pmerge==2
+        replace area_self_reported = ag_o04a * 0.0001   if ag_o04b==3 & _pmerge==2
+        capture replace plot_area_GPS = ag_o04c if _pmerge==2
     }
     replace plot_area_GPS = . if plot_area_GPS<=0
 
