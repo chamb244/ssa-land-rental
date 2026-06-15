@@ -130,13 +130,30 @@ encoded. Files consumed:
 
 ---
 
+## Niger — Enquête Nationale sur les Conditions de Vie (ECVMA)  ✅ built
+
+Two ECVMA rounds, in `Niger/ECVMA 11` (2011) and `Niger/ECVMA 14` (2014).
+The 2014 round uses uppercase variable names (`AS01Q*`) and a 3-part household id;
+some files are Latin-1 encoded. Files consumed:
+
+| Role | 2011 | 2014 | Used for |
+|---|---|---|---|
+| Parcel roster | `ecvmaas1_p1.dta` (`as01q*`) | `ECVMA2_AS1P1.dta` (`AS01Q*`) | occupation (`*q16/14`), acquisition (`*q19/18`), title (`*q18/15`), disposition (`*q41/39`), area |
+| Weights | `ecvmamen_p1_en.dta` (`hhweight`) | `ECVMA2014_P1P2_ConsoMen.dta` (`hhweight`) | survey weight |
+| PSU / strata | `ecvmamen_p1_en.dta` (`grappe`, `strate`) | `ECVMA2_MS00P1.dta` (`GRAPPE`, `MS00Q01` region) | cluster + stratum |
+
+> Note: all four indicators are measurable. Rented-out has a real code
+> ("louee a un autre") but **undercounts** - it surfaces only via the
+> reason-for-non-cultivation item - so treat it as a lower bound (provenance, Niger §6).
+
+---
+
 ## Planned countries
 
 To be documented (survey files + WB catalog links) as each extractor is built:
 
 | Country | Survey | Rounds |
 |---|---|---|
-| Niger | Enquête Nationale sur les Conditions de Vie (ECVMA) | 2011, 2014 |
 | Nigeria | General Household Survey – Panel (GHS) | 2010/11, 2012/13, 2015/16, 2018/19, 2023 |
 | Tanzania | National Panel Survey (NPS) | 2008/09, 2010/11, 2012/13, 2014/15, 2019/20 |
 | Uganda | National Panel Survey (UNPS) | 2009/10 → 2019/20 |

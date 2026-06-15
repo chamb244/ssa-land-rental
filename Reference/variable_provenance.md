@@ -416,6 +416,99 @@ GPS `s11bq07`, self-reported `s11bq11a` (× 0.0001 where unit `s11bq11b==2`). `n
 
 ---
 
-*Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2)
-and the raw survey modules, with all source variables, codes, and value labels verified
-against the data. Extend with one new country section (1-6) per country as the workflow grows.*
+## NIGER — Enquete Nationale sur les Conditions de Vie (ECVMA)
+
+Two ECVMA rounds (2011, 2014). The 2014 round uses **uppercase** variable names
+(`AS01Q*`) and a 3-part household id; 2011 uses lowercase (`as01q*`) and a single
+`hid`. Some files are Latin-1 encoded.
+
+> **Unit note.** Tenure, acquisition, title, disposition, and area all sit in the one
+> parcel roster, so the `parcel` is that roster record and no cross-module merge is needed.
+
+### 1. Survey & wave key
+
+| Wave | Round folder | Year | HH id | Parcel roster |
+|------|--------------|--------|-----------------------|----------------------|
+| 1 | `Niger/ECVMA 11` | 2011 | `hid` | `ecvmaas1_p1.dta` (`as01q*`) |
+| 2 | `Niger/ECVMA 14` | 2014 | `GRAPPE`-`MENAGE`-`EXTENSION` | `ECVMA2_AS1P1.dta` (`AS01Q*`) |
+
+Weights: 2011 `ecvmamen_p1_en.dta` (housing; `hhweight`, `grappe`, `strate`);
+2014 `ECVMA2014_P1P2_ConsoMen.dta` (`hhweight`) + cover `ECVMA2_MS00P1.dta` (region).
+
+### 2. Tenure indicators
+
+| Variable | Wave | Source var | Construction |
+|--------------------|------|----------------|----------------------------------------------|
+| `parcel_rentedin` | 1 | `as01q16` | `as01q16==4` - Location (rental) |
+| `parcel_rentedin` | 2 | `AS01Q14` | `AS01Q14==3` - Location (rental) |
+| `parcel_purchased` | 1 | `as01q19` | `as01q19==1` - Achat (9 -> missing) |
+| `parcel_purchased` | 2 | `AS01Q18` | `AS01Q18==1` - Achat (9 -> missing) |
+| `parcel_certificate` | 1 | `as01q18` | `inlist(as01q18,1,2,3,4)` - any title doc (9 -> missing) |
+| `parcel_certificate` | 2 | `AS01Q15` | `inlist(AS01Q15,1,2,3,4)` - any title doc (9 -> missing) |
+| `parcel_rentedout` | 1 | `as01q41` | `as01q41==4` - "louee a un autre" (rented out) |
+| `parcel_rentedout` | 2 | `AS01Q39` | `AS01Q39==4` - "louee a un autre" (rented out) |
+
+### 3. Parcel area (`parcel_area_ha`)
+
+GPS where measured, else self-reported (deterministic; no imputation). 2011: GPS
+`as01q09`, self-reported `as01q08`; 2014: GPS `AS01Q07`, self-reported `AS01Q06`.
+All in m² (× 0.0001 → ha); 999999 = missing; GPS 0 = missing.
+
+### 4. Design variables & identifiers
+
+| Variable | Wave | Source | Construction |
+|----------------|------|--------------------------------|------------------------------------|
+| `weight` | 1 | `ecvmamen_p1_en.dta` | `hhweight` |
+| `weight` | 2 | `ECVMA2014_P1P2_ConsoMen.dta` | `hhweight` |
+| `ea_id` | 1 | `ecvmamen_p1_en.dta` | `grappe` (cluster / PSU) |
+| `ea_id` | 2 | `ECVMA2_MS00P1.dta` | `GRAPPE` |
+| `strataid` | 1 | `ecvmamen_p1_en.dta` | official `strate` |
+| `strataid` | 2 | `ECVMA2_MS00P1.dta` | `MS00Q01` (region; proxy - no 2014 `strate`) |
+| `parcel_id` | 1 | parcel roster | `hid-as01q03-as01q05` |
+| `parcel_id` | 2 | parcel roster | `GRAPPE-MENAGE-EXTENSION-AS01Q01-AS01Q03` |
+| `year` | 1-2 | — | 2011 / 2014 |
+
+### 5. Value labels of key source variables (verified)
+
+**Occupation mode** - `as01q16` (2011) / `AS01Q14` (2014), *"Mode d'occupation de la parcelle"*:
+2011: 1 propriete · 2 pret (gratuit) · 3 hypotheque (gage) · **4 location** · 5 autres.
+2014: 1 propriete · 2 copropriete · **3 location** · 4 hypotheque · 5 pret · 6 autres.
+*(No sharecropping / metayage category in either wave.)*
+
+**Acquisition mode** - `as01q19` / `AS01Q18`: **1 Achat** · 2 Heritage · 3 Don ·
+4 Prise de possession simple · 5 Autres · 9 manquant.
+
+**Title document** - `as01q18` / `AS01Q15`: 1 titre foncier · 2 certificat coutumier ·
+3 attestation de vente · 4 autre document · 5 aucun document · 9 manquant.
+
+**Disposition (reason for non-cultivation)** - `as01q41` / `AS01Q39`: 1 jachere ·
+2 prete a un autre · 3 hypothequee · **4 louee a un autre** · 5 autre · 9 manquant.
+
+### 6. Harmonization decisions & caveats (Niger)
+
+- **Rental variables derived here, not inherited** - upstream built only
+  `plot_owned`/`plot_certificate`. Rented-in (Location), purchased (Achat) and
+  rented-out (louee a un autre) are constructed from the occupation, acquisition and
+  disposition questions.
+- **Rented-in = rental (Location) only** - Niger has no sharecropping category, so
+  unlike Ethiopia/Malawi/Mali the rented-in measure excludes sharecropping. Free loan
+  (pret) and pledge (hypotheque) are also excluded as non-market arrangements.
+- **Rented-out UNDERCOUNTS - treat as a lower bound.** It is captured only through the
+  "reason for non-cultivation" item (`as01q41==4`), so parcels rented out are largely
+  under-represented in this operated-parcel roster (weighted rate ~0.0% in 2011, ~0.2%
+  in 2014). The code is real (unlike Mali), but the level is not reliable.
+- **Cross-wave comparability - do not read the rented-in change.** 2011 and 2014 are
+  independent cross-sections with different occupation-mode category schemes and samples;
+  the rented-in rate falls from ~14% (2011) to ~2.4% (2014), a swing too large to be
+  behavioral and not directly comparable across the redesign. Check CI overlap.
+- **Certificate** = the parcel has any tenure document (`title in {1,2,3,4}`); "aucun
+  document" (5) = 0, "manquant" (9) = missing.
+- **Strata**: 2011 uses the official `strate`; 2014 has no `strate` in its files, so we
+  use region (`MS00Q01`) as a coarser self-contained stratum proxy.
+
+---
+
+*Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2,
+NER ECVMA1-2) and the raw survey modules, with all source variables, codes, and value
+labels verified against the data. Extend with one new country section (1-6) per country
+as the workflow grows.*

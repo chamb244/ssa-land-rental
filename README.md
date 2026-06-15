@@ -67,7 +67,8 @@ auto-installed by `MASTER.do`.
 | Ethiopia | ESS | 1-5 (2012-2022) | ✅ built & validated |
 | Malawi | IHPS | 1-4 (2010-2019) | ✅ built & validated |
 | Mali | EACI | 2014, 2017 | ✅ built & validated |
-| Niger, Nigeria, Tanzania, Uganda | ECVMA / GHS / NPS / UNPS | — | ⏳ planned |
+| Niger | ECVMA | 2011, 2014 | ✅ built & validated |
+| Nigeria, Tanzania, Uganda | GHS / NPS / UNPS | — | ⏳ planned |
 
 Construction choices, exact source variables, and value-label codes for every
 variable are documented per country and wave in
