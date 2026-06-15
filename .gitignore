@@ -1,0 +1,30 @@
+# ============================================================================
+# Raw survey microdata — NEVER committed.
+# These are obtained from the World Bank LSMS-ISA program; see DATA_SOURCES.md.
+# ============================================================================
+*.dta
+*.zip
+*.tar.gz
+*.sav
+*.7z
+
+# Generated outputs (rebuilt by running the code)
+Output/Temp/
+Output/Final/
+*.gph
+
+# Stata / R / OS scratch
+*.log
+*.smcl
+~$*
+*.stswp
+.~lock.*
+.Rhistory
+.RData
+.Rproj.user/
+.DS_Store
+Thumbs.db
+
+# Keep the folder structure (empty dirs) so the workflow runs out of the box
+!Output/Temp/.gitkeep
+!Output/Final/.gitkeep

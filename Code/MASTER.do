@@ -1,0 +1,76 @@
+/*********************************************************************************
+* LSMS-ISA Harmonised Panel - SLIM RENTAL / TENURE EXTRACTOR
+* Created: 2026-06-15 (JC)
+*--------------------------------------------------------------------------------
+* Purpose: Build a lightweight, plot-level dataset of land-tenure descriptives,
+*          country by country, WITHOUT running the full harmonisation pipeline.
+*
+* Target variables (per plot):
+*     plot_rentedin    - parcel rented/sharecropped IN   (0/1)
+*     plot_rentedout   - parcel rented/sharecropped OUT  (0/1)
+*     plot_certificate - parcel has certificate/document (0/1)
+*     plot_purchased   - parcel acquired through PURCHASE (0/1; . where not asked)
+*     plot_area_ha     - plot (field) area in hectares (GPS, pmm-imputed)
+*
+* Identifiers carried on every row:
+*     country  wave  year  weight   + household / plot / parcel IDs
+*
+* NOTE on units: rental / certificate / purchase are PARCEL-level attributes in
+* the raw surveys. Area is FIELD(plot)-level. This extractor produces a
+* PLOT(field)-level file with the parcel attributes mapped down onto plots
+* (m:1 on holder_id parcel_id), matching the structure of the published
+* Plot_dataset. Aggregate to parcel or household level for participation rates.
+*********************************************************************************/
+
+cap log close _all
+clear all
+clear matrix
+macro drop _all
+set more off
+set maxvar 10000
+set type double
+set seed 12345
+
+*--------------------------------------------------------------------------------
+* PATHS  -- EDIT THESE for your machine.
+* Raw input data is REUSED from the existing Reproduction_v2 tree (not copied),
+* so we do not duplicate the ~17 MB of survey inputs.
+*--------------------------------------------------------------------------------
+* Forward slashes work in Stata on both Mac and Windows. On Windows you can
+* alternatively set: global root "C:/DATA/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
+global root   "/Users/jchamberlin/Library/CloudStorage/Dropbox/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
+
+global Do     "${root}/Reproduction_rental_260615/Code"
+global Input  "${root}/Reproduction_v2/Folder_structures/Input data"      // reuse existing raw inputs
+global Temp   "${root}/Reproduction_rental_260615/Output/Temp"
+global Final  "${root}/Reproduction_rental_260615/Output/Final"
+
+*--------------------------------------------------------------------------------
+* Packages used (mi impute is core Stata; these are for convenience/QC)
+*--------------------------------------------------------------------------------
+foreach pkg in mdesc fre distinct {
+    capture which `pkg'
+    if _rc == 111 ssc install `pkg'
+}
+
+*--------------------------------------------------------------------------------
+* Country-by-country extractors.
+* ETH is the validated template; uncomment others as they are built & checked.
+*--------------------------------------------------------------------------------
+do "${Do}/extract_ETH.do"
+* do "${Do}/extract_MWI.do"
+* do "${Do}/extract_MLI.do"
+* do "${Do}/extract_NER.do"
+* do "${Do}/extract_NGA.do"
+* do "${Do}/extract_TZA.do"
+* do "${Do}/extract_UGA.do"
+
+*--------------------------------------------------------------------------------
+* Append all country files into one harmonised rental/tenure dataset
+*--------------------------------------------------------------------------------
+* clear
+* foreach c in ETH MWI MLI NER NGA TZA UGA {
+*     capture confirm file "${Final}/rental_`c'.dta"
+*     if _rc == 0 append using "${Final}/rental_`c'.dta"
+* }
+* save "${Final}/rental_tenure_ALL.dta", replace
