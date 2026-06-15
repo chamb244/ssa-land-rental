@@ -43,13 +43,13 @@
 *                          (ag_b211a/b > 0)  -- payment-based proxy.
 *
 * DECISIONS / CAVEATS to confirm:
-*   - "rented-in" excludes "borrowed for free" (code 9) — non-market access.
+*   - "rented-in" excludes "borrowed for free" (code 9) - non-market access.
 *   - "rented-out" relies on positive rent received (no clean yes/no gate in w1-3).
 *   - Area imputation stratifier = district (built inline; upstream used admin3.dta).
 *   - strataid: waves 1-2 use the baseline `stratum` (region x urban/rural);
 *     waves 3-4 build group(region reside) (their cover has no `stratum`).
 *   - Year map 2010/2013/2016/2019 follows the IHPS rounds; the shocks do-file
-*     labeled w3/w4 as 2017/2020 — adjust `year` below if you prefer that.
+*     labeled w3/w4 as 2017/2020 - adjust `year` below if you prefer that.
 *********************************************************************************/
 
 local mwidir "${Input}/Malawi/IHPS_panel_v6/MWI_2010-2019_IHPS_v06_M_Stata"
