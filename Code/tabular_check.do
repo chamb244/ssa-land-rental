@@ -75,12 +75,16 @@ preserve
         using "${Final}/qc_means_by_country_year.csv", replace
 restore
 
-di as txt _n "{hline 70}"
+di as txt _n "{hline 78}"
+di as txt "NOTES (see Reference/variable_provenance.md):"
 di as txt "Structural missings ('.' = question not asked that round; exclude, do NOT treat as 0):"
 di as txt "  Ethiopia parcel_purchased   : 2012, 2014  (no 'purchased' category until 2016)"
 di as txt "  Malawi   parcel_certificate : 2010, 2019  (no title/document question those rounds)"
 di as txt "  Malawi   parcel_purchased   : 2019        ('how acquired' question dropped in 2019)"
-di as txt "See Reference/variable_provenance.md - 'Missing by design' - for details."
-di as txt "{hline 70}"
+di as txt "  Mali     parcel_rentedout   : 2014, 2017  (rented-out land out of EACI's operated frame)"
+di as txt "  Nigeria  parcel_certificate : 2011        (no certificate question in GHS wave 1)"
+di as txt "parcel_area_ha is TOP-CODED at ${area_max} ha: data-entry outliers set missing (means"
+di as txt "  affected, medians not). Rented-out also undercounts for Mali/Niger/Nigeria-w1."
+di as txt "{hline 78}"
 
 exit   // stop cleanly at end-of-file; ignore anything after this line
