@@ -1,18 +1,10 @@
 # ssa-land-rental
 
-**Land-tenure & rental-market descriptives for Sub-Saharan Africa.**
+**Land rental market descriptive statistics for Sub-Saharan Africa.**
 
-Reproducible Stata workflow that builds parcel-level land-tenure and
-rental-market descriptive statistics from farm-household surveys, for an invited
-paper in the *Annual Review of Resource Economics* (ARRE).
+Reproducible Stata workflow that builds parcel-level land-tenure and rental-market descriptive statistics from farm-household surveys, as reported in a manuscript currently being prepared for the *Annual Review of Resource Economics* (ARRE). The workflow is designed to enable full replication of the summary statistics used in our paper. 
 
-Coverage is currently the World Bank **LSMS-ISA** surveys (Ethiopia, Malawi,
-Mali, with more in progress); an additional non-LSMS multi-wave panel will be
-added on the same parcel-level template.
-
-The workflow is deliberately **slim**: rather than reproducing the full
-harmonized panel, it extracts only the variables needed for the tenure
-descriptives, country by country, directly from the raw survey files.
+Coverage is currently based on the World Bank **LSMS-ISA** surveys (Ethiopia, Malawi, Mali, Niger, Nigeria, Tanzania, Uganda); plus nationally representative panel data from Zambia.
 
 ## Output variables (unit = parcel)
 
