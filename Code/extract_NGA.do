@@ -299,6 +299,9 @@ forvalues w = 2/5 {
 }
 label data "Nigeria GHS w1-5: PARCEL-level rental/tenure descriptives (built `c(current_date)')"
 compress
+* top-code implausible plot areas (data-entry outliers); threshold in MASTER
+if "${area_max}"=="" global area_max 40
+replace parcel_area_ha = . if parcel_area_ha > ${area_max} & !missing(parcel_area_ha)
 save "${Final}/rental_NGA.dta", replace
 
 *================================================================================

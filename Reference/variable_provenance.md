@@ -31,6 +31,13 @@ they appear in `Reproduction_v2/Folder_structures/Input data/<Country>/<round>/`
 | `strataid` | Survey design stratum | id |
 | `country` `wave` `year` `hh_id` `holder_id` `parcel_id` | Identifiers | — |
 
+**Area cleaning.** `parcel_area_ha` is **top-coded**: values above `${area_max}` (40 ha,
+set in `MASTER.do`) are treated as data-entry errors and set missing. Smallholder
+parcels rarely exceed this, but the raw self-reported areas carry unit-entry outliers
+(e.g. tens of thousands of "acres") that otherwise inflate the *mean* (the median is
+unaffected). This matters most where a parcel falls back to self-reported area because
+GPS is missing; GPS-measured areas are well-behaved.
+
 ---
 
 ## Missing by design (read this before interpreting the tables)

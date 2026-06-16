@@ -45,6 +45,11 @@ global Input  "${root}/Reproduction_v2/Folder_structures/Input data"      // reu
 global Temp   "${root}/ssa-land-rental/Output/Temp"
 global Final  "${root}/ssa-land-rental/Output/Final"
 
+* Plot-area top-code: parcel_area_ha above this (ha) is treated as a data-entry
+* error and set missing. Smallholder parcels rarely exceed this; the raw data carry
+* unit-error outliers (e.g. tens of thousands of "acres") that otherwise inflate means.
+global area_max 40
+
 *--------------------------------------------------------------------------------
 * Packages used (for convenience / QC; core estimation uses base Stata)
 *--------------------------------------------------------------------------------
