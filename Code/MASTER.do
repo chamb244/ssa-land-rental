@@ -38,12 +38,21 @@ set seed 12345
 *--------------------------------------------------------------------------------
 * Forward slashes work in Stata on both Mac and Windows. On Windows you can
 * alternatively set: global root "C:/DATA/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
-global root   "/Users/jchamberlin/Library/CloudStorage/Dropbox/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
+* Project root. Preferred home: a top-level "SSA-pooled-survey-data" umbrella (sibling to
+* the LSMS-ISA folder) that holds "Input data/" beside the "ssa-land-rental" code repo.
+* Falls back to the legacy location, so runs work before AND after you move things.
+global root "/Users/jchamberlin/Library/CloudStorage/Dropbox/SSA-pooled-survey-data"
+capture confirm file "${root}/ssa-land-rental/Code/MASTER.do"
+if _rc global root "/Users/jchamberlin/Library/CloudStorage/Dropbox/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
 
 global Do     "${root}/ssa-land-rental/Code"
-global Input  "${root}/Reproduction_v2/Folder_structures/Input data"      // reuse existing raw inputs
 global Temp   "${root}/ssa-land-rental/Output/Temp"
 global Final  "${root}/ssa-land-rental/Output/Final"
+
+* Raw survey inputs (never in git). Prefer "${root}/Input data"; else the legacy path.
+global Input  "${root}/Input data"
+capture confirm file "${Input}/Ethiopia/ESS 11/sect2_pp_w1.dta"
+if _rc global Input "${root}/Reproduction_v2/Folder_structures/Input data"
 
 * Plot-area top-code: parcel_area_ha above this (ha) is treated as a data-entry
 * error and set missing. Smallholder parcels rarely exceed this; the raw data carry
