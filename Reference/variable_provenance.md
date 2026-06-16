@@ -68,6 +68,29 @@ with no usable area is missing on `parcel_area_ha` only.)
 
 ---
 
+## Rented-in: sharecropping coverage (read before comparing rented-in levels)
+
+`parcel_rentedin` is meant to capture access to land for a payment, which in principle
+includes **sharecropping** (a share-of-output payment) as well as fixed cash/kind rental.
+Surveys differ in whether sharecropping is recorded *separately*, so coverage varies:
+
+| Country | Sharecropping in `rented_in`? | Basis |
+|---------|-------------------------------|-------|
+| Ethiopia | **Yes** | acquisition has both a "rent" and a separate "sharecrop" code |
+| Mali | **Yes** | occupation mode includes *metayage* (sharecropping) |
+| Tanzania | **Yes** | tenure has "rented in" plus a separate "shared-rent" (sharecrop) code |
+| Zambia | **Yes** | field land-use "rented in" is defined as *cash or in-kind* |
+| Malawi | Partial / unclear | "leasehold / rented / tenant" categories; no explicit sharecrop code |
+| Nigeria | Cash rental | "rented" acquisition code; sharecropping not separately identified |
+| Uganda | Cash rental (likely undercounts sharecrop) | rented-in keyed on rent *paid > 0*; in-kind shares may not register |
+| Niger | **No sharecropping at all** | "location" (cash rental) only; the survey has no sharecropping category |
+
+Where sharecropping is not separately coded (Niger entirely; Nigeria/Malawi/Uganda weakly),
+the cross-country rented-in levels are **lower bounds** on total rental-market participation.
+(Flagged for the questionnaire review.)
+
+---
+
 ## ETHIOPIA — Ethiopia Socioeconomic Survey (ESS)
 
 ### 1. Survey & wave key
@@ -815,7 +838,94 @@ matching `…5`/`…05` variable. Top-coded at `${area_max}` ha.
 
 ---
 
+## ZAMBIA — Rural Agricultural Livelihoods Survey (RALS)  *(non-LSMS-ISA)*
+
+Three RALS rounds (2012, 2015, 2019), IAPRI / Indaba Agricultural Policy Research Institute -
+a **non-LSMS** national agricultural panel. The land roster is the per-field file
+`field.dta` in every round, and it **includes rented-out and borrowed-out fields**, so
+rented-out is observed at field level (unlike Mali/Niger). One agricultural season only, so
+`season` = 1.
+
+> **Unit note.** `parcel` = a **field** (`cluster-hh-field`); single level. Variable names are
+> UPPERCASE in 2012 (`F01`, `F05`, `F06` ...) and lowercase from 2015 (`f01` ...).
+
+### 1. Survey & wave key
+
+| Wave | Round folder | Year | Field roster | HH/field key | Cross-sec weight |
+|------|--------------|------|--------------|--------------|------------------|
+| 1 | `Zambia/RALS 12` | 2012 | `field.dta` (UPPER) | `cluster`-`hh`-`field` | `weight` (from `id.dta`) |
+| 2 | `Zambia/RALS 15` | 2015 | `field.dta` (lower) | `cluster`-`hh`-`field` | `popwgt` (on `field.dta`) |
+| 3 | `Zambia/RALS 19` | 2019 | `field.dta` (lower) | `cluster`-`hh`-`field` | `weight` = panel (no popwgt) |
+
+Field-type roster (household counts of each field type): `fieldtype.dta` (2012/2019),
+`allfields.dta` (2015) - not used for the headline rates (the per-field `field.dta` already
+carries rented-out), but available for cross-checks.
+
+### 2. Tenure indicators
+
+| Variable | Source var | Construction |
+|----------|------------|--------------|
+| `parcel_rentedin` | `F01` land use | `== 2` ("rented in", cash OR in-kind -> **sharecropping included**) |
+| `parcel_rentedout` | `F01` land use | `== 6` ("rented out") |
+| `parcel_purchased` | `F06` acquisition | `== 1` ("Purchased") |
+| `parcel_certificate` | `F05` tenure status | per-wave title map (below); 1 titled / 0 untitled / . DK |
+
+Borrowed-in/out (`F01` 3 / 7) are non-market and are **not** counted as rented.
+
+### 3. Parcel area (`parcel_area_ha`)
+
+`hect` (area already converted to hectares); falls back to `F02` (amount) × `convert`
+(conversion factor; `F03` gives the unit - 1 lima, 2 acre, 3 hectare, 4 m²). Top-coded at
+`${area_max}` ha.
+
+### 4. Design variables & identifiers
+
+| Variable | Source | Construction |
+|----------|--------|--------------|
+| `weight` | `field.dta` (2015/19) / `id.dta` (2012) | cross-sectional `weight`/`popwgt`; **2019 is panel-weighted** (see caveats) |
+| `ea_id` | `field.dta` | `cluster` (PSU) |
+| `strataid` | `field.dta` | `group(dist)` (district stratum) |
+| `parcel_id` | `field.dta` | `cluster-hh-field` |
+| `year` | — | 2012 / 2015 / 2019 |
+
+### 5. `F05` tenure status - per-wave title map (the categories expand)
+
+2012 has 6 categories; 2015 and 2019 share an expanded 9-category scheme, and the **code
+numbers do not line up** (2012 code 7 = "state land no title", but 2015/19 code 7 = "chief
+certificate"). The comparable **formal-title** flag is therefore built per wave:
+
+| | Titled = 1 | Untitled = 0 | DK / other / NC = `.` |
+|---|---|---|---|
+| **2012** | {1 state titled, 2 former-customary titled} | {3 customary no title, 7 state no title} | {4, 5} |
+| **2015 / 2019** | {1, 2 state titled given/processing; 4, 5 former-customary titled given/processing} | {3 state not titled, 6 customary no title} | {8 DK, 9 other, -8 NC} |
+
+**"Chief certificate"** (2015/19 code 7) has no 2012 analogue. By **default it is NOT counted
+as a formal title** (set to 0) so the series stays comparable with 2012; set
+`global zmb_chief_cert 1` in `MASTER.do` to count it as a certificate instead.
+
+### 6. Harmonization decisions & caveats (Zambia)
+
+- **Field-level, single tier.** The field is the unit; `field.dta` is the whole-roster frame
+  (owned, rented-in, borrowed-in, rented-out, borrowed-out, fallow, garden, ...), so rates use
+  an all-fields denominator and rented-out is directly observed.
+- **Rented-in includes sharecropping** (the "rented in" land-use code is explicitly *cash or
+  in-kind*); rented-in/out are read from land use `F01`, not the acquisition item.
+- **Certificate categories expand 2012 -> 2015/19** and are aggregated to a comparable
+  formal-title flag (table above); "chief certificate" excluded by default.
+- **2019 weighting.** This release of RALS 2019 carries only a single `weight` labelled
+  "Panel Weight" - there is no population/cross-sectional weight in the field/household/id
+  files. 2019 estimates therefore represent the **followed panel** (with attrition), not a
+  fresh cross-section; 2012 uses its `weight` and 2015 its `popwgt`. Treat the 2019 level
+  with that caveat (point estimates only mildly affected; representativeness differs).
+- **Deterministic area** via `hect` (already converted); top-coded at 40 ha.
+- **Non-LSMS source.** RALS is fielded by IAPRI, not the World Bank; obtain it from IAPRI
+  rather than the LSMS catalog. Validated by a Python replication of the extractor against
+  the raw files (100% weight match; rates within expected ranges for all three waves).
+
+---
+
 *Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2,
-NER ECVMA1-2, NGA GHS1-5, TZA NPS1-5 incl. refresh, UGA UNPS1-5/7/8) and the raw survey
-modules, with source variables, codes, and value labels verified against the data. Extend
-with one new country section (1-6) per country as the workflow grows.*
+NER ECVMA1-2, NGA GHS1-5, TZA NPS1-5 incl. refresh, UGA UNPS1-5/7/8) plus the non-LSMS
+Zambia RALS 2012/2015/2019, and the raw survey modules, with source variables, codes, and
+value labels verified against the data. Extend with one new country section (1-6) per
+country as the workflow grows.*

@@ -72,6 +72,7 @@ auto-installed by `MASTER.do`.
 | Nigeria | GHS-Panel | 1-5 (2011-2023) | ✅ built (run shakedown pending) |
 | Tanzania | NPS | 1-5 (2009-2019) | ✅ built (run shakedown pending) |
 | Uganda | UNPS | 1-5, 7, 8 (2009-2019) | ✅ built (parcel × season; reports season 1) |
+| Zambia | RALS (non-LSMS, IAPRI) | 2012, 2015, 2019 | ✅ built (field-level) |
 
 Construction choices, exact source variables, and value-label codes for every
 variable are documented per country and wave in

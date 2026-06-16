@@ -1,9 +1,11 @@
 # Data sources & availability
 
-This repository contains **no survey microdata**. All inputs come from the World
+This repository contains **no survey microdata**. Most inputs come from the World
 Bank **Living Standards Measurement Study – Integrated Surveys on Agriculture
 (LSMS-ISA)**, which are free but require registration and acceptance of the
-data provider's terms before download.
+data provider's terms before download. **Zambia is the exception:** it uses the
+non-LSMS **Rural Agricultural Livelihoods Survey (RALS)** from IAPRI (see the
+Zambia section below).
 
 - LSMS-ISA program: <https://www.worldbank.org/en/programs/lsms/initiatives/lsms-ISA>
 - World Bank Microdata Library (LSMS catalog): <https://microdata.worldbank.org/index.php/catalog/lsms>
@@ -194,11 +196,21 @@ files are lowercase.)
 
 ---
 
-## Planned countries
+## Zambia — Rural Agricultural Livelihoods Survey (RALS)  ✅ built  *(non-LSMS)*
 
-| Country | Survey | Rounds | Note |
-|---|---|---|---|
-| Zambia | (national survey, non-LSMS) | TBD | non-LSMS-ISA source; to be integrated into the same parcel-level schema |
+Three RALS rounds in folders `Zambia/RALS 12 | 15 | 19` (2012, 2015, 2019). RALS is a
+national agricultural panel fielded by **IAPRI** (Indaba Agricultural Policy Research
+Institute) - **not** a World Bank LSMS-ISA survey, so it is obtained from IAPRI, not the
+LSMS catalog. Files consumed per round: the per-field land roster `field.dta` (land use,
+tenure status, acquisition, area) and - for the 2012 weight only - `id.dta`. The
+field-type roster (`fieldtype.dta`, or `allfields.dta` in 2015) is available for
+cross-checks but not needed for the headline rates.
+
+> Notes: the field is the unit (single level). Variable names are UPPERCASE in 2012,
+> lowercase from 2015. Rented-in/out come from land use `F01` (2 = rented-in incl.
+> sharecropping, 6 = rented-out); certificate from `F05` (categories expand after 2012 and
+> are aggregated to a comparable formal-title flag); purchase from `F06` (1). 2019 carries
+> only a panel weight (no cross-sectional weight). See provenance, Zambia §5-6.
 
 ---
 
