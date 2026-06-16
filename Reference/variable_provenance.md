@@ -60,7 +60,7 @@ country-years from the *other* variables too.
 | Mali | `parcel_rentedout` | 2014, 2017 | EACI surveys only the parcels a household **operates**, so land rented/lent **out** is out of frame (no rented-out code in 2014; the 2017 "Louee/Pretee" code flags only 5 of ~24,250 parcels). |
 | Nigeria | `parcel_certificate` | 2011 | GHS wave 1 has **no certificate-of-occupancy question** in the tenure module (added from wave 2). |
 | Tanzania | `parcel_purchased` | 2009, 2011, 2013 | The early NPS "ownership status" question has **no acquisition-mode / purchase category** (added when the question was redesigned to "how was this plot acquired?" in NPS4, 2015). |
-| Uganda | `parcel_purchased` | 2018 | UNPS7 (2018/19) did **not record the owned-parcel acquisition item** (`s2aq8` is entirely empty), so acquisition mode - including purchase - is unidentifiable that round. |
+| Uganda | `parcel_purchased` | 2018 | UNPS7 (2018/19) fielded a **reduced panel re-interview** roster for owned parcels: the acquisition item `s2aq8` was **not administered** (0 of 4,368 parcels), so acquisition mode - including purchase - is unidentifiable. (Area and tenure-system were also only re-collected for the ~25% of parcels that were new or re-measured; see Uganda §6.) |
 
 All other variables are populated in every country-year shown. (Within a populated
 country-year, ordinary item non-response is handled the usual way - e.g. a parcel
@@ -794,9 +794,16 @@ matching `…5`/`…05` variable. Top-coded at `${area_max}` ha.
   ("Rented-out" / "Sub-contracted out"); weighted rates are low (~0.2-1.3 %), as in
   Mali / Niger. The cash "rent received" amount (`…aq14`/`s2aq14`) corroborates but is not
   used to define the flag (it is annual, not season-specific).
-- **Purchase missing in 2018.** UNPS7 did not record the owned-parcel acquisition item
-  (`s2aq8` empty), so `parcel_purchased` is `.` in 2018 — do not read the 2B-only zeros as
-  a 0 % purchase rate.
+- **2018 is a reduced panel re-interview.** UNPS7 (2018/19) re-asked owned parcels with a
+  shortened update instrument: most parcel characteristics were carried forward, not
+  re-collected. In `AGSEC2A` the acquisition item `s2aq8` has **0** non-missing values (so
+  `parcel_purchased` is set `.` - do not read the 2B-only zeros as 0% purchase), and GPS /
+  self-reported **area** were captured for only ~256 / ~824 of 4,368 parcels (~25%); the
+  tenure-system item likewise (~932). Certificate (`s2aq23`), ownership flag, documents,
+  disputes and value WERE re-asked. **Consequence:** 2018 owned-parcel area and tenure-
+  system rest on a non-random ~25% (new / re-measured parcels), so treat the 2018 area mean
+  with caution; rented-in (from the separately-administered `AGSEC2B`), rented-out (primary
+  use) and certificate are well-populated. 2019 (UNPS8) is a full re-administration.
 - **Season order swapped in 2015 / 2018 / 2019** (the "…b" primary-use variable is season 1);
   only `parcel_rentedout` differs across seasons, and the paper reports season 1.
 - **Deterministic area** (GPS else self-reported, no pmm imputation, unlike the upstream
