@@ -33,7 +33,8 @@ descriptives, country by country, directly from the raw survey files.
 Code/
   MASTER.do          # sets paths, installs packages, calls per-country extractors, appends
   extract_ETH.do     # Ethiopia (ESS waves 1-5)  — validated template
-  tabular_check.do   # QC / descriptive tables
+  extract_*.do       # one extractor per country: MWI MLI NER NGA TZA UGA
+  tabular_check.do   # QC / descriptive tables (season-aware; reports season 1)
 Reference/
   variable_provenance.md     # source file + variable + coding, by country and wave
   variable_provenance.docx   # same content, formatted (regenerated from the .md)
@@ -70,7 +71,7 @@ auto-installed by `MASTER.do`.
 | Niger | ECVMA | 2011, 2014 | ✅ built & validated |
 | Nigeria | GHS-Panel | 1-5 (2011-2023) | ✅ built (run shakedown pending) |
 | Tanzania | NPS | 1-5 (2009-2019) | ✅ built (run shakedown pending) |
-| Uganda | UNPS | — | ⏳ planned |
+| Uganda | UNPS | 1-5, 7, 8 (2009-2019) | ✅ built (parcel × season; reports season 1) |
 
 Construction choices, exact source variables, and value-label codes for every
 variable are documented per country and wave in

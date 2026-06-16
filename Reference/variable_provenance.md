@@ -26,6 +26,7 @@ they appear in `Reproduction_v2/Folder_structures/Input data/<Country>/<round>/`
 | `parcel_purchased` | Parcel acquired through purchase | 0/1 (`.` if not asked) |
 | `parcel_area_ha` | Cultivated parcel area (Σ field GPS, else self-reported) | hectares |
 | `n_fields` | Number of cultivated fields on the parcel | count |
+| `season` | Cropping season (1 = single-season country / Uganda season 1; 2 = Uganda season 2) | 1/2 |
 | `weight` | Household survey weight | analytic/probability |
 | `ea_id` | Enumeration area (survey PSU) | id |
 | `strataid` | Survey design stratum | id |
@@ -59,6 +60,7 @@ country-years from the *other* variables too.
 | Mali | `parcel_rentedout` | 2014, 2017 | EACI surveys only the parcels a household **operates**, so land rented/lent **out** is out of frame (no rented-out code in 2014; the 2017 "Louee/Pretee" code flags only 5 of ~24,250 parcels). |
 | Nigeria | `parcel_certificate` | 2011 | GHS wave 1 has **no certificate-of-occupancy question** in the tenure module (added from wave 2). |
 | Tanzania | `parcel_purchased` | 2009, 2011, 2013 | The early NPS "ownership status" question has **no acquisition-mode / purchase category** (added when the question was redesigned to "how was this plot acquired?" in NPS4, 2015). |
+| Uganda | `parcel_purchased` | 2018 | UNPS7 (2018/19) did **not record the owned-parcel acquisition item** (`s2aq8` is entirely empty), so acquisition mode - including purchase - is unidentifiable that round. |
 
 All other variables are populated in every country-year shown. (Within a populated
 country-year, ordinary item non-response is handled the usual way - e.g. a parcel
@@ -694,7 +696,119 @@ Self-reported = `s2aq4` (w1) / `ag2a_04` (w2-5); GPS = `area` (w1) / `ag2a_09` (
 
 ---
 
+## UGANDA — National Panel Survey (UNPS)
+
+Seven UNPS rounds (2009/10, 2010/11, 2011/12, 2013/14, 2015/16, 2018/19, 2019/20;
+internal waves 1-5, 7, 8). The land roster is split into **two modules per round**:
+`AGSEC2A` = parcels the household **owns / holds use-rights to**, and `AGSEC2B` =
+parcels **accessed for use but not owned** (rented or borrowed in). These are disjoint
+parcel sets, so the extractor **stacks** them (origin tagged in `parcel_id`: `-A-`
+owned, `-B-` accessed) rather than merging them on the parcel number.
+
+> **Unit note.** `parcel` = a parcel record from 2A or 2B. Variable NAMES drift across
+> rounds (`a2aq*`/`A2aq*`/`s2aq*`) - notably the **certificate** item moves
+> `A2aq25` (2009/10) → `a2aq23` (2011-2015) → `s2aq23` (2018/19). The household key
+> also changes (`Hhid`/`HHID` numeric → `hh`/`hhid` string → 32-char interview GUID).
+
+> **Season note.** The parcel roster (tenure, certificate, purchase, area) is **annual**
+> and identical across the two cropping seasons; **only `parcel_rentedout` is
+> season-specific** (read from the per-season "primary use of parcel" item, code 3). The
+> extractor writes one row per parcel **× season** (`season` = 1, 2) differing only in
+> `parcel_rentedout`, and **the paper reports season 1**. *The season order is SWAPPED in
+> 2015, 2018 and 2019:* there the "…b" primary-use variable is the 1st season and "…a" the
+> 2nd (handled per wave).
+
+### 1. Survey & wave key
+
+| Wave | Round folder | Year | HH key (roster ↔ cover) | Cross-sec weight |
+|------|--------------|------|--------------------------|------------------|
+| 1 | `Uganda/UNPS 09` | 2009 | `Hhid` ↔ `HHID` | `wgt09` |
+| 2 | `Uganda/UNPS 10` | 2010 | `HHID` ↔ `HHID` | `wgt10` |
+| 3 | `Uganda/UNPS 11` | 2011 | `HHID` ↔ `HHID` | `mult` |
+| 4 | `Uganda/UNPS 13` | 2013 | `hh` ↔ `hhid` (string) | `wgt_X` |
+| 5 | `Uganda/UNPS 15` | 2015 | `hhid` ↔ `hhid` | `h_xwgt_W5` |
+| 7 | `Uganda/UNPS 18` | 2018 | `hhid` ↔ `hhid` (GUID) | `wgt` |
+| 8 | `Uganda/UNPS 19` | 2019 | `hhid` ↔ `hhid` (GUID) | `wgt` |
+
+Land roster: `AGSEC2A` (owned) + `AGSEC2B` (accessed). Cover: `GSEC1`. Household keys and
+their types were verified against the raw files (roster numeric ids are matched to the
+string cover ids via `tostring … , format("%17.0f")`, as in the upstream pipeline).
+
+### 2. Tenure indicators
+
+| Variable | Module | Source var (across waves) | Construction |
+|----------|--------|---------------------------|--------------|
+| `parcel_rentedin` | 2B | rent paid `A2bq9`/`a2bq9`/`a2bq09` | `> 0` (accessed parcel paid for) |
+| `parcel_rentedin` | 2A | acquisition `A2aq8`/`a2aq8`/`s2aq8` | `== 3` (Leased-in) |
+| `parcel_rentedout` | 2A/2B | per-season primary use | `== 3` ("Rented-out" 2A / "Sub-contracted out" 2B) |
+| `parcel_purchased` | 2A | acquisition `A2aq8`/`a2aq8`/`s2aq8` | `== 1` Purchased (`.` in 2018) |
+| `parcel_certificate` | 2A | `A2aq25`(09/10) / `a2aq23`(11-15) / `s2aq23`(18/19) | `inlist(1,2,3)`=1; `4`=0; accessed parcels=0 |
+
+Primary-use **season-1** variable by wave: `A2aq13a`(09) · `a2aq13a`(10) · `a2aq11a`(11,13) ·
+`a2aq11b`(15) · `s2aq11b`(18,19) — swapped from 2015. The 2B analogues are
+`A2bq15*`/`a2bq15*`/`a2bq12*`.
+
+### 3. Parcel area (`parcel_area_ha`)
+
+GPS where measured, else self-reported (deterministic; both in **acres × 0.404686 → ha**).
+GPS = `A2aq4`/`a2aq4`/`s2aq4` (2A), `A2bq4`/`a2bq4`/`s2aq04` (2B); self-reported = the
+matching `…5`/`…05` variable. Top-coded at `${area_max}` ha.
+
+### 4. Design variables & identifiers
+
+| Variable | Source | Construction |
+|----------|--------|--------------|
+| `weight` | cover `GSEC1` | cross-sectional HH weight (see wave key) |
+| `strataid` | cover | `group()` of `stratum` (09/10) / `sregion` (11-15) / `region` (18/19) |
+| `ea_id` | cover | `comm` (09-11) / `ea` (13/15); **blank in 2018/19** (no EA on the cover) |
+| `parcel_id` | roster | `hh_id + "-A-"/"-B-" + parcelID` (origin-tagged, globally unique) |
+| `year` | — | 2009 / 2010 / 2011 / 2013 / 2015 / 2018 / 2019 |
+
+### 5. Value labels of key source variables (verified against the raw rosters)
+
+**Acquisition (2A)** `…aq8`: **1 Purchased** · 2 inherited / received as gift · **3 Leased-in** ·
+4 just walked in (cleared) · 5 don't know · 6 other (2018/19 add 7 given by gov / authority ·
+8 agreement with owner · 9 without agreement · 96 other). *(2018: entirely missing.)*
+
+**Certificate / title (2A)** `…aq25`/`…aq23`/`s2aq23`: **1 certificate of title** ·
+**2 certificate of customary ownership** · **3 certificate of occupancy** · 4 no document.
+
+**Primary use of parcel** (per season): 1 own-cultivated annual · 2 own-cultivated perennial ·
+**3 Rented-out** (2A) / **3 Sub-contracted out** (2B) · 4 cultivated by mailo tenant (2A) ·
+5 fallow · 6 pasture / grazing · 7 woodlot / forest · 96 other.
+
+**Tenure system** `…aq7`: 1 freehold · 2 leasehold · 3 mailo · 4 customary · 6 other.
+*(Recorded but not used directly; rented-in keys off rent-paid / leased-in acquisition.)*
+
+### 6. Harmonization decisions & caveats (Uganda)
+
+- **Owned vs accessed are separate modules.** 2A (owned) supplies purchase, certificate and
+  rented-out; 2B (accessed) supplies rented-in. They are stacked into one parcel frame;
+  accessed parcels carry `parcel_purchased = 0` and `parcel_certificate = 0` (the household
+  holds no title to a rented-in parcel), so the rates use an all-parcels denominator
+  comparable to the other countries.
+- **Rented-in = paid access.** A 2B parcel counts as rented-in when rent paid `> 0`
+  (cash or sharecrop); free-borrowed parcels (rent 0) are not rented-in. 2A parcels with
+  acquisition "Leased-in" (code 3) are also flagged rented-in.
+- **Rented-out is a lower bound.** It is read from the categorical per-season primary use
+  ("Rented-out" / "Sub-contracted out"); weighted rates are low (~0.2-1.3 %), as in
+  Mali / Niger. The cash "rent received" amount (`…aq14`/`s2aq14`) corroborates but is not
+  used to define the flag (it is annual, not season-specific).
+- **Purchase missing in 2018.** UNPS7 did not record the owned-parcel acquisition item
+  (`s2aq8` empty), so `parcel_purchased` is `.` in 2018 — do not read the 2B-only zeros as
+  a 0 % purchase rate.
+- **Season order swapped in 2015 / 2018 / 2019** (the "…b" primary-use variable is season 1);
+  only `parcel_rentedout` differs across seasons, and the paper reports season 1.
+- **Deterministic area** (GPS else self-reported, no pmm imputation, unlike the upstream
+  pipeline); acres → ha via 0.404686; top-coded at 40 ha.
+- **Weights** are each round's **cross-sectional** household weight; `ea_id` (PSU) is absent
+  on the 2018/2019 cover, so design-based SEs there rest on strata + weights (point
+  estimates are unaffected). Validated by a Python replication of the extractor against the
+  raw data: household-weight match 97-100 % and rates within expected ranges for all waves.
+
+---
+
 *Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2,
-NER ECVMA1-2, NGA GHS1-5, TZA NPS1-5 incl. refresh) and the raw survey modules, with
-source variables, codes, and value labels verified against the data. Extend with one new
-country section (1-6) per country as the workflow grows.*
+NER ECVMA1-2, NGA GHS1-5, TZA NPS1-5 incl. refresh, UGA UNPS1-5/7/8) and the raw survey
+modules, with source variables, codes, and value labels verified against the data. Extend
+with one new country section (1-6) per country as the workflow grows.*

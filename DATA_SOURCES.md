@@ -177,13 +177,28 @@ NPS 19 - extended | NPS 19 - refresh`. Files consumed per dataset: plot-inputs m
 
 ---
 
+## Uganda — National Panel Survey (UNPS)  ✅ built
+
+Seven UNPS rounds in folders `Uganda/UNPS 09 | 10 | 11 | 13 | 15 | 18 | 19`
+(internal waves 1-5, 7, 8; years 2009/10 → 2019/20). Files consumed per round: the
+land roster split into `AGSEC2A` (owned parcels) and `AGSEC2B` (accessed / rented-in
+parcels) for tenure, certificate, purchase and area, plus the cover `GSEC1` for the
+cross-sectional weight, stratum and EA. (2009 files carry a `2009_` prefix; the 2019
+files are lowercase.)
+
+> Notes: 2A and 2B are **stacked** (owned + accessed). Variable names drift across rounds
+> and the certificate item moves `A2aq25` → `a2aq23` → `s2aq23`; the season order is
+> swapped in 2015/2018/2019; purchase is missing in 2018 (acquisition item not recorded).
+> Output is one row per parcel × season and the paper reports season 1. See provenance,
+> Uganda §6.
+
+---
+
 ## Planned countries
 
-To be documented (survey files + WB catalog links) as each extractor is built:
-
-| Country | Survey | Rounds |
-|---|---|---|
-| Uganda | National Panel Survey (UNPS) | 2009/10 → 2019/20 |
+| Country | Survey | Rounds | Note |
+|---|---|---|---|
+| Zambia | (national survey, non-LSMS) | TBD | non-LSMS-ISA source; to be integrated into the same parcel-level schema |
 
 ---
 
