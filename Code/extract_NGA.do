@@ -91,7 +91,7 @@ forvalues w = 1/5 {
         local certv s11b1q7
         local srv s11aq4a
         local unitv s11aq4b
-        local gpsv s11aq4d
+        local gpsv s11aq4c
         local rincodes 2
         local cover secta_plantingw2.dta
     }
@@ -106,7 +106,7 @@ forvalues w = 1/5 {
         local certv s11b1q7
         local srv s11aq4a
         local unitv s11aq4b
-        local gpsv s11aq4d
+        local gpsv s11aq4c
         local rincodes 2
         local cover secta_plantingw3.dta
     }
@@ -121,7 +121,7 @@ forvalues w = 1/5 {
         local certv s11b1q7
         local srv s11aq4aa
         local unitv s11aq4b
-        local gpsv s11aq4d
+        local gpsv s11aq4c
         local rincodes 2
         local cover secta_plantingw4.dta
     }
@@ -205,11 +205,12 @@ forvalues w = 1/5 {
     replace area_self_reported = area_self_reported * 0.00013 if `unitv'==3 & admin_1==5
     replace area_self_reported = area_self_reported * 0.00041 if `unitv'==3 & admin_1==6
 
-    * GPS: upstream uses `plot_area' (m2) -> ha; fall back to the section GPS var.
-    * Always create gps so it exists even when neither source is present (-> uses SR).
+    * GPS area = the per-wave "GPS measured in square meters" variable (-> ha).
+    *   w1 s11aq4d | w2-4 s11aq4c | w5 s11mq3.  (No `plot_area' var exists in the raw -
+    *   the upstream pipeline referenced a nonexistent variable.)
     gen double gps = .
-    capture replace gps = `gpsv'
-    capture replace gps = plot_area * 0.0001
+    capture replace gps = `gpsv' * 0.0001
+    replace gps = . if gps<=0
     gen plot_area_ha = gps
     replace plot_area_ha = area_self_reported if missing(plot_area_ha)
 

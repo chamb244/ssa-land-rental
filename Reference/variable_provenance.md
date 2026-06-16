@@ -546,12 +546,14 @@ module; area is in the plot roster - the two are merged on `hhid-plotid`.
 
 ### 3. Parcel area (`parcel_area_ha`)
 
-GPS where measured (`plot_area` × 0.0001, m² → ha), else self-reported. Self-reported
-is in local units with **region-specific** conversion factors (heaps/ridges/stands ×
-the survey zone `admin_1` 1-6; plus acres/m²/plot factors). Wave 1-4 self-reported =
-`s11aq4a`/`s11aq4aa` with unit `s11aq4b`; wave 5 = `s11aq3_number` with unit
-`s11aq3_unit` (different simple-unit codes). The region factors are identical across
-waves and transcribed verbatim from the upstream pipeline.
+GPS where measured (the "GPS measured in square meters" variable × 0.0001 → ha), else
+self-reported. The GPS variable name shifts by wave: **w1 `s11aq4d`, w2-4 `s11aq4c`,
+w5 `s11mq3`** (there is no `plot_area` variable in the raw - the upstream pipeline
+referenced a nonexistent one, so its GPS was effectively unused). Self-reported is in
+local units with **region-specific** conversion factors (heaps/ridges/stands × the
+survey zone `admin_1` 1-6; plus acres/m²/plot factors); self-reported number = `s11aq4a`
+(w1-3) / `s11aq4aa` (w4) / `s11aq3_number` (w5), unit `s11aq4b` (w1-4) / `s11aq3_unit`
+(w5). The region factors are identical across waves (transcribed from the upstream pipeline).
 
 ### 4. Design variables & identifiers
 
