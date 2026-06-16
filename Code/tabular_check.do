@@ -20,7 +20,7 @@ svyset _psu [pw=weight], strata(_strat) singleunit(centered)
 *--------------------------------------------------------------------------------
 * Sample sizes
 *--------------------------------------------------------------------------------
-tab country wave
+tab country wave if season==1
 
 *--------------------------------------------------------------------------------
 * Design-weighted participation rates, BY COUNTRY, one variable per call.
@@ -36,7 +36,7 @@ foreach c of local countries {
     di as txt "{hline 64}"
     foreach v in parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased {
         di as txt _n ">> `v'"
-        capture svy, subpop(if country=="`c'"): mean `v', over(year)
+        capture svy, subpop(if country=="`c'" & season==1): mean `v', over(year)
         if _rc di as error "   (not estimable for `c' - all missing)"
     }
 }
@@ -44,8 +44,8 @@ foreach c of local countries {
 *--------------------------------------------------------------------------------
 * Cultivated parcel area (ha), by country x wave
 *--------------------------------------------------------------------------------
-di as txt _n "================  parcel area (ha)  ================"
-table country wave, stat(mean parcel_area_ha) stat(p50 parcel_area_ha) ///
+di as txt _n "================  parcel area (ha)  [season 1]  ================"
+table country wave if season==1, stat(mean parcel_area_ha) stat(p50 parcel_area_ha) ///
     stat(count parcel_area_ha) nformat(%7.3f)
 
 *--------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ table country wave, stat(mean parcel_area_ha) stat(p50 parcel_area_ha) ///
 foreach c of local countries {
     di as txt _n "-- missingness: `c' --"
     capture mdesc parcel_rentedin parcel_rentedout parcel_certificate ///
-        parcel_purchased parcel_area_ha weight if country=="`c'"
+        parcel_purchased parcel_area_ha weight if country=="`c'" & season==1
 }
 
 *--------------------------------------------------------------------------------
@@ -62,6 +62,7 @@ foreach c of local countries {
 * easy to scan for plausibility. Also written to CSV.
 *--------------------------------------------------------------------------------
 preserve
+    keep if season==1           // paper tables report season 1 (Uganda has season 2 too)
     gen byte _n1 = 1
     collapse (mean) parcel_rentedin parcel_rentedout parcel_certificate ///
         parcel_purchased parcel_area_ha (rawsum) n_parcels = _n1 [aw=weight], ///
@@ -86,6 +87,21 @@ di as txt "  Nigeria  parcel_certificate : 2011        (no certificate question 
 di as txt "  Tanzania parcel_purchased   : 2009,2011,2013 (no acquisition/purchase category until 2015)"
 di as txt "parcel_area_ha is TOP-CODED at ${area_max} ha: data-entry outliers set missing (means"
 di as txt "  affected, medians not). Rented-out also undercounts for Mali/Niger/Nigeria-w1."
+di as txt "UGANDA: parcel x season file; tables above use season==1. Rented-in/certificate/"
+di as txt "  purchase/area are annual (identical across seasons); only rented-out is season-"
+di as txt "  specific. Accessed (rented-in) parcels carry certificate=0 (no HH title)."
 di as txt "{hline 78}"
+
+*--------------------------------------------------------------------------------
+* Uganda only: rented-out season 1 vs season 2 (weighted), for the 'both seasons' check
+*--------------------------------------------------------------------------------
+capture confirm variable season
+if !_rc {
+    di as txt _n "-- Uganda rented-out: season 1 vs 2 (weighted means by year) --"
+    forvalues s = 1/2 {
+        di as txt _n ">> season `s'"
+        capture svy, subpop(if country=="Uganda" & season==`s'): mean parcel_rentedout, over(year)
+    }
+}
 
 exit   // stop cleanly at end-of-file; ignore anything after this line

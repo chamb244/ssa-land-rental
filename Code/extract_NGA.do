@@ -58,8 +58,11 @@ program define _ngafinal
     label var n_fields           "Number of parcel records aggregated"
     label var ea_id              "Enumeration area (survey PSU)"
     label var strataid           "Survey design stratum (zone)"
-    keep country wave year weight strataid ea_id hh_id parcel_id parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased parcel_area_ha n_fields
-    order country wave year weight strataid ea_id hh_id parcel_id ///
+    capture confirm variable season
+    if _rc gen byte season = 1
+    label var season "Cropping season (1=single-season country / Uganda s1; 2=Uganda s2)"
+    keep country wave year season weight strataid ea_id hh_id parcel_id parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased parcel_area_ha n_fields
+    order country wave year season weight strataid ea_id hh_id parcel_id ///
           parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased ///
           parcel_area_ha n_fields
 end
