@@ -69,7 +69,8 @@ auto-installed by `MASTER.do`.
 | Mali | EACI | 2014, 2017 | ✅ built & validated |
 | Niger | ECVMA | 2011, 2014 | ✅ built & validated |
 | Nigeria | GHS-Panel | 1-5 (2011-2023) | ✅ built (run shakedown pending) |
-| Tanzania, Uganda | NPS / UNPS | — | ⏳ planned |
+| Tanzania | NPS | 1-5 (2009-2019) | ✅ built (run shakedown pending) |
+| Uganda | UNPS | — | ⏳ planned |
 
 Construction choices, exact source variables, and value-label codes for every
 variable are documented per country and wave in

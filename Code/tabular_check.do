@@ -83,6 +83,7 @@ di as txt "  Malawi   parcel_certificate : 2010, 2019  (no title/document questi
 di as txt "  Malawi   parcel_purchased   : 2019        ('how acquired' question dropped in 2019)"
 di as txt "  Mali     parcel_rentedout   : 2014, 2017  (rented-out land out of EACI's operated frame)"
 di as txt "  Nigeria  parcel_certificate : 2011        (no certificate question in GHS wave 1)"
+di as txt "  Tanzania parcel_purchased   : 2009,2011,2013 (no acquisition/purchase category until 2015)"
 di as txt "parcel_area_ha is TOP-CODED at ${area_max} ha: data-entry outliers set missing (means"
 di as txt "  affected, medians not). Rented-out also undercounts for Mali/Niger/Nigeria-w1."
 di as txt "{hline 78}"

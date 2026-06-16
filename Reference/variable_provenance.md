@@ -58,6 +58,7 @@ country-years from the *other* variables too.
 | Malawi | `parcel_purchased` | 2019 | The 2019 round **dropped the categorical "how acquired" question** entirely (only "from whom" and "year acquired" remain), so acquisition mode - including purchase - is not identifiable. |
 | Mali | `parcel_rentedout` | 2014, 2017 | EACI surveys only the parcels a household **operates**, so land rented/lent **out** is out of frame (no rented-out code in 2014; the 2017 "Louee/Pretee" code flags only 5 of ~24,250 parcels). |
 | Nigeria | `parcel_certificate` | 2011 | GHS wave 1 has **no certificate-of-occupancy question** in the tenure module (added from wave 2). |
+| Tanzania | `parcel_purchased` | 2009, 2011, 2013 | The early NPS "ownership status" question has **no acquisition-mode / purchase category** (added when the question was redesigned to "how was this plot acquired?" in NPS4, 2015). |
 
 All other variables are populated in every country-year shown. (Within a populated
 country-year, ordinary item non-response is handled the usual way - e.g. a parcel
@@ -608,7 +609,92 @@ w2-4 `s11b1q28` / w5 `s11b1q44` (codes 2,3 = rented/leased out).
 
 ---
 
+## TANZANIA — National Panel Survey (NPS)
+
+Five NPS waves. Waves **4 (2014/15) and 5 (2019/20) each split into an EXTENDED (long
+panel) and a REFRESH subsample** - 7 datasets in all, combined here into waves 4 and 5
+using each subsample's own weights. Tenure (acquisition & use) is in the plot-inputs
+module; area is in the plot roster - merged on `hhid-plotnum`.
+
+> **Unit note.** `parcel` = the plot. The household id changes each wave
+> (`hhid` → `y2_hhid` → `y3_hhid` → `y4_hhid` → `sdd_hhid`/`y5_hhid`).
+
+### 1. Survey & wave key
+
+| Wave | Round folder(s) | Year | HH id | Tenure var |
+|------|-----------------|--------|----------------|------------|
+| 1 | `Tanzania/NPS 08` | 2009 | `hhid` | `s3aq22` (early) |
+| 2 | `Tanzania/NPS 10` | 2011 | `y2_hhid` | `ag3a_24` (early) |
+| 3 | `Tanzania/NPS 12` | 2013 | `y3_hhid` | `ag3a_25` (early) |
+| 4 | `NPS 14 - extended` + `NPS 14 - refresh` | 2015 | `y4_hhid` | `ag3a_25` (late) |
+| 5 | `NPS 19 - extended` (`sdd_hhid`) + `NPS 19 - refresh` (`y5_hhid`) | 2019 | — | `ag3a_25` (late) |
+
+Plot roster: `SEC_2A`/`AG_SEC2A`/`AG_SEC_2A`/`AG_SEC_02`. Weights from the cover
+(`hh_weight`/`y2_weight`/`y3_weight`/`y4_weights`/`sdd_weights`/`y5_crossweight`).
+
+### 2. Tenure indicators
+
+| Variable | Wave | Source var | Construction |
+|--------------------|------|----------------|----------------------------------------------|
+| `parcel_rentedin` | 1-3 | `s3aq22`/`ag3a_24`/`ag3a_25` | `inlist(.,3,4)` - rented in + shared-rent |
+| `parcel_rentedin` | 4-5 | `ag3a_25` | `inlist(ag3a_25,7,8)` - rented in + shared-rent |
+| `parcel_rentedout` | 1-5 | `s3aq3`/`ag3a_03` | `== 2` (plot "rented out" in the use question) |
+| `parcel_purchased` | 1-3 | — | **missing** - no acquisition/purchase category |
+| `parcel_purchased` | 4-5 | `ag3a_25` | `ag3a_25==5` - PURCHASED |
+| `parcel_certificate` | 1 | `s3aq25` | `==1` (has title) |
+| `parcel_certificate` | 2 | `ag3a_27` | `==1` |
+| `parcel_certificate` | 3 | `ag3a_28` | not in {9,10,11} = has title |
+| `parcel_certificate` | 4-5 | `ag3a_28a`,`ag3a_28d` | `ag3a_28a in {1,2}` or `ag3a_28d in 1-5` |
+
+(Certificate set to 0 for non-owned parcels.)
+
+### 3. Parcel area (`parcel_area_ha`)
+
+GPS where measured, else self-reported (deterministic; both in **acres × 0.404686 → ha**).
+Self-reported = `s2aq4` (w1) / `ag2a_04` (w2-5); GPS = `area` (w1) / `ag2a_09` (w2-5).
+
+### 4. Design variables & identifiers
+
+| Variable | Wave | Source | Construction |
+|----------------|------|--------|------------------------------------|
+| `weight` | 1-5 | cover (`HH_SEC_A`/`SEC_A_T`) | wave-specific weight; extended & refresh use their own |
+| `strataid` | 1-5 | cover | `strataid` (direct) |
+| `ea_id` | 1-5 | cover | cluster/admin vars (region-district-ward-ea), else household id |
+| `parcel_id` | 1-5 | tenure/roster | `hhid-plotnum` |
+| `year` | 1-5 | — | 2009 / 2011 / 2013 / 2015 / 2019 |
+
+### 5. Value labels of key source variables (verified)
+
+**EARLY ownership status** - `s3aq22`/`ag3a_24`/`ag3a_25` (w1-3): 1 owned · 2 used free ·
+**3 rented in** · **4 shared rent** · 5 shared ownership. *(No purchase category.)*
+
+**LATE "How was this plot acquired?"** - `ag3a_25` (w4-5): 1 inheritance · 2 gift ·
+3 borrowing · 4 village allocation · **5 PURCHASED** · 6 used free · **7 rented in** ·
+**8 shared-rent** · 9 shared-own · 10 squatting · 11 other.
+
+**Use of plot** - `s3aq3`/`ag3a_03`: 1 cultivated · **2 rented out** · 3 given out ·
+4 fallow · 5 forest · 6 other.
+
+### 6. Harmonization decisions & caveats (Tanzania)
+
+- **Purchase only measurable from 2015.** NPS1-3 ask "ownership status" (owned/free/
+  rented/shared) with no acquisition mode, so `parcel_purchased` is missing in
+  2009/2011/2013. From NPS4 the question becomes "how was this plot acquired?" with a
+  PURCHASED code (5). The 2015 level is high (~25% in the extended panel) - a *stock*
+  ("ever acquired by purchase"); scrutinize and mind the level break from the redesign.
+- **Rented-in includes sharecropping** (shared-rent: code 4 early / 8 late) alongside
+  cash rental (3 / 7); the upstream pipeline used pure rental only. Shared-OWN (5 / 9)
+  is treated as owned, not rented.
+- **Waves 4 and 5 pool an extended panel and a refresh sample**, each weighted by its
+  own design weight; together they represent the wave's population.
+- **Rented-out is well-measured** (the roster lists plots owned *or* cultivated, and the
+  "use" question flags rented-out) - unlike Mali/Niger.
+- **ea_id** is built from the cover's cluster/admin variables where present, else the
+  household id (a conservative PSU); `strataid` comes directly from the cover.
+
+---
+
 *Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2,
-NER ECVMA1-2, NGA GHS1-5) and the raw survey modules, with source variables, codes, and
-value labels verified against the data. Extend with one new country section (1-6) per
-country as the workflow grows.*
+NER ECVMA1-2, NGA GHS1-5, TZA NPS1-5 incl. refresh) and the raw survey modules, with
+source variables, codes, and value labels verified against the data. Extend with one new
+country section (1-6) per country as the workflow grows.*

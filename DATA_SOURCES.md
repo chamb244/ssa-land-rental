@@ -162,13 +162,27 @@ rented-out, certificate), plot roster `sect11a1_plantingwN` (area), cover
 
 ---
 
+## Tanzania — National Panel Survey (NPS)  ✅ built
+
+Five NPS waves; waves 4 and 5 each split into extended + refresh subsamples (7 folders):
+`Tanzania/NPS 08 | NPS 10 | NPS 12 | NPS 14 - extended | NPS 14 - refresh |
+NPS 19 - extended | NPS 19 - refresh`. Files consumed per dataset: plot-inputs module
+(`SEC_3A`/`AG_SEC3A`/`AG_SEC_3A`) for tenure, plot roster (`SEC_2A`/`AG_SEC2A`/
+`AG_SEC_2A`/`AG_SEC_02`) for area, and the cover (`SEC_A_T`/`HH_SEC_A`) for weight,
+`strataid`, and ea/cluster.
+
+> Notes: purchase is measurable only from NPS4 (2015), when the tenure question gained a
+> "how acquired" form (code 5 = purchased); earlier waves have no purchase category.
+> Waves 4-5 pool the extended panel and refresh sample with their own weights.
+
+---
+
 ## Planned countries
 
 To be documented (survey files + WB catalog links) as each extractor is built:
 
 | Country | Survey | Rounds |
 |---|---|---|
-| Tanzania | National Panel Survey (NPS) | 2008/09, 2010/11, 2012/13, 2014/15, 2019/20 |
 | Uganda | National Panel Survey (UNPS) | 2009/10 → 2019/20 |
 
 ---

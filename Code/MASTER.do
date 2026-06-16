@@ -67,7 +67,7 @@ do "${Do}/extract_MWI.do"
 do "${Do}/extract_MLI.do"
 do "${Do}/extract_NER.do"
 do "${Do}/extract_NGA.do"
-* do "${Do}/extract_TZA.do"
+do "${Do}/extract_TZA.do"
 * do "${Do}/extract_UGA.do"
 
 *--------------------------------------------------------------------------------
