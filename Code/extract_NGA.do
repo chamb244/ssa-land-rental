@@ -205,8 +205,10 @@ forvalues w = 1/5 {
     replace area_self_reported = area_self_reported * 0.00013 if `unitv'==3 & admin_1==5
     replace area_self_reported = area_self_reported * 0.00041 if `unitv'==3 & admin_1==6
 
-    * GPS: upstream uses `plot_area' (m2) -> ha; fall back to the section GPS var
-    capture gen gps = `gpsv'
+    * GPS: upstream uses `plot_area' (m2) -> ha; fall back to the section GPS var.
+    * Always create gps so it exists even when neither source is present (-> uses SR).
+    gen double gps = .
+    capture replace gps = `gpsv'
     capture replace gps = plot_area * 0.0001
     gen plot_area_ha = gps
     replace plot_area_ha = area_self_reported if missing(plot_area_ha)
