@@ -61,14 +61,14 @@ auto-installed by `MASTER.do`.
 
 | Country | Survey | Waves | Status |
 |---|---|---|---|
-| Ethiopia | ESS | 1-5 (2012-2022) | ✅ built & validated |
-| Malawi | IHPS | 1-4 (2010-2019) | ✅ built & validated |
-| Mali | EACI | 2014, 2017 | ✅ built & validated |
-| Niger | ECVMA | 2011, 2014 | ✅ built & validated |
-| Nigeria | GHS-Panel | 1-5 (2011-2023) | ✅ built (run shakedown pending) |
-| Tanzania | NPS | 1-5 (2009-2019) | ✅ built (run shakedown pending) |
-| Uganda | UNPS | 1-5, 7, 8 (2009-2019) | ✅ built (parcel × season; reports season 1) |
-| Zambia | RALS (non-LSMS, IAPRI) | 2012, 2015, 2019 | ✅ built (field-level) |
+| Ethiopia | ESS (LSMS-ISA) | 1-5 (2012-2022) | ✅ built & validated |
+| Malawi | IHPS (LSMS-ISA) | 1-4 (2010-2019) | ✅ built & validated |
+| Mali | EACI (LSMS-ISA) | 2014, 2017 | ✅ built & validated |
+| Niger | ECVMA (LSMS-ISA) | 2011, 2014 | ✅ built & validated |
+| Nigeria | GHS-Panel (LSMS-ISA) | 1-5 (2011-2023) | ✅ built & validated |
+| Tanzania | NPS (LSMS-ISA) | 1-5 (2009-2019) | ✅ built & validated |
+| Uganda | UNPS (LSMS-ISA) | 1-5, 7, 8 (2009-2019) | ✅ built (parcel × season; reports season 1) |
+| Zambia | RALS (IAPRI-MSU) | 2012, 2015, 2019 | ✅ built (field-level) |
 
 Construction choices, exact source variables, and value-label codes for every
 variable are documented per country and wave in
