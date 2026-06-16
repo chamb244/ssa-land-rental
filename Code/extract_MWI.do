@@ -70,6 +70,7 @@ program define _mwifinal
     label var n_fields           "Number of cultivated fields on parcel"
     label var ea_id              "Enumeration area (survey PSU)"
     label var strataid           "Survey design stratum"
+    keep country wave year weight strataid ea_id hh_id parcel_id parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased parcel_area_ha n_fields
     order country wave year weight strataid ea_id hh_id parcel_id ///
           parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased ///
           parcel_area_ha n_fields

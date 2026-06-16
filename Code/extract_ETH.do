@@ -65,6 +65,7 @@ program define _ethfinal
     if _rc tostring parcel_id, replace force
     capture confirm string variable holder_id
     if _rc tostring holder_id, replace force
+    keep country wave year weight strataid ea_id hh_id holder_id parcel_id parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased parcel_area_ha n_fields
     order country wave year weight strataid ea_id hh_id holder_id parcel_id ///
           parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased ///
           parcel_area_ha n_fields

@@ -58,6 +58,7 @@ program define _ngafinal
     label var n_fields           "Number of parcel records aggregated"
     label var ea_id              "Enumeration area (survey PSU)"
     label var strataid           "Survey design stratum (zone)"
+    keep country wave year weight strataid ea_id hh_id parcel_id parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased parcel_area_ha n_fields
     order country wave year weight strataid ea_id hh_id parcel_id ///
           parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased ///
           parcel_area_ha n_fields
