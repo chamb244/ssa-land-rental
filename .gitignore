@@ -27,3 +27,6 @@ Output/Final/*
 .DS_Store
 Thumbs.db
 
+
+# consolidated report build artifacts (regenerable)
+Report/.pdf_src.md
