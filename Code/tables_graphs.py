@@ -12,8 +12,6 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 import os as _os
-# Repo root: prefer the SSA-pooled-survey-data umbrella, else the legacy LSMS folder
-# (mirrors MASTER.do). Edit if your local path differs.
 _cands=[
  "/Users/jchamberlin/Library/CloudStorage/Dropbox/SSA-pooled-survey-data/ssa-land-rental",
  "/Users/jchamberlin/Library/CloudStorage/Dropbox/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare/ssa-land-rental",
@@ -103,19 +101,30 @@ def wide(level):
 T={lvl:wide(lvl) for lvl in ["hh","plot","area"]}
 TITLES={"hh":"Share of households with one or more plot",
         "plot":"Share of plots","area":"Share of farm area (ha)"}
+# Presentation view: country labelled once per group (blank on repeat rows),
+# values to 3 decimals, structural-missing cells blank. (The long file
+# shares_long_with_CIs.csv keeps full labels + CIs for machine use.)
+def present(t):
+    t=t.copy()
+    t["country"]=t["country"].astype(str)          # drop Categorical so "" is allowed
+    for col in [NICE[i] for i in IND]:
+        t[col]=t[col].map(lambda x:"" if pd.isna(x) else f"{x:.3f}")
+    t["year"]=t["year"].astype(int).astype(str)
+    dup=t["country"].eq(t["country"].shift())
+    t.loc[dup,"country"]=""
+    t=t.rename(columns={"country":"Country","year":"Year"})
+    return t[["Country","Year"]+[NICE[i] for i in IND]]
+
 for lvl,t in T.items():
-    t.to_csv(f"{TAB}/table_{lvl}_share.csv",index=False)
+    present(t).to_csv(f"{TAB}/table_{lvl}_share.csv",index=False)
 
 # Excel: one sheet per table
 with pd.ExcelWriter(f"{TAB}/tenure_share_tables.xlsx") as xl:
     for lvl,t in T.items():
-        tt=t.copy()
-        for col in [NICE[i] for i in IND]: tt[col]=tt[col].map(lambda x:round(x,4) if pd.notna(x) else None)
-        tt.to_excel(xl,sheet_name=TITLES[lvl][:31],index=False)
+        present(t).to_excel(xl,sheet_name=TITLES[lvl][:31],index=False)
 
 # Word
 from docx import Document
-from docx.shared import Pt
 doc=Document()
 doc.add_heading("Land-tenure & rental-market descriptives",0)
 doc.add_paragraph("Survey-weighted shares by country and survey year (season 1). "
@@ -123,16 +132,15 @@ doc.add_paragraph("Survey-weighted shares by country and survey year (season 1).
     "Cross-country levels should be read with care: survey instruments and panel structure "
     "differ across countries and waves.")
 for lvl in ["hh","plot","area"]:
-    t=T[lvl]; doc.add_heading(TITLES[lvl],level=1)
-    tbl=doc.add_table(rows=1,cols=len(t.columns)); tbl.style="Light Grid Accent 1"
-    hdr=tbl.rows[0].cells
-    cols=["Country","Year"]+[NICE[i] for i in IND]
-    for j,cn in enumerate(cols): hdr[j].text=cn
-    for _,r in t.iterrows():
+    p=present(T[lvl]); doc.add_heading(TITLES[lvl],level=1)
+    tbl=doc.add_table(rows=1,cols=len(p.columns)); tbl.style="Light Grid Accent 1"
+    for j,cn in enumerate(p.columns): tbl.rows[0].cells[j].text=cn
+    for _,r in p.iterrows():
         cs=tbl.add_row().cells
-        cs[0].text=str(r["country"]); cs[1].text=str(int(r["year"]))
-        for j,i in enumerate(IND):
-            val=r[NICE[i]]; cs[2+j].text="" if pd.isna(val) else f"{val:.3f}"
+        for j,cn in enumerate(p.columns):
+            cs[j].text=str(r[cn])
+            if j==0 and r[cn]!="":              # bold the country label
+                cs[j].paragraphs[0].runs[0].font.bold=True
 doc.save(f"{TAB}/tenure_share_tables.docx")
 
 # ---- faceted-by-country trend graphs, plot-level, with CI bands ----

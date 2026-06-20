@@ -119,11 +119,18 @@ foreach lvl in hh plot area {
         keep country year ind est
         reshape wide est, i(country year) j(ind)
         rename (est1 est2 est3 est4) (rentedin rentedout purchased certificate)
+        foreach v in rentedin rentedout purchased certificate {
+            replace `v' = round(`v', .001)            // 3 decimals for presentation
+        }
         label var rentedin "Rented-in"
         label var rentedout "Rented-out"
         label var purchased "Purchased"
         label var certificate "Has certificate"
         sort country year
+        * label each country ONCE (blank on repeat rows), matching the paper layout
+        bysort country (year): gen byte _first = (_n==1)
+        replace country = "" if !_first
+        drop _first
         export delimited using "${Tables}/table_`lvl'_share.csv", replace
         export excel using "${Tables}/tenure_share_tables.xlsx", ///
             sheet("`lvl'_share") sheetreplace firstrow(variables)
