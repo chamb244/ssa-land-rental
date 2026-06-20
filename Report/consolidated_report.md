@@ -34,6 +34,7 @@ At present, eight nationally representative farm-household surveys across Sub-Sa
 | Tanzania | NPS (LSMS-ISA) | 2009, 2011, 2013, 2015, 2019 | plot |
 | Uganda | UNPS (LSMS-ISA) | 2009, 2010, 2011, 2013, 2015, 2018, 2019 | parcel -> plot (season 1 reported) |
 | Zambia | RALS (IAPRI-MSU) | 2012, 2015, 2019 | field |
+| Tanzania (ASC) | Agric. Sample Census (NBS) | 2009, 2019 | household (land by tenure category) |
 
 # 3. Definitions and methods
 
@@ -329,16 +330,18 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 |  | 2013 | `AG_SEC_3A.dta` | _(pending)_ |
 |  | 2015 | `AG_SEC_3A.dta` (extended + refresh) | _(pending)_ |
 |  | 2019 | `AG_SEC_3A.dta` (extended + refresh) | _(pending)_ |
-| Uganda | 2009 | `2009_AGSEC2A.dta` | _(pending)_ |
-|  | 2010 | `AGSEC2A.dta` | _(pending)_ |
-|  | 2011 | `AGSEC2A.dta` | _(pending)_ |
-|  | 2013 | `AGSEC2A.dta` | _(pending)_ |
-|  | 2015 | `AGSEC2A.dta` | _(pending)_ |
-|  | 2018 | `AGSEC2A.dta` | _(pending)_ |
-|  | 2019 | `agsec2a.dta` | _(pending)_ |
+| Uganda | 2009 | `2009_AGSEC2A.dta` | [UNPS 2009/10](https://microdata.worldbank.org/index.php/catalog/1001) |
+|  | 2010 | `AGSEC2A.dta` | [UNPS 2010/11](https://microdata.worldbank.org/index.php/catalog/2166) |
+|  | 2011 | `AGSEC2A.dta` | [UNPS 2011/12](https://microdata.worldbank.org/index.php/catalog/2059) |
+|  | 2013 | `AGSEC2A.dta` | [UNPS 2013/14](https://microdata.worldbank.org/index.php/catalog/2663) |
+|  | 2015 | `AGSEC2A.dta` | [UNPS 2015/16](https://microdata.worldbank.org/index.php/catalog/3460) |
+|  | 2018 | `AGSEC2A.dta` | [UNPS 2018/19](https://microdata.worldbank.org/index.php/catalog/3795) |
+|  | 2019 | `agsec2a.dta` | [UNPS 2019/20](https://microdata.worldbank.org/index.php/catalog/3902) |
 | Zambia | 2012 | `field.dta` | _(pending; IAPRI)_ |
 |  | 2015 | `field.dta` | _(pending; IAPRI)_ |
 |  | 2019 | `field.dta` | _(pending; IAPRI)_ |
+| Tanzania (ASC) | 2009 | `R041.DTA` (smallholder) | _(NBS Tanzania; pending)_ |
+|  | 2019 | `R041_LAND_OWNERSHIP.dta` | _(NBS Tanzania; pending)_ |
 
 
 # Appendix A. Per-country variable provenance

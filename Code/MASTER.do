@@ -79,12 +79,13 @@ do "${Do}/extract_NGA.do"
 do "${Do}/extract_TZA.do"
 do "${Do}/extract_UGA.do"
 do "${Do}/extract_ZMB.do"      // non-LSMS (Zambia RALS 2012/2015/2019)
+do "${Do}/extract_TZA_ASC.do"  // non-LSMS (Tanzania Agric. Sample Census 2009/2019, smallholder)
 
 *--------------------------------------------------------------------------------
 * Append all country files into one harmonised rental/tenure dataset
 *--------------------------------------------------------------------------------
 clear
-foreach c in ETH MWI MLI NER NGA TZA UGA ZMB {
+foreach c in ETH MWI MLI NER NGA TZA UGA ZMB TZA_ASC {
     capture confirm file "${Final}/rental_`c'.dta"
     if _rc == 0 append using "${Final}/rental_`c'.dta"
 }
