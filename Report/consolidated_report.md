@@ -272,7 +272,7 @@ Note that in some countries, the wave-on-wave differences in rental rates is qui
 
 ![Figure 1. Plot-level tenure and rental-market shares over time, by country, with 95% confidence bands. Y-axis is scaled per country so within-country trends are legible; levels differ across panels.](figure_trends.png)
 
-![Figure 2. Household-level shares (share of households with at least one plot of each type) over time, by country, shown as bars with 95% confidence intervals; the y-axis is scaled per country. Gaps mark items not collected that round.](figure_trends_hh_bars.png)
+![Figure 2. Household-level shares (share of households with at least one plot of each type) over time, by country, with 95% confidence bands. Y-axis is scaled per country, as in Figure 1.](figure_trends_hh.png)
 
 With the caveat that waves are not strictly comparable (due to instrument changes, panel attrition, and the sample redesign breaks flagged in Section 4 and the appendix), we may compare levels across time to see if any strong patterns are detectable. For the most part, the patterns are too noisy to ascribe much of a unified story to. Rented land is only increasing consistently over the period observed in Zambia, although at very low base levels. Tanzania shows growth between the first and last waves observed, but not consistently across intervening waves. Ethiopia and Malawi are essentially flat. Altogether, there is not much of a consistent growth story observable in these data. 
 

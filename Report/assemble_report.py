@@ -43,7 +43,7 @@ tbl_area=csv_to_md(f"{TAB}/table_area_share.csv")
 
 # ---- copy the figure next to the report so paths are portable ------------------
 shutil.copyfile(f"{FIG}/trends_by_country_plot.png", f"{HERE}/figure_trends.png")
-shutil.copyfile(f"{FIG}/trends_by_country_hh_bars.png", f"{HERE}/figure_trends_hh_bars.png")
+shutil.copyfile(f"{FIG}/trends_by_country_hh.png", f"{HERE}/figure_trends_hh.png")
 
 today=datetime.date.today().isoformat()
 COVERAGE="""| Country | Survey (source) | Waves (years) | Spatial unit |
@@ -145,7 +145,7 @@ structurally missing items (question not asked that round; see Section 4).
 
 ![Figure 1. Plot-level tenure and rental-market shares over time, by country, with 95% confidence bands. Y-axis is scaled per country so within-country trends are legible; levels differ across panels.](figure_trends.png)
 
-![Figure 2. Household-level shares (share of households with at least one plot of each type) over time, by country, shown as bars with 95% confidence intervals; the y-axis is scaled per country. Gaps mark items not collected that round.](figure_trends_hh_bars.png)
+![Figure 2. Household-level shares (share of households with at least one plot of each type) over time, by country, with 95% confidence bands. Y-axis is scaled per country, as in Figure 1.](figure_trends_hh.png)
 
 {DRAFT("Do any countries show a pronounced trend once the CIs are taken into account? Emphasize the caveat that waves are not strictly comparable (instrument changes, panel attrition, the redesign breaks flagged in Section 4 and the appendix).")}
 
