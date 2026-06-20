@@ -1,6 +1,6 @@
 ---
-title: "Land-Tenure and Rental-Market Descriptives for Sub-Saharan Africa"
-subtitle: "Reference and results for the *Annual Review of Resource Economics* manuscript"
+title: "Land Rental Market Descriptives for Sub-Saharan Africa"
+subtitle: "Workflow summary for survey-derived statsitics on land rental market participation"
 date: "2026-06-20"
 toc: true
 toc-depth: 2
@@ -9,20 +9,17 @@ fontsize: 10pt
 ---
 
 <!-- This document is assembled by Report/assemble_report.py from the live project
-     outputs. Tables, the figure, and the provenance appendix are auto-generated;
-     sections flagged [DRAFT - Jordan] are prose placeholders to be written. Once
-     you begin drafting, edit THIS markdown directly and re-render with
-     build_report.sh (do NOT re-run assemble_report.py, which overwrites prose). -->
+     outputs. Tables, the figure, and the provenance appendix are auto-generated. All edits should be done to THIS markdown file directly and re-render with
+     build_report.sh (DO NOT re-run assemble_report.py, which overwrites prose). -->
 
 # 1. Overview
 
-> **[DRAFT - Jordan]** _Purpose of this document; relationship to the ARRE manuscript; what the reader gets; one-line reproducibility statement (all numbers regenerate from raw survey files via the public repo)._
+This document present summary statistics on rural land rental market participation (and related variables) derived from nationally representative rural household survey datasets, primarily taken from the World Bank's LSMS-ISA project.  the objective is to make the assembly of these variables completely transparent and reproducible from source files.  at present, all source files used are taken from the LSMS-ISA project, with the exception of the Rural Agricultural Livelihoods Survey (RALS) data for Zambia, which is used by permission from the Indaba Agricultural Research Institute (IAPRI).  The replication code and outputs are provided in the GitHub page where this document is found.  The source files need to be downloaded (using links to LSMS-ISA data provided in section 7; RALS data may be accessed through permission from IAPRI) and made available to scripts to enable the workflow to run on a users computer.
 
 
 # 2. Coverage
 
-Eight farm-household surveys across Sub-Saharan Africa, seven from the World Bank
-LSMS-ISA program and one (Zambia RALS) from IAPRI-MSU.
+At present, eight nationally representative farm-household surveys across Sub-Saharan Africa, seven from the World Bank LSMS-ISA program and one (Zambia RALS) from IAPRI-MSU.
 
 | Country | Survey (source) | Waves (years) | Spatial unit |
 |---|---|---|---|
@@ -37,11 +34,11 @@ LSMS-ISA program and one (Zambia RALS) from IAPRI-MSU.
 
 # 3. Definitions and methods
 
-The unit of analysis is the **parcel** (the tenure-bearing land unit in each
+The unit of analysis is the the tenure-bearing land unit in each
 survey; this is the *field* in single-level surveys and the *parcel* above
-fields/plots in Ethiopia, Uganda and Malawi). For every parcel we record:
+fields/plots in Ethiopia, Uganda and Malawi. For convenience, we refer to all of these units assembed for the pooled analysis as *parcels*. 
 
-**Final variables (unit = parcel):**
+For every parcel we record:
 
 | Output variable | Definition | Type |
 |---|---|---|
@@ -66,17 +63,20 @@ GPS is missing; GPS-measured areas are well-behaved.
 
 ---
 
-**Weighting and inference.** All shares are survey-weighted using each round's
+**Weighting and inference.** All shares are survey-weighted using each round's 
 household weight, with the survey design set as `svyset psu [pw=weight],
 strata(strata)` where the PSU and stratum are made unique by country x wave;
 single-PSU strata are centered. Confidence intervals are design-based (Taylor
 linearization). Tables report season 1 (the only season for all countries except
 Uganda, which is computed for both and reported for season 1).
 
-> **[DRAFT - Jordan]** _Any additional framing you want on the unit choice, the parcel-vs-field decision, or the weighting approach._
+Please note that the pooled data draws on survey rounds, some of which are panel data (repeated visits to the same households) and new cross-sectional survey rounds (where households are not repeated from prior rounds). The statistics reported here are repeated cross-sectional, design-weighted prevalence estimates rather than panel or transition estimates. For each survey round we apply that round's official household weight, which the data producers construct to make the round representative of its target population and which already incorporates their own unit non-response and, for the panel surveys, attrition adjustments. Because each estimate targets the population at the time of that round rather than a fixed cohort followed across waves, between-wave attrition does not bias a given year's share. 
+
+As noted above, several of the surveys are independent cross-sections rather than panels - Mali's EACI and Niger's ECVMA each draw fresh samples - so a common attrition correction would be neither feasible nor meaningful across the eight surveys. We therefore read the over-time figures as a sequence of representative snapshots rather than as within-household trajectories. The lone exception is Zambia's 2019 RALS round, for which only a panel weight is released; that estimate represents the followed panel, and is noted as such.
 
 
-# 4. Read before interpreting
+
+# 4. Interpretion guidance
 
 ## Missing by design (read this before interpreting the tables)
 
@@ -137,34 +137,36 @@ fresh cross-section.
 
 # 5. Results
 
-Survey-weighted shares by country and survey year (season 1). Blank cells mark
+Survey-weighted shares by country and survey year (season 1). A dash (`-`) marks
 structurally missing items (question not asked that round; see Section 4).
 
 ## 5.1 Share of households with one or more plot
 
+**Table 1.** Share of households with at least one plot that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
+
 | Country | Year | Rented-in | Rented-out | Purchased | Has certificate |
 |---|---|---|---|---|---|
-| Ethiopia | 2012 | 0.248 | 0.073 |   | 0.486 |
-|   | 2014 | 0.259 | 0.132 |   | 0.537 |
+| Ethiopia | 2012 | 0.248 | 0.073 | - | 0.486 |
+|   | 2014 | 0.259 | 0.132 | - | 0.537 |
 |   | 2016 | 0.277 | 0.178 | 0.099 | 0.586 |
 |   | 2019 | 0.242 | 0.117 | 0.068 | 0.790 |
 |   | 2022 | 0.234 | 0.050 | 0.082 | 0.782 |
-| Malawi | 2010 | 0.121 | 0.004 | 0.039 |   |
+| Malawi | 2010 | 0.121 | 0.004 | 0.039 | - |
 |   | 2013 | 0.117 | 0.006 | 0.031 | 0.026 |
 |   | 2016 | 0.119 | 0.024 | 0.065 | 0.019 |
-|   | 2019 | 0.109 | 0.023 |   |   |
-| Mali | 2014 | 0.030 |   | 0.018 | 0.075 |
-|   | 2017 | 0.010 |   | 0.008 | 0.063 |
+|   | 2019 | 0.109 | 0.023 | - | - |
+| Mali | 2014 | 0.030 | - | 0.018 | 0.075 |
+|   | 2017 | 0.010 | - | 0.008 | 0.063 |
 | Niger | 2011 | 0.232 | 0.001 | 0.141 | 0.126 |
 |   | 2014 | 0.038 | 0.005 | 0.149 | 0.055 |
-| Nigeria | 2011 | 0.103 | 0.002 | 0.097 |   |
+| Nigeria | 2011 | 0.103 | 0.002 | 0.097 | - |
 |   | 2013 | 0.104 | 0.006 | 0.071 | 0.109 |
 |   | 2016 | 0.090 | 0.006 | 0.088 | 0.075 |
 |   | 2019 | 0.187 | 0.019 | 0.243 | 0.174 |
 |   | 2023 | 0.145 | 0.013 | 0.115 | 0.130 |
-| Tanzania | 2009 | 0.112 | 0.013 |   | 0.108 |
-|   | 2011 | 0.075 | 0.012 |   | 0.144 |
-|   | 2013 | 0.061 | 0.012 |   | 0.116 |
+| Tanzania | 2009 | 0.112 | 0.013 | - | 0.108 |
+|   | 2011 | 0.075 | 0.012 | - | 0.144 |
+|   | 2013 | 0.061 | 0.012 | - | 0.116 |
 |   | 2015 | 0.093 | 0.012 | 0.288 | 0.146 |
 |   | 2019 | 0.152 | 0.029 | 0.432 | 0.218 |
 | Uganda | 2009 | 0.214 | 0.030 | 0.379 | 0.226 |
@@ -172,7 +174,7 @@ structurally missing items (question not asked that round; see Section 4).
 |   | 2011 | 0.136 | 0.012 | 0.298 | 0.159 |
 |   | 2013 | 0.172 | 0.011 | 0.352 | 0.256 |
 |   | 2015 | 0.232 | 0.019 | 0.366 | 0.218 |
-|   | 2018 | 0.210 | 0.023 |   | 0.127 |
+|   | 2018 | 0.210 | 0.023 | - | 0.127 |
 |   | 2019 | 0.188 | 0.024 | 0.346 | 0.075 |
 | Zambia | 2012 | 0.030 | 0.005 | 0.056 | 0.086 |
 |   | 2015 | 0.038 | 0.011 | 0.068 | 0.054 |
@@ -180,29 +182,31 @@ structurally missing items (question not asked that round; see Section 4).
 
 ## 5.2 Share of plots
 
+**Table 2.** Share of plots that are rented-in, rented-out, purchased, or hold a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
+
 | Country | Year | Rented-in | Rented-out | Purchased | Has certificate |
 |---|---|---|---|---|---|
-| Ethiopia | 2012 | 0.130 | 0.032 |   | 0.458 |
-|   | 2014 | 0.117 | 0.053 |   | 0.510 |
+| Ethiopia | 2012 | 0.130 | 0.032 | - | 0.458 |
+|   | 2014 | 0.117 | 0.053 | - | 0.510 |
 |   | 2016 | 0.111 | 0.064 | 0.040 | 0.555 |
 |   | 2019 | 0.152 | 0.068 | 0.033 | 0.717 |
 |   | 2022 | 0.134 | 0.022 | 0.035 | 0.688 |
-| Malawi | 2010 | 0.082 | 0.002 | 0.031 |   |
+| Malawi | 2010 | 0.082 | 0.002 | 0.031 | - |
 |   | 2013 | 0.082 | 0.003 | 0.026 | 0.025 |
 |   | 2016 | 0.091 | 0.015 | 0.042 | 0.014 |
-|   | 2019 | 0.075 | 0.013 |   |   |
-| Mali | 2014 | 0.013 |   | 0.008 | 0.041 |
-|   | 2017 | 0.004 |   | 0.003 | 0.031 |
+|   | 2019 | 0.075 | 0.013 | - | - |
+| Mali | 2014 | 0.013 | - | 0.008 | 0.041 |
+|   | 2017 | 0.004 | - | 0.003 | 0.031 |
 | Niger | 2011 | 0.143 | 0.000 | 0.082 | 0.085 |
 |   | 2014 | 0.024 | 0.002 | 0.098 | 0.041 |
-| Nigeria | 2011 | 0.090 | 0.002 | 0.069 |   |
+| Nigeria | 2011 | 0.090 | 0.002 | 0.069 | - |
 |   | 2013 | 0.101 | 0.004 | 0.054 | 0.090 |
 |   | 2016 | 0.077 | 0.004 | 0.062 | 0.061 |
 |   | 2019 | 0.112 | 0.008 | 0.131 | 0.095 |
 |   | 2023 | 0.093 | 0.008 | 0.072 | 0.086 |
-| Tanzania | 2009 | 0.062 | 0.007 |   | 0.070 |
-|   | 2011 | 0.042 | 0.006 |   | 0.110 |
-|   | 2013 | 0.038 | 0.007 |   | 0.112 |
+| Tanzania | 2009 | 0.062 | 0.007 | - | 0.070 |
+|   | 2011 | 0.042 | 0.006 | - | 0.110 |
+|   | 2013 | 0.038 | 0.007 | - | 0.112 |
 |   | 2015 | 0.063 | 0.007 | 0.247 | 0.143 |
 |   | 2019 | 0.079 | 0.014 | 0.288 | 0.143 |
 | Uganda | 2009 | 0.119 | 0.013 | 0.265 | 0.157 |
@@ -210,7 +214,7 @@ structurally missing items (question not asked that round; see Section 4).
 |   | 2011 | 0.085 | 0.006 | 0.211 | 0.101 |
 |   | 2013 | 0.106 | 0.005 | 0.242 | 0.186 |
 |   | 2015 | 0.139 | 0.010 | 0.253 | 0.151 |
-|   | 2018 | 0.128 | 0.012 |   | 0.091 |
+|   | 2018 | 0.128 | 0.012 | - | 0.091 |
 |   | 2019 | 0.116 | 0.013 | 0.254 | 0.045 |
 | Zambia | 2012 | 0.013 | 0.002 | 0.047 | 0.070 |
 |   | 2015 | 0.016 | 0.003 | 0.057 | 0.047 |
@@ -218,29 +222,31 @@ structurally missing items (question not asked that round; see Section 4).
 
 ## 5.3 Share of farm area (hectares)
 
+**Table 3.** Share of farm area (hectares) that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
+
 | Country | Year | Rented-in | Rented-out | Purchased | Has certificate |
 |---|---|---|---|---|---|
-| Ethiopia | 2012 | 0.100 | 0.013 |   | 0.560 |
-|   | 2014 | 0.127 | 0.049 |   | 0.517 |
+| Ethiopia | 2012 | 0.100 | 0.013 | - | 0.560 |
+|   | 2014 | 0.127 | 0.049 | - | 0.517 |
 |   | 2016 | 0.132 | 0.046 | 0.034 | 0.556 |
 |   | 2019 | 0.186 | 0.000 | 0.018 | 0.731 |
 |   | 2022 | 0.192 | 0.000 | 0.027 | 0.740 |
-| Malawi | 2010 | 0.077 | 0.002 | 0.037 |   |
+| Malawi | 2010 | 0.077 | 0.002 | 0.037 | - |
 |   | 2013 | 0.102 | 0.004 | 0.039 | 0.026 |
 |   | 2016 | 0.077 | 0.014 | 0.059 | 0.014 |
-|   | 2019 | 0.051 | 0.013 |   |   |
-| Mali | 2014 | 0.006 |   | 0.006 | 0.045 |
-|   | 2017 | 0.002 |   | 0.003 | 0.020 |
+|   | 2019 | 0.051 | 0.013 | - | - |
+| Mali | 2014 | 0.006 | - | 0.006 | 0.045 |
+|   | 2017 | 0.002 | - | 0.003 | 0.020 |
 | Niger | 2011 | 0.103 | 0.000 | 0.076 | 0.087 |
 |   | 2014 | 0.022 | 0.002 | 0.094 | 0.045 |
-| Nigeria | 2011 | 0.105 | 0.001 | 0.088 |   |
+| Nigeria | 2011 | 0.105 | 0.001 | 0.088 | - |
 |   | 2013 | 0.164 | 0.003 | 0.054 | 0.069 |
 |   | 2016 | 0.068 | 0.006 | 0.069 | 0.061 |
 |   | 2019 | 0.127 | 0.015 | 0.126 | 0.108 |
 |   | 2023 | 0.093 | 0.010 | 0.089 | 0.108 |
-| Tanzania | 2009 | 0.039 | 0.007 |   | 0.070 |
-|   | 2011 | 0.026 | 0.012 |   | 0.124 |
-|   | 2013 | 0.026 | 0.019 |   | 0.152 |
+| Tanzania | 2009 | 0.039 | 0.007 | - | 0.070 |
+|   | 2011 | 0.026 | 0.012 | - | 0.124 |
+|   | 2013 | 0.026 | 0.019 | - | 0.152 |
 |   | 2015 | 0.058 | 0.011 | 0.397 | 0.183 |
 |   | 2019 | 0.051 | 0.030 | 0.432 | 0.181 |
 | Uganda | 2009 | 0.062 | 0.022 | 0.259 | 0.242 |
@@ -248,20 +254,27 @@ structurally missing items (question not asked that round; see Section 4).
 |   | 2011 | 0.048 | 0.017 | 0.246 | 0.152 |
 |   | 2013 | 0.075 | 0.008 | 0.286 | 0.239 |
 |   | 2015 | 0.094 | 0.008 | 0.296 | 0.224 |
-|   | 2018 | 0.134 | 0.003 |   | 0.125 |
+|   | 2018 | 0.134 | 0.003 | - | 0.125 |
 |   | 2019 | 0.082 | 0.011 | 0.272 | 0.046 |
 | Zambia | 2012 | 0.011 | 0.003 | 0.063 | 0.083 |
 |   | 2015 | 0.013 | 0.004 | 0.084 | 0.066 |
 |   | 2019 | 0.013 | 0.006 | 0.083 | 0.062 |
 
-> **[DRAFT - Jordan]** _Interpretation of the three tables - levels and notable cross-country contrasts; how the household / plot / area views differ._
+We observe different participation rates for the different countries, with the highest rates in Ethiopia (23-27% of households renting in) and Uganda (14-22% of households renting in) and the lowest rates in Zambia (<4% of households renting in) and Mali (<2% of households renting in). This conforms somewhat to rural population densities, although some high population density countries have only moderate rates of rental (e.g., Malawi, where household rates of renting in land are 10-12% for the included waves).
 
+The rates of renting in are systematically higher than rates of renting out. This difference is observed for all countries in all waves, although the ratio of renting in to renting out rates varies considerably, with household rates of renting in exceeding household rates of renting out by as little as 56% (in Ethiopia for 2016) to more than 1000% (most waves in Uganda, Nigeria; the first two waves of Malawi; the first wave of Niger). This speaks to systematic distortions in the probability of reporting renting in versus renting out land. Note that in Mali, data on renting out land is not collected at all. 
+
+Household rental participation rates (defined as the share of households in the sample which are renting one or more parcels) are systematically higher than parcel-level statistics, as expected. The magnitude of this difference (which is reflective, in part, of the average number of plots per farm) is lowest in Nigeria (where household rates exceed plot-level rental participation rates by <20%) and highest in Ethiopia and Zambia (where household rental participation rates are often >100% greater than plot-level rental participation rates).
+
+Note that in some countries, the wave-on-wave differences in rental rates is quite high, which may reflect suvey differences more than actual changes in rental market participation.  Mali is a good example of this, where rent-to-market participation rates at both the household and plot level are three times higher in the first wave than the second wave.  the second wave was a much broader sampling frame than the first wave, however, which means that these averages are reflective of different areas and shouldn't be interpreted as changes over time in the same population 
 
 # 6. Trends over time
 
-![Plot-level tenure and rental-market shares over time, by country, with 95% confidence bands. Y-axis is scaled per country so within-country trends are legible; levels differ across panels.](figure_trends.png)
+![Figure 1. Plot-level tenure and rental-market shares over time, by country, with 95% confidence bands. Y-axis is scaled per country so within-country trends are legible; levels differ across panels.](figure_trends.png)
 
-> **[DRAFT - Jordan]** _Do any countries show a pronounced trend once the CIs are taken into account? Emphasize the caveat that waves are not strictly comparable (instrument changes, panel attrition, the redesign breaks flagged in Section 4 and the appendix)._
+![Figure 2. Household-level shares (share of households with at least one plot of each type) over time, by country, shown as bars with 95% confidence intervals; the y-axis is scaled per country. Gaps mark items not collected that round.](figure_trends_hh_bars.png)
+
+With the caveat that waves are not strictly comparable (due to instrument changes, panel attrition, and the sample redesign breaks flagged in Section 4 and the appendix), we may compare levels across time to see if any strong patterns are detectable. For the most part, the patterns are too noisy to ascribe much of a unified story to. Rented land is only increasing consistently over the period observed in Zambia, although at very low base levels. Tanzania shows growth between the first and last waves observed, but not consistently across intervening waves. Ethiopia and Malawi are essentially flat. Altogether, there is not much of a consistent growth story observable in these data. 
 
 
 # 7. Data sources and reproduction

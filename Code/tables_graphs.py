@@ -1,6 +1,6 @@
 # tables_graphs.py - Python implementation of tables_graphs.do.
-# Reads the Stata-built ${Final}/rental_tenure_ALL.dta and writes the same
-# CSV/Excel/Word tables + faceted-by-country trend figure (design-based 95% CIs).
+# Reads the Stata-built ${Final}/rental_tenure_ALL.dta and writes the same CSV/Excel/Word
+# tables (missing = "-") + faceted-by-country plot-line and household-bar figures (95% CIs).
 #!/usr/bin/env python3
 # Build the 3 weighted share tables + faceted-by-country trend graphs from
 # rental_tenure_ALL.dta. Design-based (Taylor-linearized) 95% CIs with
@@ -108,7 +108,7 @@ def present(t):
     t=t.copy()
     t["country"]=t["country"].astype(str)          # drop Categorical so "" is allowed
     for col in [NICE[i] for i in IND]:
-        t[col]=t[col].map(lambda x:"" if pd.isna(x) else f"{x:.3f}")
+        t[col]=t[col].map(lambda x:"-" if pd.isna(x) else f"{x:.3f}")   # "-" = not asked that round
     t["year"]=t["year"].astype(int).astype(str)
     dup=t["country"].eq(t["country"].shift())
     t.loc[dup,"country"]=""
@@ -165,6 +165,31 @@ fig.suptitle("Plot-level tenure & rental-market shares over time, by country (95
              fontsize=13,fontweight="bold")
 fig.tight_layout(rect=[0,0.03,1,0.97])
 fig.savefig(f"{FIG}/trends_by_country_plot.png",dpi=150,bbox_inches="tight")
+
+# ---- faceted-by-country HOUSEHOLD-level BAR chart with 95% CI error bars ----
+fig2,axes2=plt.subplots(2,4,figsize=(16,8))
+nbar=len(IND); width=0.8/nbar
+for ax,c in zip(axes2.ravel(),CORDER):
+    sub=R[R.country==c]; yrs=sorted(sub.year.unique()); xpos=np.arange(len(yrs))
+    pmax=0
+    for k,v in enumerate(IND):
+        s=sub[sub.indicator==v].set_index("year").reindex(yrs)
+        vals=s["hh"].values; lo=s["hh_lo"].values; hi=s["hh_hi"].values
+        err=np.vstack([vals-lo,hi-vals]); err=np.where(~np.isfinite(err),0,err)
+        ax.bar(xpos+k*width, vals, width, color=COL[v],
+               yerr=err, error_kw=dict(lw=0.7,ecolor="0.35",capsize=1.5))
+        if np.isfinite(hi).any(): pmax=max(pmax,np.nanmax(hi))
+    ax.set_title(c,fontsize=11,fontweight="bold")
+    ax.set_xticks(xpos+0.4-width/2); ax.set_xticklabels(yrs,rotation=45,fontsize=8)
+    ax.set_ylim(0,(pmax*1.15 if pmax>0 else 1)); ax.grid(axis="y",alpha=0.25)
+axes2[0,0].set_ylabel("share of households"); axes2[1,0].set_ylabel("share of households")
+h2=[Line2D([0],[0],color=COL[v],lw=6,label=NICE[v]) for v in IND]
+fig2.legend(handles=h2,loc="lower center",ncol=4,frameon=False,fontsize=11,bbox_to_anchor=(0.5,-0.02))
+fig2.suptitle("Household-level shares over time, by country (bars = share of households with >=1 plot; 95% CI; y-axis per country)",
+              fontsize=13,fontweight="bold")
+fig2.tight_layout(rect=[0,0.03,1,0.97])
+fig2.savefig(f"{FIG}/trends_by_country_hh_bars.png",dpi=150,bbox_inches="tight")
+
 print("rows in long table:",len(R))
 print("wrote tables to",TAB)
 print("wrote figure to",FIG)

@@ -43,6 +43,7 @@ tbl_area=csv_to_md(f"{TAB}/table_area_share.csv")
 
 # ---- copy the figure next to the report so paths are portable ------------------
 shutil.copyfile(f"{FIG}/trends_by_country_plot.png", f"{HERE}/figure_trends.png")
+shutil.copyfile(f"{FIG}/trends_by_country_hh_bars.png", f"{HERE}/figure_trends_hh_bars.png")
 
 today=datetime.date.today().isoformat()
 COVERAGE="""| Country | Survey (source) | Waves (years) | Spatial unit |
@@ -117,18 +118,24 @@ fresh cross-section.
 
 # 5. Results
 
-Survey-weighted shares by country and survey year (season 1). Blank cells mark
+Survey-weighted shares by country and survey year (season 1). A dash (`-`) marks
 structurally missing items (question not asked that round; see Section 4).
 
 ## 5.1 Share of households with one or more plot
+
+**Table 1.** Share of households with at least one plot that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
 
 {tbl_hh}
 
 ## 5.2 Share of plots
 
+**Table 2.** Share of plots that are rented-in, rented-out, purchased, or hold a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
+
 {tbl_plot}
 
 ## 5.3 Share of farm area (hectares)
+
+**Table 3.** Share of farm area (hectares) that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
 
 {tbl_area}
 
@@ -136,7 +143,9 @@ structurally missing items (question not asked that round; see Section 4).
 
 # 6. Trends over time
 
-![Plot-level tenure and rental-market shares over time, by country, with 95% confidence bands. Y-axis is scaled per country so within-country trends are legible; levels differ across panels.](figure_trends.png)
+![Figure 1. Plot-level tenure and rental-market shares over time, by country, with 95% confidence bands. Y-axis is scaled per country so within-country trends are legible; levels differ across panels.](figure_trends.png)
+
+![Figure 2. Household-level shares (share of households with at least one plot of each type) over time, by country, shown as bars with 95% confidence intervals; the y-axis is scaled per country. Gaps mark items not collected that round.](figure_trends_hh_bars.png)
 
 {DRAFT("Do any countries show a pronounced trend once the CIs are taken into account? Emphasize the caveat that waves are not strictly comparable (instrument changes, panel attrition, the redesign breaks flagged in Section 4 and the appendix).")}
 
