@@ -1,5 +1,5 @@
 # tables_graphs.py - Python implementation of tables_graphs.do.
-# Tables (missing="-") + faceted-by-country plot-line and household-line figures (95% CIs).
+# Tables (missing="-"; area share = "-" where the attribute is unmeasured) + plot/household trend figures.
 #!/usr/bin/env python3
 # Build the 3 weighted share tables + faceted-by-country trend graphs from
 # rental_tenure_ALL.dta. Design-based (Taylor-linearized) 95% CIs with
@@ -60,6 +60,11 @@ def svyratio_area(sub,y):
     """Area-weighted share = sum(w*area*y)/sum(w*area), design CI."""
     s=sub[sub[y].notna() & sub["parcel_area_ha"].notna() & (sub["parcel_area_ha"]>0)]
     if len(s)==0: return (np.nan,np.nan,np.nan,0)
+    # If the attribute IS observed in the cell but never among area-measured parcels
+    # (e.g. rented-out parcels are uncultivated and carry no measured area), the area
+    # share is undefined, not zero -> return missing.
+    if (sub[y]==1).sum()>0 and (s[y]==1).sum()==0:
+        return (np.nan,np.nan,np.nan,0)
     w=s["weight"].values; a=s["parcel_area_ha"].values; yy=s[y].values
     D=(w*a).sum(); est=(w*a*yy).sum()/D
     e=w*a*(yy-est)/D

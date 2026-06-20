@@ -1,11 +1,14 @@
 ---
-title: "Land Rental Market Descriptives for Sub-Saharan Africa"
-subtitle: "Workflow summary for survey-derived statsitics on land rental market participation"
+title: "Land Rental Market Participation for Sub-Saharan Africa"
+subtitle: "Reproducible workflow for survey-derived statistics on land rental market participation"
 date: "2026-06-20"
 toc: true
 toc-depth: 2
 geometry: margin=1in
 fontsize: 10pt
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
 ---
 
 <!-- This document is assembled by Report/assemble_report.py from the live project
@@ -21,15 +24,15 @@ This document present summary statistics on rural land rental market participati
 
 At present, eight nationally representative farm-household surveys across Sub-Saharan Africa, seven from the World Bank LSMS-ISA program and one (Zambia RALS) from IAPRI-MSU.
 
-| Country | Survey (source) | Waves (years) | Spatial unit |
+| Country | Survey (source) | Survey years | Spatial unit |
 |---|---|---|---|
-| Ethiopia | ESS (LSMS-ISA) | 1-5 (2012-2022) | parcel -> field |
-| Malawi | IHPS (LSMS-ISA) | 1-4 (2010-2019) | garden / plot |
+| Ethiopia | ESS (LSMS-ISA) | 2012, 2014, 2016, 2019, 2022 | parcel -> field |
+| Malawi | IHPS (LSMS-ISA) | 2010, 2013, 2016, 2019 | garden / plot |
 | Mali | EACI (LSMS-ISA) | 2014, 2017 | parcelle |
 | Niger | ECVMA (LSMS-ISA) | 2011, 2014 | parcelle |
-| Nigeria | GHS-Panel (LSMS-ISA) | 1-5 (2011-2023) | plot |
-| Tanzania | NPS (LSMS-ISA) | 1-5 (2009-2019) | plot |
-| Uganda | UNPS (LSMS-ISA) | 1-5, 7, 8 (2009-2019) | parcel -> plot (season 1 reported) |
+| Nigeria | GHS-Panel (LSMS-ISA) | 2011, 2013, 2016, 2019, 2023 | plot |
+| Tanzania | NPS (LSMS-ISA) | 2009, 2011, 2013, 2015, 2019 | plot |
+| Uganda | UNPS (LSMS-ISA) | 2009, 2010, 2011, 2013, 2015, 2018, 2019 | parcel -> plot (season 1 reported) |
 | Zambia | RALS (IAPRI-MSU) | 2012, 2015, 2019 | field |
 
 # 3. Definitions and methods
@@ -222,15 +225,15 @@ structurally missing items (question not asked that round; see Section 4).
 
 ## 5.3 Share of farm area (hectares)
 
-**Table 3.** Share of farm area (hectares) that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
+**Table 3.** Share of farm area (hectares) that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round; for rented-out it can also denote that the rented-out parcels carry no measured area (they are uncultivated, so no field area is recorded - e.g. Ethiopia 2019, 2022), making the area share undefined rather than zero.
 
 | Country | Year | Rented-in | Rented-out | Purchased | Has certificate |
 |---|---|---|---|---|---|
 | Ethiopia | 2012 | 0.100 | 0.013 | - | 0.560 |
 |   | 2014 | 0.127 | 0.049 | - | 0.517 |
 |   | 2016 | 0.132 | 0.046 | 0.034 | 0.556 |
-|   | 2019 | 0.186 | 0.000 | 0.018 | 0.731 |
-|   | 2022 | 0.192 | 0.000 | 0.027 | 0.740 |
+|   | 2019 | 0.186 | - | 0.018 | 0.731 |
+|   | 2022 | 0.192 | - | 0.027 | 0.740 |
 | Malawi | 2010 | 0.077 | 0.002 | 0.037 | - |
 |   | 2013 | 0.102 | 0.004 | 0.039 | 0.026 |
 |   | 2016 | 0.077 | 0.014 | 0.059 | 0.014 |
@@ -274,7 +277,7 @@ Note that in some countries, the wave-on-wave differences in rental rates is qui
 
 ![Figure 2. Household-level shares (share of households with at least one plot of each type) over time, by country, with 95% confidence bands. Y-axis is scaled per country, as in Figure 1.](figure_trends_hh.png)
 
-With the caveat that waves are not strictly comparable (due to instrument changes, panel attrition, and the sample redesign breaks flagged in Section 4 and the appendix), we may compare levels across time to see if any strong patterns are detectable. For the most part, the patterns are too noisy to ascribe much of a unified story to. Rented land is only increasing consistently over the period observed in Zambia, although at very low base levels. Tanzania shows growth between the first and last waves observed, but not consistently across intervening waves. Ethiopia and Malawi are essentially flat. Altogether, there is not much of a consistent growth story observable in these data. 
+Figures 1 and 2 present these shares over time at the plot and household levels, respectively. With the caveat that waves are not strictly comparable (due to instrument changes, panel attrition, and the sample redesign breaks flagged in Section 4 and the appendix), we may compare levels across time to see if any strong patterns are detectable. For the most part, the patterns are too noisy to ascribe much of a unified story to. Rented land is only increasing consistently over the period observed in Zambia, although at very low base levels. Tanzania shows growth between the first and last waves observed, but not consistently across intervening waves. Ethiopia and Malawi are essentially flat. Altogether, there is not much of a consistent growth story observable in these data. 
 
 
 # 7. Data sources and reproduction
@@ -286,7 +289,56 @@ from IAPRI. After placing the raw files in the expected folder tree, running
 `Code/tables_graphs.py`) regenerates every table and figure here. Full per-survey
 file lists are in `DATA_SOURCES.md`.
 
-> **[DRAFT - Jordan]** _Optional: a sentence pointing readers to the GitHub repo URL and the license._
+All code, reference documentation, and the outputs reproduced here are available in
+the project's public GitHub repository, <https://github.com/chamb244/ssa-land-rental>.
+The repository contains the country-by-country extractors, the pooled-dataset build
+(`MASTER.do`), the table and figure generators, this report and its build script, and
+the full variable-provenance reference. Code is released under the MIT License and the
+accompanying documentation under CC-BY-4.0; the survey microdata themselves are not
+redistributed and must be obtained from the providers below.
+
+## Main source file and catalog link, by survey wave
+
+The table gives, for each survey wave, the primary land/tenure roster file the workflow
+reads (the complete per-wave file list is in Appendix A). Catalog links are shown where a
+stable URL is available; entries marked _(pending)_ can be located in the World Bank
+Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
+
+| Country | Year | Main source file | Data catalog |
+|---|---|---|---|
+| Ethiopia | 2012 | `sect2_pp_w1.dta` | [ESS 2011/12](https://microdata.worldbank.org/index.php/catalog/2053) |
+|  | 2014 | `sect2_pp_w2.dta` | [ESS 2013/14](https://microdata.worldbank.org/index.php/catalog/2247) |
+|  | 2016 | `sect2_pp_w3.dta` | [ESS 2015/16](https://microdata.worldbank.org/index.php/catalog/2783) |
+|  | 2019 | `sect2_pp_w4.dta` | [ESS 2018/19](https://microdata.worldbank.org/index.php/catalog/3823) |
+|  | 2022 | `sect2_pp_w5.dta` | [ESS 2021/22](https://microdata.worldbank.org/index.php/catalog/6161) |
+| Malawi | 2010 | `ag_mod_d_10.dta` | _(pending)_ |
+|  | 2013 | `ag_mod_d_13.dta` | _(pending)_ |
+|  | 2016 | `ag_mod_b2_16.dta` | _(pending)_ |
+|  | 2019 | `ag_mod_b2_19.dta` | _(pending)_ |
+| Mali | 2014 | `EACIEXPLOI_p1.dta` | _(pending)_ |
+|  | 2017 | `eaci17_s11bp1.dta` | _(pending)_ |
+| Niger | 2011 | `ecvmaas1_p1.dta` | _(pending)_ |
+|  | 2014 | `ECVMA2_AS1P1.dta` | _(pending)_ |
+| Nigeria | 2011 | `sect11b_plantingw1.dta` | _(pending)_ |
+|  | 2013 | `sect11b1_plantingw2.dta` | _(pending)_ |
+|  | 2016 | `sect11b1_plantingw3.dta` | _(pending)_ |
+|  | 2019 | `sect11b1_plantingw4.dta` | _(pending)_ |
+|  | 2023 | `sect11b1_plantingw5.dta` | _(pending)_ |
+| Tanzania | 2009 | `SEC_3A.dta` | _(pending)_ |
+|  | 2011 | `AG_SEC3A.dta` | _(pending)_ |
+|  | 2013 | `AG_SEC_3A.dta` | _(pending)_ |
+|  | 2015 | `AG_SEC_3A.dta` (extended + refresh) | _(pending)_ |
+|  | 2019 | `AG_SEC_3A.dta` (extended + refresh) | _(pending)_ |
+| Uganda | 2009 | `2009_AGSEC2A.dta` | _(pending)_ |
+|  | 2010 | `AGSEC2A.dta` | _(pending)_ |
+|  | 2011 | `AGSEC2A.dta` | _(pending)_ |
+|  | 2013 | `AGSEC2A.dta` | _(pending)_ |
+|  | 2015 | `AGSEC2A.dta` | _(pending)_ |
+|  | 2018 | `AGSEC2A.dta` | _(pending)_ |
+|  | 2019 | `agsec2a.dta` | _(pending)_ |
+| Zambia | 2012 | `field.dta` | _(pending; IAPRI)_ |
+|  | 2015 | `field.dta` | _(pending; IAPRI)_ |
+|  | 2019 | `field.dta` | _(pending; IAPRI)_ |
 
 
 # Appendix A. Per-country variable provenance
