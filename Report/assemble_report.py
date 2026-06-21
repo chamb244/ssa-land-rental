@@ -194,10 +194,10 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 |  | 2016 | `sect2_pp_w3.dta` | [ESS 2015/16](https://microdata.worldbank.org/index.php/catalog/2783) |
 |  | 2019 | `sect2_pp_w4.dta` | [ESS 2018/19](https://microdata.worldbank.org/index.php/catalog/3823) |
 |  | 2022 | `sect2_pp_w5.dta` | [ESS 2021/22](https://microdata.worldbank.org/index.php/catalog/6161) |
-| Malawi | 2010 | `ag_mod_d_10.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
-|  | 2013 | `ag_mod_d_13.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
-|  | 2016 | `ag_mod_b2_16.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
-|  | 2019 | `ag_mod_b2_19.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
+| Malawi | 2010 | `ag_mod_d_10.dta` | [IHPS 2010/11 (W1)](https://microdata.worldbank.org/index.php/catalog/1003) |
+|  | 2013 | `ag_mod_d_13.dta` | [IHPS 2013 (W2)](https://microdata.worldbank.org/index.php/catalog/2248) |
+|  | 2016 | `ag_mod_b2_16.dta` | [IHPS 2016 panel (W3)](https://microdata.worldbank.org/index.php/catalog/2939) |
+|  | 2019 | `ag_mod_b2_19.dta` | _(pending: IHPS 2019/20 W4)_ |
 | Mali | 2014 | `EACIEXPLOI_p1.dta` | [EACI 2014](https://microdata.worldbank.org/index.php/catalog/2583) |
 |  | 2017 | `eaci17_s11bp1.dta` | [EACI 2017](https://microdata.worldbank.org/index.php/catalog/3409) |
 | Niger | 2011 | `ecvmaas1_p1.dta` | [ECVMA 2011](https://microdata.worldbank.org/index.php/catalog/2050) |
