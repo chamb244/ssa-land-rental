@@ -91,6 +91,29 @@ the cross-country rented-in levels are **lower bounds** on total rental-market p
 
 ---
 
+## Frame note: rented-in land is not always cultivated
+
+`parcel_rentedin` records a **tenure status** - land the household holds through a
+rental/lease arrangement - and is built over the full parcel/field **roster**, so it
+includes rented-in land that is **not cropped in the reference season**. Measured
+directly, this is a nontrivial share of rented-in units - about **7-14% in Tanzania
+and 16-20% in Uganda** - and it is **overwhelmingly land left FALLOW** that season
+(plus a small "other" bucket and a negligible <1% of records that are simultaneously
+rented-in and passed on, i.e. possible sub-leasing or noise). This is **not a coding
+artifact**; it is the genuine gap between *holding land via rental* and *cultivating it
+this season*.
+
+Consequently, a workflow that computes rates on the **cultivated-plot frame** (e.g. the
+harmonized Reproduction_v2 panel) excludes these fallow rented-in units and reports
+**lower** rented-in rates. Restricting our roster data to cultivated plots reproduces
+those figures to within a few tenths of a point (Tanzania 2013/2015 and Uganda
+2010/2011/2019 essentially exactly). We keep the **roster frame** as the headline
+because it is the only frame that can also represent **rented-out** land and **area
+shares**; a `cultivated` filter (planned) yields the cultivated-frame variant for
+direct comparability.
+
+---
+
 ## ETHIOPIA — Ethiopia Socioeconomic Survey (ESS)
 
 ### 1. Survey & wave key
