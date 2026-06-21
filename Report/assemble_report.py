@@ -184,24 +184,24 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 |  | 2016 | `sect2_pp_w3.dta` | [ESS 2015/16](https://microdata.worldbank.org/index.php/catalog/2783) |
 |  | 2019 | `sect2_pp_w4.dta` | [ESS 2018/19](https://microdata.worldbank.org/index.php/catalog/3823) |
 |  | 2022 | `sect2_pp_w5.dta` | [ESS 2021/22](https://microdata.worldbank.org/index.php/catalog/6161) |
-| Malawi | 2010 | `ag_mod_d_10.dta` | _(pending)_ |
-|  | 2013 | `ag_mod_d_13.dta` | _(pending)_ |
-|  | 2016 | `ag_mod_b2_16.dta` | _(pending)_ |
-|  | 2019 | `ag_mod_b2_19.dta` | _(pending)_ |
-| Mali | 2014 | `EACIEXPLOI_p1.dta` | _(pending)_ |
-|  | 2017 | `eaci17_s11bp1.dta` | _(pending)_ |
-| Niger | 2011 | `ecvmaas1_p1.dta` | _(pending)_ |
-|  | 2014 | `ECVMA2_AS1P1.dta` | _(pending)_ |
-| Nigeria | 2011 | `sect11b_plantingw1.dta` | _(pending)_ |
-|  | 2013 | `sect11b1_plantingw2.dta` | _(pending)_ |
-|  | 2016 | `sect11b1_plantingw3.dta` | _(pending)_ |
-|  | 2019 | `sect11b1_plantingw4.dta` | _(pending)_ |
+| Malawi | 2010 | `ag_mod_d_10.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
+|  | 2013 | `ag_mod_d_13.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
+|  | 2016 | `ag_mod_b2_16.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
+|  | 2019 | `ag_mod_b2_19.dta` | [IHPS long-term panel](https://microdata.worldbank.org/index.php/catalog/3819) |
+| Mali | 2014 | `EACIEXPLOI_p1.dta` | [EACI 2014](https://microdata.worldbank.org/index.php/catalog/2583) |
+|  | 2017 | `eaci17_s11bp1.dta` | [EACI 2017](https://microdata.worldbank.org/index.php/catalog/3409) |
+| Niger | 2011 | `ecvmaas1_p1.dta` | [ECVMA 2011](https://microdata.worldbank.org/index.php/catalog/2050) |
+|  | 2014 | `ECVMA2_AS1P1.dta` | [ECVMA 2014](https://microdata.worldbank.org/index.php/catalog/2676) |
+| Nigeria | 2011 | `sect11b_plantingw1.dta` | [GHS 2010/11](https://microdata.worldbank.org/index.php/catalog/1002) |
+|  | 2013 | `sect11b1_plantingw2.dta` | [GHS 2012/13](https://microdata.worldbank.org/index.php/catalog/1952) |
+|  | 2016 | `sect11b1_plantingw3.dta` | [GHS 2015/16](https://microdata.worldbank.org/index.php/catalog/2734) |
+|  | 2019 | `sect11b1_plantingw4.dta` | [GHS 2018/19](https://microdata.worldbank.org/index.php/catalog/3557) |
 |  | 2023 | `sect11b1_plantingw5.dta` | _(pending)_ |
-| Tanzania | 2009 | `SEC_3A.dta` | _(pending)_ |
-|  | 2011 | `AG_SEC3A.dta` | _(pending)_ |
-|  | 2013 | `AG_SEC_3A.dta` | _(pending)_ |
-|  | 2015 | `AG_SEC_3A.dta` (extended + refresh) | _(pending)_ |
-|  | 2019 | `AG_SEC_3A.dta` (extended + refresh) | _(pending)_ |
+| Tanzania | 2009 | `SEC_3A.dta` | [NPS 2008/09](https://microdata.worldbank.org/index.php/catalog/76) |
+|  | 2011 | `AG_SEC3A.dta` | [NPS 2010/11](https://microdata.worldbank.org/index.php/catalog/1050) |
+|  | 2013 | `AG_SEC_3A.dta` | [NPS 2012/13](https://microdata.worldbank.org/index.php/catalog/2252) |
+|  | 2015 | `AG_SEC_3A.dta` (extended + refresh) | [NPS 2014/15](https://microdata.worldbank.org/index.php/catalog/2862) |
+|  | 2019 | `AG_SEC_3A.dta` (extended + refresh) | [NPS 2019/20 SDD](https://microdata.worldbank.org/index.php/catalog/3885) |
 | Uganda | 2009 | `2009_AGSEC2A.dta` | [UNPS 2009/10](https://microdata.worldbank.org/index.php/catalog/1001) |
 |  | 2010 | `AGSEC2A.dta` | [UNPS 2010/11](https://microdata.worldbank.org/index.php/catalog/2166) |
 |  | 2011 | `AGSEC2A.dta` | [UNPS 2011/12](https://microdata.worldbank.org/index.php/catalog/2059) |
@@ -212,8 +212,8 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 | Zambia | 2012 | `field.dta` | _(pending; IAPRI)_ |
 |  | 2015 | `field.dta` | _(pending; IAPRI)_ |
 |  | 2019 | `field.dta` | _(pending; IAPRI)_ |
-| Tanzania (ASC) | 2009 | `R041.DTA` (smallholder) | _(NBS Tanzania; pending)_ |
-|  | 2019 | `R041_LAND_OWNERSHIP.dta` | _(NBS Tanzania; pending)_ |
+| Tanzania (ASC) | 2009 | `R041.DTA` (smallholder) | [ASC 2008/09 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/5) |
+|  | 2019 | `R041_LAND_OWNERSHIP.dta` | [ASC 2019/20 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/31) |
 
 # Appendix A. Per-country variable provenance
 
