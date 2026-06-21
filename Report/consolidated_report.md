@@ -29,7 +29,7 @@ At present, eight nationally representative farm-household surveys across Sub-Sa
 | Country | Survey (source) | Survey years | Spatial unit (reporting unit) |
 |---|---|---|---|
 | Ethiopia | ESS (LSMS-ISA) | 2012, 2014, 2016, 2019, 2022 | parcel (subdivided into fields) |
-| Malawi | IHPS (LSMS-ISA) | 2010, 2013, 2016, 2019 | garden (subdivided into plots) |
+| Malawi | IHS cross-sections (LSMS-ISA) | 2010, 2016, 2019 | plot (2010); garden subdivided into plots (2016, 2019) |
 | Mali | EACI (LSMS-ISA) | 2014, 2017 | parcelle (single land unit) |
 | Niger | ECVMA (LSMS-ISA) | 2011, 2014 | parcelle (single land unit) |
 | Nigeria | GHS-Panel (LSMS-ISA) | 2011, 2013, 2016, 2019, 2023 | plot (single land unit) |
@@ -101,7 +101,7 @@ country-years from the *other* variables too.
 | Country | Variable | Missing year(s) | Why |
 |---------|--------------------|-----------------|--------------------------------------------------|
 | Ethiopia | `parcel_purchased` | 2012, 2014 | ESS11/ESS13 acquisition question had **no "purchased" category**; "Purchased" (code 7) is first offered in wave 3 (2016). |
-| Malawi | `parcel_certificate` | 2010 | IHPS 2010 has **no title/ownership-document question** for the plot. |
+| Malawi | `parcel_certificate` | 2010 | IHS3 (2010) has **no title/ownership-document question** for the plot. |
 | Malawi | `parcel_certificate` | 2019 | The 2019 round **dropped** the title/document question. |
 | Malawi | `parcel_purchased` | 2019 | The 2019 round **dropped the categorical "how acquired" question** entirely (only "from whom" and "year acquired" remain), so acquisition mode - including purchase - is not identifiable. |
 | Mali | `parcel_rentedout` | 2014, 2017 | EACI surveys only the parcels a household **operates**, so land rented/lent **out** is out of frame (no rented-out code in 2014; the 2017 "Louee/Pretee" code flags only 5 of ~24,250 parcels). |
@@ -152,45 +152,52 @@ fresh cross-section.
 Survey-weighted shares by country and survey year (season 1). A dash (`-`) marks
 structurally missing items (question not asked that round; see Section 4).
 
-## 5.1 Share of households with one or more plot
+Tanzania appears twice: the LSMS-ISA panel ("Tanzania (LSMS)") and, listed separately,
+the Tanzania Agricultural Sample Census ("Tanzania (ASC)"). The ASC records land by
+tenure category at the household level rather than by plot, so it appears only in the
+household-share and area-share tables (Tables 5 and 7) and is excluded from the
+plot-share table (Table 6) and the trend figures.
+
+## 5.1 Share of households (with one or more plots rented, etc.)
 
 **Table 5.** Share of households with at least one plot that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
 
 | Country | Year | Rented-in | Rented-out | Purchased | Has certificate |
 |---|---|---|---|---|---|
-| Ethiopia | 2012 | 0.248 | 0.073 | - | 0.486 |
-|   | 2014 | 0.259 | 0.132 | - | 0.537 |
-|   | 2016 | 0.277 | 0.178 | 0.099 | 0.586 |
-|   | 2019 | 0.242 | 0.117 | 0.068 | 0.790 |
-|   | 2022 | 0.234 | 0.050 | 0.082 | 0.782 |
-| Malawi | 2010 | 0.121 | 0.004 | 0.039 | - |
-|   | 2013 | 0.117 | 0.006 | 0.031 | 0.026 |
-|   | 2016 | 0.119 | 0.024 | 0.065 | 0.019 |
-|   | 2019 | 0.109 | 0.023 | - | - |
-| Mali | 2014 | 0.030 | - | 0.018 | 0.075 |
-|   | 2017 | 0.010 | - | 0.008 | 0.063 |
-| Niger | 2011 | 0.232 | 0.001 | 0.141 | 0.126 |
-|   | 2014 | 0.038 | 0.005 | 0.149 | 0.055 |
-| Nigeria | 2011 | 0.103 | 0.002 | 0.097 | - |
-|   | 2013 | 0.104 | 0.006 | 0.071 | 0.109 |
-|   | 2016 | 0.090 | 0.006 | 0.088 | 0.075 |
-|   | 2019 | 0.187 | 0.019 | 0.243 | 0.174 |
-|   | 2023 | 0.145 | 0.013 | 0.115 | 0.130 |
-| Tanzania | 2009 | 0.112 | 0.013 | - | 0.108 |
-|   | 2011 | 0.075 | 0.012 | - | 0.144 |
-|   | 2013 | 0.061 | 0.012 | - | 0.116 |
-|   | 2015 | 0.093 | 0.012 | 0.288 | 0.146 |
-|   | 2019 | 0.152 | 0.029 | 0.432 | 0.218 |
-| Uganda | 2009 | 0.214 | 0.030 | 0.379 | 0.226 |
-|   | 2010 | 0.202 | 0.004 | 0.350 | 0.168 |
-|   | 2011 | 0.136 | 0.012 | 0.298 | 0.159 |
-|   | 2013 | 0.172 | 0.011 | 0.352 | 0.256 |
-|   | 2015 | 0.232 | 0.019 | 0.366 | 0.218 |
-|   | 2018 | 0.210 | 0.023 | - | 0.127 |
-|   | 2019 | 0.188 | 0.024 | 0.346 | 0.075 |
-| Zambia | 2012 | 0.030 | 0.005 | 0.056 | 0.086 |
-|   | 2015 | 0.038 | 0.011 | 0.068 | 0.054 |
-|   | 2019 | 0.045 | 0.018 | 0.079 | 0.056 |
+| Ethiopia (LSMS) | 2012 | 0.248 | 0.073 | - | 0.486 |
+|    | 2014 | 0.259 | 0.132 | - | 0.537 |
+|    | 2016 | 0.277 | 0.178 | 0.099 | 0.586 |
+|    | 2019 | 0.242 | 0.117 | 0.068 | 0.790 |
+|    | 2022 | 0.234 | 0.050 | 0.082 | 0.782 |
+| Malawi (LSMS) | 2010 | 0.101 | 0.001 | 0.032 | - |
+|    | 2016 | 0.096 | 0.013 | 0.043 | 0.011 |
+|    | 2019 | 0.100 | 0.010 | - | - |
+| Mali (LSMS) | 2014 | 0.030 | - | 0.018 | 0.075 |
+|    | 2017 | 0.010 | - | 0.008 | 0.063 |
+| Niger (LSMS) | 2011 | 0.232 | 0.001 | 0.141 | 0.126 |
+|    | 2014 | 0.038 | 0.005 | 0.149 | 0.055 |
+| Nigeria (LSMS) | 2011 | 0.103 | 0.002 | 0.097 | - |
+|    | 2013 | 0.104 | 0.006 | 0.071 | 0.109 |
+|    | 2016 | 0.090 | 0.006 | 0.088 | 0.075 |
+|    | 2019 | 0.187 | 0.019 | 0.243 | 0.174 |
+|    | 2023 | 0.145 | 0.013 | 0.115 | 0.130 |
+| Tanzania (LSMS) | 2009 | 0.112 | 0.013 | - | 0.108 |
+|    | 2011 | 0.075 | 0.012 | - | 0.144 |
+|    | 2013 | 0.061 | 0.012 | - | 0.116 |
+|    | 2015 | 0.093 | 0.012 | 0.288 | 0.146 |
+|    | 2019 | 0.152 | 0.029 | 0.432 | 0.218 |
+| Tanzania (ASC) | 2009 | 0.108 | 0.028 | 0.195 | 0.061 |
+|    | 2019 | 0.201 | 0.029 | 0.077 | 0.077 |
+| Uganda (LSMS) | 2009 | 0.214 | 0.030 | 0.379 | 0.226 |
+|    | 2010 | 0.202 | 0.004 | 0.350 | 0.168 |
+|    | 2011 | 0.136 | 0.012 | 0.298 | 0.159 |
+|    | 2013 | 0.172 | 0.011 | 0.352 | 0.256 |
+|    | 2015 | 0.232 | 0.019 | 0.366 | 0.218 |
+|    | 2018 | 0.210 | 0.023 | - | 0.127 |
+|    | 2019 | 0.188 | 0.024 | 0.346 | 0.075 |
+| Zambia (RALS) | 2012 | 0.030 | 0.005 | 0.056 | 0.086 |
+|    | 2015 | 0.038 | 0.011 | 0.068 | 0.054 |
+|    | 2019 | 0.045 | 0.018 | 0.079 | 0.056 |
 
 ## 5.2 Share of plots
 
@@ -198,39 +205,38 @@ structurally missing items (question not asked that round; see Section 4).
 
 | Country | Year | Rented-in | Rented-out | Purchased | Has certificate |
 |---|---|---|---|---|---|
-| Ethiopia | 2012 | 0.130 | 0.032 | - | 0.458 |
-|   | 2014 | 0.117 | 0.053 | - | 0.510 |
-|   | 2016 | 0.111 | 0.064 | 0.040 | 0.555 |
-|   | 2019 | 0.152 | 0.068 | 0.033 | 0.717 |
-|   | 2022 | 0.134 | 0.022 | 0.035 | 0.688 |
-| Malawi | 2010 | 0.082 | 0.002 | 0.031 | - |
-|   | 2013 | 0.082 | 0.003 | 0.026 | 0.025 |
-|   | 2016 | 0.091 | 0.015 | 0.042 | 0.014 |
-|   | 2019 | 0.075 | 0.013 | - | - |
-| Mali | 2014 | 0.013 | - | 0.008 | 0.041 |
-|   | 2017 | 0.004 | - | 0.003 | 0.031 |
-| Niger | 2011 | 0.143 | 0.000 | 0.082 | 0.085 |
-|   | 2014 | 0.024 | 0.002 | 0.098 | 0.041 |
-| Nigeria | 2011 | 0.090 | 0.002 | 0.069 | - |
-|   | 2013 | 0.101 | 0.004 | 0.054 | 0.090 |
-|   | 2016 | 0.077 | 0.004 | 0.062 | 0.061 |
-|   | 2019 | 0.112 | 0.008 | 0.131 | 0.095 |
-|   | 2023 | 0.093 | 0.008 | 0.072 | 0.086 |
-| Tanzania | 2009 | 0.062 | 0.007 | - | 0.070 |
-|   | 2011 | 0.042 | 0.006 | - | 0.110 |
-|   | 2013 | 0.038 | 0.007 | - | 0.112 |
-|   | 2015 | 0.063 | 0.007 | 0.247 | 0.143 |
-|   | 2019 | 0.079 | 0.014 | 0.288 | 0.143 |
-| Uganda | 2009 | 0.119 | 0.013 | 0.265 | 0.157 |
-|   | 2010 | 0.126 | 0.002 | 0.242 | 0.105 |
-|   | 2011 | 0.085 | 0.006 | 0.211 | 0.101 |
-|   | 2013 | 0.106 | 0.005 | 0.242 | 0.186 |
-|   | 2015 | 0.139 | 0.010 | 0.253 | 0.151 |
-|   | 2018 | 0.128 | 0.012 | - | 0.091 |
-|   | 2019 | 0.116 | 0.013 | 0.254 | 0.045 |
-| Zambia | 2012 | 0.013 | 0.002 | 0.047 | 0.070 |
-|   | 2015 | 0.016 | 0.003 | 0.057 | 0.047 |
-|   | 2019 | 0.017 | 0.005 | 0.068 | 0.047 |
+| Ethiopia (LSMS) | 2012 | 0.130 | 0.032 | - | 0.458 |
+|    | 2014 | 0.117 | 0.053 | - | 0.510 |
+|    | 2016 | 0.111 | 0.064 | 0.040 | 0.555 |
+|    | 2019 | 0.152 | 0.068 | 0.033 | 0.717 |
+|    | 2022 | 0.134 | 0.022 | 0.035 | 0.688 |
+| Malawi (LSMS) | 2010 | 0.073 | 0.001 | 0.028 | - |
+|    | 2016 | 0.080 | 0.010 | 0.036 | 0.010 |
+|    | 2019 | 0.074 | 0.006 | - | - |
+| Mali (LSMS) | 2014 | 0.013 | - | 0.008 | 0.041 |
+|    | 2017 | 0.004 | - | 0.003 | 0.031 |
+| Niger (LSMS) | 2011 | 0.143 | 0.000 | 0.082 | 0.085 |
+|    | 2014 | 0.024 | 0.002 | 0.098 | 0.041 |
+| Nigeria (LSMS) | 2011 | 0.090 | 0.002 | 0.069 | - |
+|    | 2013 | 0.101 | 0.004 | 0.054 | 0.090 |
+|    | 2016 | 0.077 | 0.004 | 0.062 | 0.061 |
+|    | 2019 | 0.112 | 0.008 | 0.131 | 0.095 |
+|    | 2023 | 0.093 | 0.008 | 0.072 | 0.086 |
+| Tanzania (LSMS) | 2009 | 0.062 | 0.007 | - | 0.070 |
+|    | 2011 | 0.042 | 0.006 | - | 0.110 |
+|    | 2013 | 0.038 | 0.007 | - | 0.112 |
+|    | 2015 | 0.063 | 0.007 | 0.247 | 0.143 |
+|    | 2019 | 0.079 | 0.014 | 0.288 | 0.143 |
+| Uganda (LSMS) | 2009 | 0.119 | 0.013 | 0.265 | 0.157 |
+|    | 2010 | 0.126 | 0.002 | 0.242 | 0.105 |
+|    | 2011 | 0.085 | 0.006 | 0.211 | 0.101 |
+|    | 2013 | 0.106 | 0.005 | 0.242 | 0.186 |
+|    | 2015 | 0.139 | 0.010 | 0.253 | 0.151 |
+|    | 2018 | 0.128 | 0.012 | - | 0.091 |
+|    | 2019 | 0.116 | 0.013 | 0.254 | 0.045 |
+| Zambia (RALS) | 2012 | 0.013 | 0.002 | 0.047 | 0.070 |
+|    | 2015 | 0.016 | 0.003 | 0.057 | 0.047 |
+|    | 2019 | 0.017 | 0.005 | 0.068 | 0.047 |
 
 ## 5.3 Share of farm area (hectares)
 
@@ -238,43 +244,44 @@ structurally missing items (question not asked that round; see Section 4).
 
 | Country | Year | Rented-in | Rented-out | Purchased | Has certificate |
 |---|---|---|---|---|---|
-| Ethiopia | 2012 | 0.100 | 0.013 | - | 0.560 |
-|   | 2014 | 0.127 | 0.049 | - | 0.517 |
-|   | 2016 | 0.132 | 0.046 | 0.034 | 0.556 |
-|   | 2019 | 0.186 | - | 0.018 | 0.731 |
-|   | 2022 | 0.192 | - | 0.027 | 0.740 |
-| Malawi | 2010 | 0.077 | 0.002 | 0.037 | - |
-|   | 2013 | 0.102 | 0.004 | 0.039 | 0.026 |
-|   | 2016 | 0.077 | 0.014 | 0.059 | 0.014 |
-|   | 2019 | 0.051 | 0.013 | - | - |
-| Mali | 2014 | 0.006 | - | 0.006 | 0.045 |
-|   | 2017 | 0.002 | - | 0.003 | 0.020 |
-| Niger | 2011 | 0.103 | 0.000 | 0.076 | 0.087 |
-|   | 2014 | 0.022 | 0.002 | 0.094 | 0.045 |
-| Nigeria | 2011 | 0.105 | 0.001 | 0.088 | - |
-|   | 2013 | 0.164 | 0.003 | 0.054 | 0.069 |
-|   | 2016 | 0.068 | 0.006 | 0.069 | 0.061 |
-|   | 2019 | 0.127 | 0.015 | 0.126 | 0.108 |
-|   | 2023 | 0.093 | 0.010 | 0.089 | 0.108 |
-| Tanzania | 2009 | 0.039 | 0.007 | - | 0.070 |
-|   | 2011 | 0.026 | 0.012 | - | 0.124 |
-|   | 2013 | 0.026 | 0.019 | - | 0.152 |
-|   | 2015 | 0.058 | 0.011 | 0.397 | 0.183 |
-|   | 2019 | 0.051 | 0.030 | 0.432 | 0.181 |
-| Uganda | 2009 | 0.062 | 0.022 | 0.259 | 0.242 |
-|   | 2010 | 0.066 | 0.004 | 0.237 | 0.162 |
-|   | 2011 | 0.048 | 0.017 | 0.246 | 0.152 |
-|   | 2013 | 0.075 | 0.008 | 0.286 | 0.239 |
-|   | 2015 | 0.094 | 0.008 | 0.296 | 0.224 |
-|   | 2018 | 0.134 | 0.003 | - | 0.125 |
-|   | 2019 | 0.082 | 0.011 | 0.272 | 0.046 |
-| Zambia | 2012 | 0.011 | 0.003 | 0.063 | 0.083 |
-|   | 2015 | 0.013 | 0.004 | 0.084 | 0.066 |
-|   | 2019 | 0.013 | 0.006 | 0.083 | 0.062 |
+| Ethiopia (LSMS) | 2012 | 0.100 | 0.013 | - | 0.560 |
+|    | 2014 | 0.127 | 0.049 | - | 0.517 |
+|    | 2016 | 0.132 | 0.046 | 0.034 | 0.556 |
+|    | 2019 | 0.186 | - | 0.018 | 0.731 |
+|    | 2022 | 0.192 | - | 0.027 | 0.740 |
+| Malawi (LSMS) | 2010 | 0.072 | 0.001 | 0.037 | - |
+|    | 2016 | 0.077 | 0.010 | 0.048 | 0.022 |
+|    | 2019 | 0.073 | 0.005 | - | - |
+| Mali (LSMS) | 2014 | 0.006 | - | 0.006 | 0.045 |
+|    | 2017 | 0.002 | - | 0.003 | 0.020 |
+| Niger (LSMS) | 2011 | 0.103 | 0.000 | 0.076 | 0.087 |
+|    | 2014 | 0.022 | 0.002 | 0.094 | 0.045 |
+| Nigeria (LSMS) | 2011 | 0.105 | 0.001 | 0.088 | - |
+|    | 2013 | 0.164 | 0.003 | 0.054 | 0.069 |
+|    | 2016 | 0.068 | 0.006 | 0.069 | 0.061 |
+|    | 2019 | 0.127 | 0.015 | 0.126 | 0.108 |
+|    | 2023 | 0.093 | 0.010 | 0.089 | 0.108 |
+| Tanzania (LSMS) | 2009 | 0.039 | 0.007 | - | 0.070 |
+|    | 2011 | 0.026 | 0.012 | - | 0.124 |
+|    | 2013 | 0.026 | 0.019 | - | 0.152 |
+|    | 2015 | 0.058 | 0.011 | 0.397 | 0.183 |
+|    | 2019 | 0.051 | 0.030 | 0.432 | 0.181 |
+| Tanzania (ASC) | 2009 | 0.045 | 0.016 | 0.156 | 0.055 |
+|    | 2019 | 0.085 | 0.020 | 0.060 | 0.059 |
+| Uganda (LSMS) | 2009 | 0.062 | 0.022 | 0.259 | 0.242 |
+|    | 2010 | 0.066 | 0.004 | 0.237 | 0.162 |
+|    | 2011 | 0.048 | 0.017 | 0.246 | 0.152 |
+|    | 2013 | 0.075 | 0.008 | 0.286 | 0.239 |
+|    | 2015 | 0.094 | 0.008 | 0.296 | 0.224 |
+|    | 2018 | 0.134 | 0.003 | - | 0.125 |
+|    | 2019 | 0.082 | 0.011 | 0.272 | 0.046 |
+| Zambia (RALS) | 2012 | 0.011 | 0.003 | 0.063 | 0.083 |
+|    | 2015 | 0.013 | 0.004 | 0.084 | 0.066 |
+|    | 2019 | 0.013 | 0.006 | 0.083 | 0.062 |
 
-We observe different participation rates for the different countries, with the highest rates in Ethiopia (23-27% of households renting in) and Uganda (14-22% of households renting in) and the lowest rates in Zambia (<4% of households renting in) and Mali (<2% of households renting in). This conforms somewhat to rural population densities, although some high population density countries have only moderate rates of rental (e.g., Malawi, where household rates of renting in land are 10-12% for the included waves).
+We observe different participation rates for the different countries, with the highest rates in Ethiopia (23-27% of households renting in) and Uganda (14-22% of households renting in) and the lowest rates in Zambia (<4% of households renting in) and Mali (<2% of households renting in). This conforms somewhat to rural population densities, although some high population density countries have only moderate rates of rental (e.g., Malawi, where household rates of renting in land are around 10% for the included waves).
 
-The rates of renting in are systematically higher than rates of renting out. This difference is observed for all countries in all waves, although the ratio of renting in to renting out rates varies considerably, with household rates of renting in exceeding household rates of renting out by as little as 56% (in Ethiopia for 2016) to more than 1000% (most waves in Uganda, Nigeria; the first two waves of Malawi; the first wave of Niger). This speaks to systematic distortions in the probability of reporting renting in versus renting out land. Note that in Mali, data on renting out land is not collected at all. 
+The rates of renting in are systematically higher than rates of renting out. This difference is observed for all countries in all waves, although the ratio of renting in to renting out rates varies considerably, with household rates of renting in exceeding household rates of renting out by as little as 56% (in Ethiopia for 2016) to more than 1000% (most waves in Uganda, Nigeria; the first wave of Malawi; the first wave of Niger). This speaks to systematic distortions in the probability of reporting renting in versus renting out land. Note that in Mali, data on renting out land is not collected at all. 
 
 Household rental participation rates (defined as the share of households in the sample which are renting one or more parcels) are systematically higher than parcel-level statistics, as expected. The magnitude of this difference (which is reflective, in part, of the average number of plots per farm) is lowest in Nigeria (where household rates exceed plot-level rental participation rates by <20%) and highest in Ethiopia and Zambia (where household rental participation rates are often >100% greater than plot-level rental participation rates).
 
@@ -322,10 +329,9 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 |  | 2016 | `sect2_pp_w3.dta` | [ESS 2015/16](https://microdata.worldbank.org/index.php/catalog/2783) |
 |  | 2019 | `sect2_pp_w4.dta` | [ESS 2018/19](https://microdata.worldbank.org/index.php/catalog/3823) |
 |  | 2022 | `sect2_pp_w5.dta` | [ESS 2021/22](https://microdata.worldbank.org/index.php/catalog/6161) |
-| Malawi | 2010 | `ag_mod_d_10.dta` | [IHPS 2010/11 (W1)](https://microdata.worldbank.org/index.php/catalog/1003) |
-|  | 2013 | `ag_mod_d_13.dta` | [IHPS 2013 (W2)](https://microdata.worldbank.org/index.php/catalog/2248) |
-|  | 2016 | `ag_mod_b2_16.dta` | [IHPS 2016 panel (W3)](https://microdata.worldbank.org/index.php/catalog/2939) |
-|  | 2019 | `ag_mod_b2_19.dta` | _(pending: IHPS 2019/20 W4)_ |
+| Malawi | 2010 | `ag_mod_d.dta` (IHS3 Full_Sample) | [IHS3 2010/11](https://microdata.worldbank.org/index.php/catalog/1003) |
+|  | 2016 | `ag_mod_b2.dta` (IHS4) | [IHS4 2016/17](https://microdata.worldbank.org/index.php/catalog/2936) |
+|  | 2019 | `ag_mod_b2.dta` (IHS5) | [IHS5 2019/20](https://microdata.worldbank.org/index.php/catalog/3818) |
 | Mali | 2014 | `EACIEXPLOI_p1.dta` | [EACI 2014](https://microdata.worldbank.org/index.php/catalog/2583) |
 |  | 2017 | `eaci17_s11bp1.dta` | [EACI 2017](https://microdata.worldbank.org/index.php/catalog/3409) |
 | Niger | 2011 | `ecvmaas1_p1.dta` | [ECVMA 2011](https://microdata.worldbank.org/index.php/catalog/2050) |
@@ -335,11 +341,13 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 |  | 2016 | `sect11b1_plantingw3.dta` | [GHS 2015/16](https://microdata.worldbank.org/index.php/catalog/2734) |
 |  | 2019 | `sect11b1_plantingw4.dta` | [GHS 2018/19](https://microdata.worldbank.org/index.php/catalog/3557) |
 |  | 2023 | `sect11b1_plantingw5.dta` | [GHS-Panel 2023 (W5)](https://microdata.worldbank.org/index.php/catalog/6410) |
-| Tanzania | 2009 | `SEC_3A.dta` | [NPS 2008/09](https://microdata.worldbank.org/index.php/catalog/76) |
+| Tanzania (LSMS) | 2009 | `SEC_3A.dta` | [NPS 2008/09](https://microdata.worldbank.org/index.php/catalog/76) |
 |  | 2011 | `AG_SEC3A.dta` | [NPS 2010/11](https://microdata.worldbank.org/index.php/catalog/1050) |
 |  | 2013 | `AG_SEC_3A.dta` | [NPS 2012/13](https://microdata.worldbank.org/index.php/catalog/2252) |
 |  | 2015 | `AG_SEC_3A.dta` (extended + refresh) | [NPS 2014/15](https://microdata.worldbank.org/index.php/catalog/2862) |
 |  | 2019 | `AG_SEC_3A.dta` (extended + refresh) | [NPS 2019/20 SDD](https://microdata.worldbank.org/index.php/catalog/3885) |
+| Tanzania (ASC) | 2009 | `R041.DTA` (smallholder) | [ASC 2008/09 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/5) |
+|  | 2019 | `R041_LAND_OWNERSHIP.dta` | [ASC 2019/20 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/31) |
 | Uganda | 2009 | `2009_AGSEC2A.dta` | [UNPS 2009/10](https://microdata.worldbank.org/index.php/catalog/1001) |
 |  | 2010 | `AGSEC2A.dta` | [UNPS 2010/11](https://microdata.worldbank.org/index.php/catalog/2166) |
 |  | 2011 | `AGSEC2A.dta` | [UNPS 2011/12](https://microdata.worldbank.org/index.php/catalog/2059) |
@@ -350,8 +358,6 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 | Zambia | 2012 | `field.dta` | [RALS 2012 (IHSN)](https://catalog.ihsn.org/catalog/7201) |
 |  | 2015 | `field.dta` | [RALS 2015 (IHSN)](https://catalog.ihsn.org/catalog/7200) |
 |  | 2019 | `field.dta` | request from IAPRI (info@iapri.org.zm) |
-| Tanzania (ASC) | 2009 | `R041.DTA` (smallholder) | [ASC 2008/09 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/5) |
-|  | 2019 | `R041_LAND_OWNERSHIP.dta` | [ASC 2019/20 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/31) |
 
 
 # Appendix A. Per-country variable provenance
@@ -502,76 +508,78 @@ area and `n_fields==0`.
 
 ---
 
-## MALAWI — Integrated Household Panel Survey (IHPS)
+## MALAWI — Integrated Household Survey (IHS) cross-sections
 
-Source: the four-wave IHPS **panel** release `MWI_2010-2019_IHPS_v06`, extracted
-flat to `Malawi/IHPS_panel_v6/MWI_2010-2019_IHPS_v06_M_Stata/` (all waves point at
-this one folder; filenames carry the year suffix).
+Source: the nationally-representative **IHS repeated cross-sections** (not the IHPS
+panel), three rounds with land data: **IHS3 2010/11** (`IHS3 2010/.../Full_Sample`),
+**IHS4 2016/17** (`IHS4 2016/...`), and **IHS5 2019/20** (`IHS5 2019/...`). There is
+no IHS round in 2013, so the Malawi series is **2010 / 2016 / 2019**. Each round is an
+independent cross-section (no panel attrition) with its own cross-sectional weight
+`hh_wgt`; household id = `case_id` throughout.
 
-> **Unit note.** The survey's land unit changed: in 2010/2013 tenure is asked at the
-> **plot** level (no garden grouping), so `parcel` := plot; in 2016/2019 tenure is
-> asked at the **garden** level and `parcel` := garden (area summed from its plots).
+> **Why the switch from IHPS.** The earlier build used the long-term IHPS panel
+> subsample (~102 EAs), which is small and subject to cumulative attrition. The IHS
+> cross-sections are full nationally-representative samples (≈9,600-10,400 households
+> per round) and give the most representative population figures.
+
+> **Unit note.** The land unit differs by round: in **2010** tenure is asked at the
+> **plot** level (`ag_mod_d`), so `parcel` := plot; in **2016/2019** tenure is asked at
+> the **garden** level (`ag_mod_b2`) and `parcel` := garden (area summed from its plots).
 
 ### 1. Survey & wave key
 
 | Wave | Round | Year | HH id | Tenure module (unit) | Area module |
 |------|--------|--------|----------------|--------------------------|----------------------------|
-| 1 | IHS3/IHPS | 2010 | `case_id` | `ag_mod_d_10` (plot) | `ag_mod_c_10` |
-| 2 | IHPS | 2013 | `y2_hhid` | `ag_mod_d_13` (plot) | `ag_mod_c_13` + `ag_mod_o2_13` |
-| 3 | IHPS | 2016 | `y3_hhid` | `ag_mod_b2_16` (garden) | `ag_mod_c_16` + `ag_mod_o2_16` |
-| 4 | IHPS | 2019/20 | `y4_hhid` | `ag_mod_b2_19` (garden) | `ag_mod_c_19` + `ag_mod_o2_19` |
+| 1 | IHS3 (Full_Sample) | 2010 | `case_id` | `ag_mod_d` (plot) | `ag_mod_c` |
+| 2 | IHS4 | 2016 | `case_id` | `ag_mod_b2` (garden) | `ag_mod_c` + `ag_mod_o2` |
+| 3 | IHS5 | 2019 | `case_id` | `ag_mod_b2` (garden, restructured) | `ag_mod_c` + `ag_mod_o2` |
 
-Household cover (weight, `ea_id`, strata): `hh_mod_a_filt_<yy>.dta`.
+Household cover (weight, `ea_id`, strata): `hh_mod_a_filt.dta`.
 
 ### 2. Tenure indicators
 
 | Variable | Wave | Source file | Source var | Construction |
 |------------------|------|----------------|--------------|--------------------------------|
-| `parcel_rentedin` | 1 | `ag_mod_d_10` | `ag_d03` | `inlist(ag_d03,6,7,8)` — leasehold/rent/tenant |
-| `parcel_rentedin` | 2 | `ag_mod_d_13` | `ag_d03` | `inlist(ag_d03,6,7,8)` |
-| `parcel_rentedin` | 3 | `ag_mod_b2_16` | `ag_b203` | `inlist(ag_b203,6,7,8)` |
-| `parcel_rentedin` | 4 | `ag_mod_b2_19` | `ag_brentedin`, `ag_b211a/b` | `ag_brentedin==1` OR paid owner `ag_b211a/b>0` (no acq. question in 2019) |
-| `parcel_rentedout` | 1-2 | `ag_mod_d_<yy>` | `ag_d19a-d` | rent received >0 (cash/in-kind, already/still) |
-| `parcel_rentedout` | 3 | `ag_mod_b2_16` | `ag_b219a-d` | rent received >0 |
-| `parcel_rentedout` | 4 | `ag_mod_b2_19` | `ag_brentedout`, `ag_b219a-d` | `ag_brentedout==1` OR `ag_b219a-d>0` |
-| `parcel_certificate` | 1 | — | — | **missing** — not asked |
-| `parcel_certificate` | 2 | `ag_mod_d_13` | `ag_d03_1` | `ag_d03_1==1` (has title) |
-| `parcel_certificate` | 3 | `ag_mod_b2_16` | `ag_b204_1` | `inlist(ag_b204_1,1,2,3)` (lease offer / title deed / lease cert) |
-| `parcel_certificate` | 4 | — | — | **missing** — not asked |
-| `parcel_purchased` | 1-2 | `ag_mod_d_<yy>` | `ag_d03` | `inlist(ag_d03,4,5)` — purchased w/ or w/o title |
-| `parcel_purchased` | 3 | `ag_mod_b2_16` | `ag_b203` | `ag_b203==4` — purchased |
-| `parcel_purchased` | 4 | — | — | **missing** — acquisition question dropped in 2019 |
+| `parcel_rentedin` | 1 (2010) | `ag_mod_d` | `ag_d03` | `inlist(ag_d03,6,7,8)` — leasehold/rent/tenant |
+| `parcel_rentedin` | 2 (2016) | `ag_mod_b2` | `ag_b203` | `inlist(ag_b203,6,7,8)` |
+| `parcel_rentedin` | 3 (2019) | `ag_mod_b2` | `ag_b209a`, `ag_b208b` | rent **paid** in cash `ag_b209a>0` OR output given as rent `ag_b208b>0` (no acquisition question in 2019) |
+| `parcel_rentedout` | 1 (2010) | `ag_mod_d` | `ag_d19a-d` | rent received >0 (cash/in-kind) |
+| `parcel_rentedout` | 2 (2016) | `ag_mod_b2` | `ag_b217a` | cash received from renting out >0 |
+| `parcel_rentedout` | 3 (2019) | `ag_mod_b2` | `ag_b217a`, `ag_b216a` | cash received `ag_b217a>0` OR output received as rent `!mi(ag_b216a)` |
+| `parcel_certificate` | 1 (2010) | — | — | **missing** — not asked |
+| `parcel_certificate` | 2 (2016) | `ag_mod_b2` | `ag_b204_1` | `inlist(ag_b204_1,1,2,3)` (lease offer / title deed / lease cert) |
+| `parcel_certificate` | 3 (2019) | — | — | **missing** — title question dropped |
+| `parcel_purchased` | 1 (2010) | `ag_mod_d` | `ag_d03` | `inlist(ag_d03,4,5)` — purchased w/ or w/o title |
+| `parcel_purchased` | 2 (2016) | `ag_mod_b2` | `ag_b203` | `ag_b203==4` — purchased |
+| `parcel_purchased` | 3 (2019) | — | — | **missing** — acquisition question dropped |
 
 ### 3. Parcel area (`parcel_area_ha`)
 
-Field roster `ag_mod_c_<yy>` (+ perennial `ag_mod_o2_<yy>` for w2-4). Field area =
+Plot roster `ag_mod_c` (+ perennial `ag_mod_o2` for 2016/2019). Plot area =
 GPS (`ag_c04c`) where measured, else self-reported (`ag_c04a`, unit `ag_c04b`:
 1=acre, 2=ha, 3=m²); acres→ha via ×0.404686. No model-based imputation (the published
 pipeline pmm-imputes missing GPS; we use the deterministic GPS-else-self-reported
-measure for cross-language reproducibility). Summed to the parcel: garden in w3-4;
-in w1-2 each plot is its own parcel. `n_fields` = cultivated fields per parcel.
+measure for cross-language reproducibility). Summed to the parcel: garden in 2016/2019;
+in 2010 each plot is its own parcel. `n_fields` = plots aggregated per parcel. Mean
+parcel area is ≈0.40-0.45 ha across rounds.
 
 ### 4. Design variables & identifiers
 
 | Variable | Wave | Source file | Source var(s) | Construction |
 |----------------|------|----------------|----------------|------------------------------|
-| `weight` | 1 | `hh_mod_a_filt_10` | `hh_wgt` | baseline sampling weight |
-| `weight` | 2 | `hh_mod_a_filt_13` | `panelweight` | panel weight 2013 |
-| `weight` | 3 | `hh_mod_a_filt_16` | `panelweight_2016` | panel weight 2016 |
-| `weight` | 4 | `hh_mod_a_filt_19` | `panelweight_2019` | panel weight 2019 |
-| `ea_id` | 1-4 | `hh_mod_a_filt_<yy>` | `ea_id` | enumeration area (PSU) |
-| `strataid` | 1-2 | `hh_mod_a_filt_<yy>` | `stratum` | baseline stratum (region × urban/rural) |
-| `strataid` | 3-4 | `hh_mod_a_filt_<yy>` | `region`, `reside` | `group(region reside)` (no `stratum` in cover) |
-| `parcel_id` | 1-2 | tenure module | `hh_id` + plot no. (`ag_d00`) | concatenated |
-| `parcel_id` | 3-4 | tenure module | `hh_id` + `gardenid` | concatenated |
-| `year` | 1-4 | — | — | 2010 / 2013 / 2016 / 2019 |
+| `weight` | 1-3 | `hh_mod_a_filt` | `hh_wgt` | cross-sectional household weight |
+| `ea_id` | 1-3 | `hh_mod_a_filt` | `ea_id` | enumeration area (PSU), where present |
+| `strataid` | 1-3 | `hh_mod_a_filt` | `region`, `reside` | `group(region reside)` (region × urban/rural) |
+| `parcel_id` | 1 | tenure module | `case_id` + plot no. (`ag_c00`/`ag_d00`) | concatenated |
+| `parcel_id` | 2-3 | tenure module | `case_id` + `gardenid` | concatenated |
+| `year` | 1-3 | — | — | 2010 / 2016 / 2019 |
 
 ### 5. Value labels of key source variables (verified)
 
-**Acquisition** — `ag_d03` (w1-2) / `ag_b203` (w3): *"How did your household acquire this [plot/garden]?"*
+**Acquisition** — `ag_d03` (2010) / `ag_b203` (2016): *"How did your household acquire this [plot/garden]?"*
 
-| Code | w1-2 (ag_d03) | w3 (ag_b203) |
-|------|---------------|--------------|
+| Code | 2010 (ag_d03) | 2016 (ag_b203) |
+|------|---------------|----------------|
 | 1 | Granted by local leaders | Granted by local leaders |
 | 2 | Inherited | Inherited |
 | 3 | Bride price | Bride price |
@@ -582,41 +590,43 @@ in w1-2 each plot is its own parcel. `n_fields` = cultivated fields per parcel.
 | 8 | Farming as a tenant | Farming as a tenant |
 | 9 | Borrowed for free | Borrowed for free |
 | 10 | Moved in w/o permission | Moved in w/o permission |
-| 11 | Other | Other |
-| 12 / 13 | — | Allocated by family / Gift from non-HH |
+| 96 | Other | Other |
 
-*(Wave 4 has no acquisition-method question — only "from whom" and "year acquired".)*
+*(2019 has no acquisition-method question; rent is identified from the rent-paid /
+rent-received amount items instead.)*
 
-**Rented out / in (w4 flags)** — `ag_brentedin` ("gave output as rent" → rented in),
-`ag_brentedout` ("received output as rent" → rented out): `1 = Yes`, `2 = No`.
-Rent amounts `ag_d19a-d` / `ag_b219a-d` = cash/in-kind received (already / still due).
+**Rent (2019, restructured module)** — `ag_b209a` cash paid for use of the garden
+(>0 → rented in), `ag_b208b` output given as rent (>0 → sharecropped in), `ag_b217a`
+cash received from renting out (>0 → rented out), `ag_b216a` output received as rent
+(non-missing → rented out). Rent amounts `ag_d19a-d` (2010) = cash/in-kind received.
 
-**Certificate** — `ag_d03_1` (w2, has title): `1 = Yes`, `2 = No`.
-`ag_b204_1` (w3): `1` offer of lease · `2` title deed · `3` certificate of lease · `4` no · `96` other.
+**Certificate** — `ag_b204_1` (2016): `1` offer of lease · `2` title deed ·
+`3` certificate of lease · `4` no · `96` other. Not collected in 2010 or 2019.
 
 ### 6. Harmonization decisions & caveats (Malawi)
 
-- **Rental variables were derived here, not inherited** — the upstream pipeline never
-  built `plot_rentedin/out` for Malawi. They are constructed from the acquisition
-  question (rented-in) and the rent-received variables (rented-out).
-- **Land unit changes across waves** — plot (2010/2013) vs garden (2016/2019). Counts
-  and mean areas are not strictly unit-comparable across that break.
-- **Wave 4 (2019)**: the categorical acquisition question was dropped, so
-  `parcel_purchased` and `parcel_certificate` are **missing** in 2019, and rented-in
-  uses a payment-based proxy (`ag_brentedin` / paid-owner) rather than an acquisition code.
-- **Rented-in** = leasehold/rent/tenant (codes 6,7,8); "borrowed for free" (9) is
-  excluded as non-market access.
-- **Rented-out is NOT comparable across waves - do not read the trend.** It is captured
-  differently by wave: 2010 and 2013 identify rented-out only via positive rent
-  *received* (`ag_d19a-d`), with heavy skip/missing on those amount items, whereas 2019
-  has an explicit yes/no flag (`ag_brentedout`). As a result the weighted rate is ~0.2%
-  in 2010 versus ~1.3-1.5% in 2016/2019. The early levels almost certainly understate
-  rented-out, so the apparent increase over time is largely a measurement artifact
-  rather than a real change in behavior.
-- **Purchase** is genuinely measurable here (codes 4-5), unlike Ethiopia w1-2.
-- **Strata**: baseline `stratum` (w1-2) vs `group(region reside)` (w3-4).
-- **Year map** follows the IHPS rounds (2010/2013/2016/2019); the shocks do-file used
-  2017/2020 for w3/w4 — change `year` in `extract_MWI.do` if you prefer that labeling.
+- **IHS cross-sections, not the IHPS panel** — switched for representativeness; each
+  round is a fresh nationally-representative sample weighted by `hh_wgt`. No 2013 round
+  exists in the IHS series, so the Malawi series is 2010/2016/2019.
+- **Rental variables were derived here** — constructed from the acquisition question
+  (2010/2016 rented-in) and the rent-paid/received amount items (2019 rented-in, and
+  rented-out in all rounds).
+- **Land unit changes across rounds** — plot (2010) vs garden (2016/2019). Counts and
+  mean areas are not strictly unit-comparable across that break.
+- **2019 (IHS5) restructured the garden module**: the categorical "how acquired" and the
+  title questions were dropped, so `parcel_purchased` and `parcel_certificate` are
+  **missing** in 2019, and rented-in is a payment-based measure (cash rent paid / output
+  given as rent) rather than an acquisition code.
+- **Certificate is collected only in 2016** (the formal-title item); it is missing in
+  2010 (not asked) and 2019 (dropped). The 2016 rate is very low (~1%).
+- **Rented-in** = leasehold/rent/tenant (codes 6,7,8) in 2010/2016, payment-based in
+  2019; "borrowed for free" is excluded as non-market access. The weighted household
+  rented-in rate is stable at ≈10% across all three rounds.
+- **Rented-out is captured differently by round** (rent received in 2010 vs explicit
+  cash/output items in 2016/2019) and is low throughout (~0.1% in 2010, ~1% in
+  2016/2019); read levels with caution.
+- **Purchase** is measurable in 2010/2016 (~3-4% of households) but not 2019.
+- **Strata** = `group(region reside)`; PSU = `ea_id` where present.
 
 ---
 
@@ -1189,5 +1199,75 @@ as a formal title** (set to 0) so the series stays comparable with 2012; set
 - **Non-LSMS source.** RALS is fielded by IAPRI, not the World Bank; obtain it from IAPRI
   rather than the LSMS catalog. Validated by a Python replication of the extractor against
   the raw files (100% weight match; rates within expected ranges for all three waves).
+
+---
+
+## TANZANIA (ASC) — Agricultural Sample Census (NBS)  *(non-LSMS-ISA)*
+
+Source: the **Tanzania Agricultural Sample Census (ASC)**, smallholder component, fielded by
+the National Bureau of Statistics. Two rounds: **2009** and **2019**. Kept as a distinct series
+("Tanzania (ASC)") from the LSMS NPS panel ("Tanzania") so the two can be compared. The
+large-scale-farm component is intentionally excluded (a separate commercial frame).
+
+> **Unit note.** The ASC has **no cultivated-plot unit.** Module R041 records, per household,
+> the **area held under each land-tenure category**. We treat each household x category holding
+> (area > 0) as a "parcel" (a tenure-homogeneous holding). Only the **household-share** and
+> **area-share** statistics are meaningful; the ASC is **excluded from the plot-level table** and
+> the trend figures because these are land-category holdings, not plots.
+
+### 1. Survey & wave key
+
+| Wave | Year | File | HH id | Category var | Area var | Weight |
+|------|------|------|-------|--------------|----------|--------|
+| 2009 | 2009 | `R041.DTA` | region-district-ward-village-hhnumber | `Q041C1` | `Q041C2` (acres) | `Wt_adjust` |
+| 2019 | 2019 | `R041_LAND_OWNERSHIP.dta` | `HHID` | `q4_1_c0` | `q4_1_c2` (acres) | `finalweight_hh` |
+
+Rented-out is read from the parallel **land-USE** module: `R042.DTA` (2009) / `R051_LAND_USE.dta`
+(2019), same household ids and weights.
+
+### 2. Tenure indicators
+
+| Variable | Construction |
+|---|---|
+| `parcel_rentedin` | `category == 4` ("Rented from others"). Set `global asc_sharecrop 1` to also count `category == 6` (share-cropped in), matching the rent+sharecrop convention used elsewhere. |
+| `parcel_purchased` | `category == 3` ("Bought from others"). |
+| `parcel_certificate` | `category == 1` ("Leased / Certificate of ownership"). |
+| `parcel_rentedout` | From the **land-USE module** ("Area Rented to others", area>0): **2009** `R042` `Q042C1==10`; **2019** `R051_LAND_USE` `q5_1_c0==11`. These holdings are appended as extra parcels (rented-in/purchased/certificate set to `.`). |
+| `parcel_area_ha` | category acres x 0.404686; top-coded at 40 ha. |
+
+### 3. Value labels — land-tenure & land-use categories
+
+**Ownership** `Q041C1` (2009) / `q4_1_c0` (2019): `1` Leased / Certificate of ownership ·
+`2` Owned under customary law · **`3` Bought from others** · **`4` Rented from others** ·
+`5` Borrowed from others · `6` Share-cropped from others · `7` Other.
+
+**Land use** `Q042C1` (2009) / `q5_1_c0` (2019), rented-out code only: temporary/permanent
+crops, pasture, fallow, natural bush, planted trees, **"Area Rented to others"
+(2009 = `10`, 2019 = `11`)**, unusable, uncultivated. (The 2019 list inserts "Fish farming",
+shifting the rented-out code from 10 to 11.)
+
+### 4. Design variables & identifiers
+
+`weight` = household survey weight; `strataid` = `group(district)`; `ea_id` = "" (the ASC public
+file carries no PSU variable, so design-based variance uses strata only — and for the household and
+area shares reported here, point estimates are what we display). `hh_id` and `parcel_id` are
+concatenated keys; `n_fields` = 1 (each record is one category holding).
+
+### 5. Harmonization decisions & caveats (ASC)
+
+- **Household id must be full-precision.** The 2019 `HHID` is a 14-digit number stored with a
+  `%10.0g` display format. Stata `egen concat()` applies that format and would truncate it,
+  collapsing ~30,650 households into ~100 groups and massively inflating household-level shares.
+  The extractor forces each numeric id component to a full-precision string (`%17.0f`) before
+  concatenating. Validated household rented-in: **2009 ~10.8%, 2019 ~20.1%**; area share rented-in
+  **2009 ~4.5%, 2019 ~8.5%** (matching the source do-files).
+- **Rented-out comes from the land-USE module** (2009 `R042`, 2019 `R051_LAND_USE`), category
+  "Area Rented to others" with positive area; these holdings are appended as extra parcels.
+  Weighted household rented-out: **2009 ~2.8%, 2019 ~2.9%**. (R041 itself records only land held
+  *from others*, so rented-out is taken from the parallel land-use roster.) For the area share,
+  the rented-out area enters both numerator and the area denominator.
+- **Not plot-comparable.** ASC holdings are tenure categories, not cultivated plots; do not read
+  ASC against the LSMS plot table.
+- **Smallholder component only.**
 
 ---

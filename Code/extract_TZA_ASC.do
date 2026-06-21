@@ -29,10 +29,13 @@
 *           matching the rent+sharecrop convention used for the LSMS countries.
 *   parcel_purchased   = (category == 3)            "Bought from others"  [derived]
 *   parcel_certificate = (category == 1)            "Leased / Certificate" [derived]
-*   parcel_rentedout   = .   (NOT collected: every R041 category is "from others")
+*   parcel_rentedout   = land-USE module "Area Rented to others" with area>0
+*        (R041 records only land held FROM others; rented/lent OUT is in the land-use
+*         module R042 (2009, Q042C1==10) / R051_LAND_USE (2019, q5_1_c0==11)). These
+*         rented-out holdings are appended as extra parcels (rentedin/purchased/cert = .).
 *   parcel_area_ha     = category acres x 0.404686
-*   Validated weighted HOUSEHOLD renting-in: 2009 ~10.7% , 2019 ~20.1%
-*   (source do-files: 10.6% / ~20%).  AREA share rented-in: 2009 ~4.3%, 2019 ~7.8%.
+*   Validated weighted HOUSEHOLD renting-in: 2009 ~10.7% , 2019 ~20.1%; renting-OUT
+*   2009 ~2.8%, 2019 ~2.9%.  AREA share rented-in: 2009 ~4.3%, 2019 ~7.8%.
 *
 * NOTE: smallholder component only (the large-scale-farm component is a separate,
 *   much smaller commercial frame and is intentionally excluded for comparability
@@ -82,6 +85,10 @@ forvalues k = 1/2 {
         local wt Wt_adjust
         local idv region district ward village hhnumber
         local distv district
+        local lufile "R042.DTA"                 // land-USE module (rented-out)
+        local lucat  Q042C1
+        local luac   Q042C2
+        local rocode 10                         // "Area Rented to others" (2009 code)
     }
     else {
         local fold "ASC 19"
@@ -92,15 +99,29 @@ forvalues k = 1/2 {
         local wt finalweight_hh
         local idv HHID
         local distv district
+        local lufile "R051_LAND_USE.dta"        // land-USE module (rented-out)
+        local lucat  q5_1_c0
+        local luac   q5_1_c2
+        local rocode 11                         // "Area Rented to Others" (2019 code)
     }
 
     di as txt _n "=========  TANZANIA ASC (smallholder)  `year'  ========="
+
+    * ===== (A) OWNERSHIP module R041: rented-IN / purchased / certificate =====
     use "`ascbase'/`fold'/`file'", clear
     duplicates drop `idv' `lc', force
-
     gen double _ha = `ac' * 0.404686
     keep if _ha>0 & !missing(_ha)               // category holdings with positive area
 
+    * NOTE: egen concat() formats numeric variables with their *display* format.
+    * The ASC-2019 HHID is a 14-digit number stored with %10.0g, which concat would
+    * truncate to ~4 significant digits and collapse ~30,650 households into ~100
+    * groups (inflating household-level shares). Force every numeric id component to a
+    * full-precision string before concatenating.
+    foreach _v of local idv {
+        capture confirm numeric variable `_v'
+        if !_rc tostring `_v', replace format(%17.0f)
+    }
     egen hh_id     = concat(`idv'), punct("-")
     egen _cat      = concat(`lc')
     gen  parcel_id = hh_id + "-c" + _cat
@@ -109,7 +130,7 @@ forvalues k = 1/2 {
     if "${asc_sharecrop}"=="1" replace parcel_rentedin = 1 if `lc'==6
     gen byte parcel_purchased  = (`lc'==3)
     gen byte parcel_certificate= (`lc'==1)
-    gen byte parcel_rentedout  = .              // not collected in the ASC
+    gen byte parcel_rentedout  = 0             // measured from the land-USE module (B)
     gen double parcel_area_ha  = _ha
 
     gen double weight = `wt'
@@ -120,8 +141,38 @@ forvalues k = 1/2 {
     gen int  wave = `year'
     gen int  year = `year'
     gen byte season = 1
-
     _ascfinal
+    tempfile own`k'
+    save `own`k'', replace
+
+    * ===== (B) LAND-USE module: rented-OUT holdings (use category `rocode', area>0) =====
+    * R041 records only land held FROM others; land rented/lent OUT is in the land-USE
+    * module under "Area Rented to others" (2009 Q042C1==10 ; 2019 q5_1_c0==11).
+    use "`ascbase'/`fold'/`lufile'", clear
+    duplicates drop `idv' `lucat', force
+    gen double _ha = `luac' * 0.404686
+    keep if _ha>0 & !missing(_ha) & `lucat'==`rocode'
+    foreach _v of local idv {
+        capture confirm numeric variable `_v'
+        if !_rc tostring `_v', replace format(%17.0f)
+    }
+    egen hh_id     = concat(`idv'), punct("-")
+    gen  parcel_id = hh_id + "-rout"
+    gen byte parcel_rentedout  = 1
+    gen byte parcel_rentedin   = .             // undefined on a rented-out holding
+    gen byte parcel_purchased  = .
+    gen byte parcel_certificate= .
+    gen double parcel_area_ha  = _ha
+    gen double weight = `wt'
+    egen strataid = group(`distv')
+    gen ea_id = ""
+    gen int  n_fields = 1
+    gen str20 country = "Tanzania (ASC)"
+    gen int  wave = `year'
+    gen int  year = `year'
+    gen byte season = 1
+    _ascfinal
+    append using `own`k''
     tempfile asc`k'
     save `asc`k'', replace
 }
@@ -141,11 +192,11 @@ di as txt _n "================  TANZANIA ASC QC  ================"
 tab year
 * household-level: collapse to household, max over its holdings
 preserve
-    collapse (max) parcel_rentedin parcel_purchased parcel_certificate (firstnm) weight strataid, by(country year hh_id)
+    collapse (max) parcel_rentedin parcel_rentedout parcel_purchased parcel_certificate (firstnm) weight strataid, by(country year hh_id)
     svyset, clear
     svyset [pw=weight], strata(strataid) singleunit(centered)
-    di as txt "-- HOUSEHOLD share (expect rent-in 2009 ~10.7%, 2019 ~20.1%) --"
-    foreach v in parcel_rentedin parcel_purchased parcel_certificate {
+    di as txt "-- HOUSEHOLD share (expect rent-in 2009 ~10.7%, 2019 ~20.1%; rent-out ~2.8%/2.9%) --"
+    foreach v in parcel_rentedin parcel_rentedout parcel_purchased parcel_certificate {
         svy: mean `v', over(year)
     }
 restore

@@ -1,297 +1,211 @@
 /*********************************************************************************
-* extract_MWI.do  -- Malawi (IHPS waves 1-4)  -- PARCEL-LEVEL
+* extract_MWI.do  -- Malawi, IHS repeated CROSS-SECTIONS  -- PARCEL-LEVEL
 * Part of ssa-land-rental.  Run via MASTER.do (needs globals set).
-* Paths use forward slashes (work in Stata on Mac/Windows/Linux).
 *--------------------------------------------------------------------------------
-* SOURCE: the four-wave IHPS *panel* release MWI_2010-2019_IHPS_v06, extracted flat
-* (one folder, files year-suffixed _10/_13/_16/_19). All four waves point at:
-*   ${Input}/Malawi/IHPS_panel_v6/MWI_2010-2019_IHPS_v06_M_Stata
-* (Edit `mwidir` below if your extraction path differs.)
+* SOURCE: the Integrated Household Survey (IHS) nationally-representative
+* cross-sections (NOT the IHPS panel). Three rounds with land data:
+*     IHS3 2010/11   (folder "IHS3 2010", Full_Sample)   plot-level tenure (ag_mod_d)
+*     IHS4 2016/17   (folder "IHS4 2016")                 garden-level tenure (ag_mod_b2)
+*     IHS5 2019/20   (folder "IHS5 2019")                 garden-level tenure (ag_mod_b2)
+* There is no IHS round in 2013, so the Malawi series is 2010/2016/2019. These are
+* independent cross-sections (no panel attrition), each with its own cross-sectional
+* household weight (hh_wgt); household id = case_id.
 *
-* UNIT = PARCEL, but the survey's land unit CHANGED across waves:
-*   waves 1-2 (2010/2013): tenure asked at the PLOT level (module ag_mod_d, id ag_d00);
-*                          there is no "garden" grouping. parcel := plot.
-*   waves 3-4 (2016/2019): tenure asked at the GARDEN level (module ag_mod_b2, gardenid);
-*                          plots nest within gardens. parcel := garden; area summed
-*                          from the garden's plots.
-* Treat cross-wave levels of area / counts with this structural change in mind.
-*
-* OUTPUT (per parcel): parcel_rentedin parcel_rentedout parcel_certificate
-*   parcel_purchased parcel_area_ha n_fields + country wave year weight
-*   strataid ea_id hh_id parcel_id
+* UNIT = PARCEL: the cultivated PLOT in 2010 (ag_mod_d), the GARDEN in 2016/2019
+* (ag_mod_b2, with plot areas in ag_mod_c summed to the garden). Tenure is mapped
+* onto these units; area is GPS where measured, else self-reported (acres -> ha).
 *
 * CODES (verified against the raw value labels):
-*   Acquisition ag_d03 (w1-2) / ag_b203 (w3) "How acquired?":
-*     1 granted | 2 inherited | 3 bride price | 4 purchased(w/title) |
-*     5 purchased(no title; w1-2 only) | 6 leasehold | 7 rent short-term |
-*     8 farming as a tenant | 9 borrowed free | 10 moved in | 11 other |
-*     (w3+) 12 allocated by family | 13 gift from non-HH.
-*   -> rented-in   = acq in {6,7,8}        (leasehold / rent / tenant)
-*   -> purchased   = acq in {4,5}
-*   Rented-OUT = household received rent for the plot/garden
-*     w1-2: ag_d19a-d (cash/in-kind received / still to receive)
-*     w3  : ag_b219a-d
-*     w4  : explicit flag ag_brentedout==1 ("received output as rent"), or ag_b219a-d
-*   Certificate: w2 ag_d03_1 (title y/n); w3 ag_b204_1 (codes 1-3 = yes);
-*                w1 not asked (.); w4 not asked (.)
+*  2010 (ag_d03, "how acquired"): 1 granted | 2 inherited | 3 bride price |
+*       4 purchased w/ title | 5 purchased no title | 6 leasehold | 7 rent short-term |
+*       8 farming as tenant | 9 borrowed free | 10 moved in w/o permission
+*     -> rented_in = inlist(6,7,8); purchased = inlist(4,5); rent-out via ag_d19a-d (>0)
+*       certificate not collected in 2010 -> .
+*  2016 (ag_b203, same acquisition scheme; ag_b204_1 title doc 1/2/3 = has title):
+*     -> rented_in = inlist(ag_b203,6,7,8); purchased = (ag_b203==4);
+*        certificate = inlist(ag_b204_1,1,2,3); rent-out via ag_b217a (>0, cash received)
+*  2019 (RESTRUCTURED - no acquisition-method or title question on the garden module):
+*     -> rented_in  = (ag_b209a>0) | (ag_b208b>0)   rent PAID in cash / in output (sharecrop)
+*        rented_out = (ag_b217a>0) | !mi(ag_b216a)   rent RECEIVED in cash / in output
+*        purchased = . ; certificate = .   (not collected this round)
 *
-* WAVE 4 (2019) is structurally different: the categorical "how acquired" question
-* was DROPPED (only "from whom" / "year" remain). Therefore:
-*   - parcel_purchased   = . (missing; not measurable)
-*   - parcel_certificate = . (no title/document question)
-*   - parcel_rentedin    = ag_brentedin==1 (gave output as rent) OR paid the owner
-*                          (ag_b211a/b > 0)  -- payment-based proxy.
-*
-* DECISIONS / CAVEATS to confirm:
-*   - "rented-in" excludes "borrowed for free" (code 9) - non-market access.
-*   - "rented-out" relies on positive rent received (no clean yes/no gate in w1-3).
-*   - Plot area = GPS where measured, else self-reported (deterministic; the
-*     published pipeline model-imputes missing GPS area, which we drop for
-*     cross-language reproducibility). Tenure variables are unaffected.
-*   - strataid: waves 1-2 use the baseline `stratum` (region x urban/rural);
-*     waves 3-4 build group(region reside) (their cover has no `stratum`).
-*   - Year map 2010/2013/2016/2019 follows the IHPS rounds; the shocks do-file
-*     labeled w3/w4 as 2017/2020 - adjust `year` below if you prefer that.
+* Single agricultural season -> season = 1.
 *********************************************************************************/
-
-local mwidir "${Input}/Malawi/IHPS_panel_v6/MWI_2010-2019_IHPS_v06_M_Stata"
 
 capture program drop _mwifinal
 program define _mwifinal
     label var country          "Country"
-    label var wave             "Survey wave"
+    label var wave             "IHS round"
     label var year             "Survey year"
-    label var weight           "Household survey weight"
+    label var season           "Cropping season (single = 1)"
+    label var weight           "Household cross-sectional weight (hh_wgt)"
     label var parcel_rentedin    "Parcel rented/sharecropped IN (0/1)"
-    label var parcel_rentedout   "Parcel rented OUT (0/1)"
-    label var parcel_certificate "Parcel has certificate/title (0/1; . if not asked)"
+    label var parcel_rentedout   "Parcel rented/sharecropped OUT (0/1)"
+    label var parcel_certificate "Parcel has a title/document (0/1; . if not asked)"
     label var parcel_purchased   "Parcel acquired through purchase (0/1; . if not asked)"
-    label var parcel_area_ha     "Cultivated parcel area, ha (field GPS, else self-reported)"
-    label var n_fields           "Number of cultivated fields on parcel"
+    label var parcel_area_ha     "Parcel area, ha (GPS, else self-reported)"
+    label var n_fields           "Number of plots aggregated to the parcel"
     label var ea_id              "Enumeration area (survey PSU)"
     label var strataid           "Survey design stratum"
+    capture confirm string variable parcel_id
+    if _rc tostring parcel_id, replace force
+    capture confirm string variable hh_id
+    if _rc tostring hh_id, replace force
     capture confirm variable season
     if _rc gen byte season = 1
-    label var season "Cropping season (1=single-season country / Uganda s1; 2=Uganda s2)"
     keep country wave year season weight strataid ea_id hh_id parcel_id parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased parcel_area_ha n_fields
     order country wave year season weight strataid ea_id hh_id parcel_id ///
           parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased ///
           parcel_area_ha n_fields
 end
 
-forvalues w = 1/4 {
+local mwiroot "${Input}/Malawi"
 
-    if `w'==1 {
-        local hhid case_id
+forvalues k = 1/3 {
+
+    if `k'==1 {              // IHS3 2010 (plot-level, pattern D)
+        local wv 1
         local year 2010
-        local wtvar hh_wgt
-        local cover hh_mod_a_filt_10.dta
-        local distvar hh_a01
-        local cfile ag_mod_c_10.dta
-        local dfile ag_mod_d_10.dta
-        local peren ""
         local pattern D
+        local agdir "`mwiroot'/IHS3 2010/MWI_2010_IHS-III_v01_M_STATA8/Full_Sample/Agriculture"
+        local hhdir "`mwiroot'/IHS3 2010/MWI_2010_IHS-III_v01_M_STATA8/Full_Sample/Household"
     }
-    else if `w'==2 {
-        local hhid y2_hhid
-        local year 2013
-        local wtvar panelweight
-        local cover hh_mod_a_filt_13.dta
-        local distvar district
-        local cfile ag_mod_c_13.dta
-        local dfile ag_mod_d_13.dta
-        local peren ag_mod_o2_13.dta
-        local pattern D
-    }
-    else if `w'==3 {
-        local hhid y3_hhid
+    else if `k'==2 {         // IHS4 2016 (garden-level, pattern B)
+        local wv 2
         local year 2016
-        local wtvar panelweight_2016
-        local cover hh_mod_a_filt_16.dta
-        local distvar district
-        local cfile ag_mod_c_16.dta
-        local bfile ag_mod_b2_16.dta
-        local peren ag_mod_o2_16.dta
         local pattern B
+        local agdir "`mwiroot'/IHS4 2016/MWI_2016_IHS-IV_v04_M_STATA14/agriculture"
+        local hhdir "`mwiroot'/IHS4 2016/MWI_2016_IHS-IV_v04_M_STATA14/household"
     }
-    else if `w'==4 {
-        local hhid y4_hhid
+    else if `k'==3 {         // IHS5 2019 (garden-level, pattern B, restructured)
+        local wv 3
         local year 2019
-        local wtvar panelweight_2019
-        local cover hh_mod_a_filt_19.dta
-        local distvar district
-        local cfile ag_mod_c_19.dta
-        local bfile ag_mod_b2_19.dta
-        local peren ag_mod_o2_19.dta
         local pattern B
+        local agdir "`mwiroot'/IHS5 2019/MWI_2019_IHS-V_v06_M_Stata"
+        local hhdir "`mwiroot'/IHS5 2019/MWI_2019_IHS-V_v06_M_Stata"
     }
 
-    di as txt _n "=================  MALAWI  wave `w'  (`year', pattern `pattern')  ================="
+    di as txt _n "=================  MALAWI  IHS  `year'  (pattern `pattern')  ================="
 
     *==========================================================================
-    * (0) HOUSEHOLD ATTRIBUTES from cover: weight, ea_id, strataid, district
+    * (0) HOUSEHOLD ATTRIBUTES from cover: weight, ea_id, strataid
     *==========================================================================
-    use "`mwidir'/`cover'", clear
+    use "`hhdir'/hh_mod_a_filt.dta", clear
+    gen double weight = hh_wgt
     capture confirm variable ea_id
     if _rc gen ea_id = ""
-    rename `wtvar' weight
-    if inlist(`w',1,2) {
-        capture confirm variable stratum
-        if !_rc  rename stratum strataid
-        else     egen strataid = group(region reside)
+    capture confirm variable region
+    if !_rc {
+        capture confirm variable reside
+        if !_rc egen strataid = group(region reside)
+        else    egen strataid = group(region)
     }
-    else {
-        egen strataid = group(region reside)
-    }
-    keep `hhid' weight ea_id strataid
+    else gen strataid = .
+    keep case_id weight ea_id strataid
     duplicates drop
-    bys `hhid' (weight): keep if _n==1     // one row per household
+    bys case_id (weight): keep if _n==1
     tempfile hhattr
     save `hhattr', replace
 
     *==========================================================================
-    * (A) AREA  -- field level, GPS else self-reported
+    * (A) AREA  (ag_mod_c, plot-level; acres -> ha; GPS else self-reported)
     *==========================================================================
-    use "`mwidir'/`cfile'", clear
-
-    if "`pattern'"=="D" {
-        * ---- waves 1-2: plot-level area (module C); unit id = plot number ----
-        if `w'==2 {
-            rename ag_c00 ag_o00
-            merge m:1 `hhid' ag_o00 using "`mwidir'/`peren'", gen(_pmerge)
-            rename ag_o00 unit
-            * perennial self-reported/GPS come in as ag_o04*
-        }
-        else rename ag_c00 unit
-
-        gen area_self_reported = ag_c04a * 0.404686            // acres -> ha (default)
-        replace area_self_reported = ag_c04a          if ag_c04b==2   // already ha
-        replace area_self_reported = ag_c04a * 0.0001 if ag_c04b==3   // m^2 -> ha
-        gen plot_area_GPS = ag_c04c * 0.404686                  // GPS acres -> ha
-        if `w'==2 {
-            replace area_self_reported = ag_o04a * 0.404686 if ag_o04b==1 & _pmerge==2
-            replace area_self_reported = ag_o04a            if ag_o04b==2 & _pmerge==2
-            replace area_self_reported = ag_o04a * 0.0001   if ag_o04b==3 & _pmerge==2
-            capture replace plot_area_GPS = ag_o04c if _pmerge==2
-        }
-    }
-    else {
-        * ---- waves 3-4: plot-in-garden area (module C + perennial) ----
-        merge m:1 `hhid' gardenid plotid using "`mwidir'/`peren'", gen(_pmerge)
-        gen area_self_reported = ag_c04a * 0.404686
-        replace area_self_reported = ag_c04a          if ag_c04b==2
-        replace area_self_reported = ag_c04a * 0.0001 if ag_c04b==3
-        capture replace area_self_reported = ag_c04a * 0.0001 if ag_c04b_oth=="METERS"
-        gen plot_area_GPS = ag_c04c * 0.404686
-        replace area_self_reported = ag_o04a * 0.404686 if ag_o04b==1 & _pmerge==2
-        replace area_self_reported = ag_o04a            if ag_o04b==2 & _pmerge==2
-        replace area_self_reported = ag_o04a * 0.0001   if ag_o04b==3 & _pmerge==2
-        capture replace plot_area_GPS = ag_o04c if _pmerge==2
-    }
+    use "`agdir'/ag_mod_c.dta", clear
+    gen double area_self_reported = ag_c04a * 0.404686
+    capture replace area_self_reported = ag_c04a          if ag_c04b==2   // already ha
+    capture replace area_self_reported = ag_c04a * 0.0001 if ag_c04b==3   // m^2 -> ha
+    gen double plot_area_GPS = ag_c04c * 0.404686
     replace plot_area_GPS = . if plot_area_GPS<=0
-
-    * deterministic plot area: GPS where measured, else self-reported
-    * (no model-based imputation; fully reproducible across Stata/R/Python)
-    gen plot_area_ha = plot_area_GPS
+    gen double plot_area_ha = plot_area_GPS
     replace plot_area_ha = area_self_reported if missing(plot_area_ha)
 
-    * aggregate to the PARCEL unit (plot for w1-2; garden for w3-4)
     if "`pattern'"=="D" {
-        collapse (sum) parcel_area_ha = plot_area_ha (count) n_fields = plot_area_ha, ///
-            by(`hhid' unit)
+        rename ag_c00 unit
+        collapse (sum) parcel_area_ha = plot_area_ha (count) n_fields = plot_area_ha, by(case_id unit)
     }
     else {
-        collapse (sum) parcel_area_ha = plot_area_ha (count) n_fields = plot_area_ha, ///
-            by(`hhid' gardenid)
+        collapse (sum) parcel_area_ha = plot_area_ha (count) n_fields = plot_area_ha, by(case_id gardenid)
     }
     tempfile area
     save `area', replace
 
     *==========================================================================
-    * (B) TENURE  + base = every tenure record (plot for w1-2; garden for w3-4)
+    * (B) TENURE  (base = every tenure record)
     *==========================================================================
     if "`pattern'"=="D" {
-        use "`mwidir'/`dfile'", clear
+        use "`agdir'/ag_mod_d.dta", clear
         rename ag_d00 unit
         gen byte parcel_rentedin  = inlist(ag_d03,6,7,8)
         gen byte parcel_purchased = inlist(ag_d03,4,5)
         egen _rout = rowmax(ag_d19a ag_d19b ag_d19c ag_d19d)
         gen byte parcel_rentedout = (_rout>0) & !mi(_rout)
-        if `w'==1 gen byte parcel_certificate = .
-        if `w'==2 gen byte parcel_certificate = (ag_d03_1==1) if !mi(ag_d03_1)
-        collapse (max) parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased, ///
-            by(`hhid' unit)
-        merge 1:1 `hhid' unit using `area', keep(master match) nogen
-        egen parcel_id = concat(`hhid' unit), punct("-")
+        gen byte parcel_certificate = .                 // not collected in 2010
+        collapse (max) parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased, by(case_id unit)
+        merge 1:1 case_id unit using `area', keep(master match) nogen
+        egen parcel_id = concat(case_id unit), punct("-")
     }
     else {
-        use "`mwidir'/`bfile'", clear
-        if `w'==3 {
+        use "`agdir'/ag_mod_b2.dta", clear
+        if `wv'==2 {                                     // IHS4 2016 (acquisition + title)
             gen byte parcel_rentedin  = inlist(ag_b203,6,7,8)
             gen byte parcel_purchased = (ag_b203==4)
             gen byte parcel_certificate = inlist(ag_b204_1,1,2,3) if !mi(ag_b204_1)
-            egen _rout = rowmax(ag_b219a ag_b219b ag_b219c ag_b219d)
-            gen byte parcel_rentedout = (_rout>0) & !mi(_rout)
+            gen byte parcel_rentedout = (ag_b217a>0) & !mi(ag_b217a)
         }
-        else {   /* wave 4: no acquisition-method question */
-            egen _paid = rowmax(ag_b211a ag_b211b)
-            gen byte parcel_rentedin  = (ag_brentedin==1) | (_paid>0 & !mi(_paid))
-            egen _rout = rowmax(ag_b219a ag_b219b ag_b219c ag_b219d)
-            gen byte parcel_rentedout = (ag_brentedout==1) | (_rout>0 & !mi(_rout))
+        else {                                           // IHS5 2019 (restructured)
+            capture confirm variable ag_b208b
+            if _rc gen ag_b208b = .
+            gen byte parcel_rentedin  = ((ag_b209a>0) & !mi(ag_b209a)) | ((ag_b208b>0) & !mi(ag_b208b))
+            gen byte parcel_rentedout = ((ag_b217a>0) & !mi(ag_b217a)) | !mi(ag_b216a)
             gen byte parcel_purchased   = .
             gen byte parcel_certificate = .
         }
-        collapse (max) parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased, ///
-            by(`hhid' gardenid)
-        merge 1:1 `hhid' gardenid using `area', keep(master match) nogen
-        egen parcel_id = concat(`hhid' gardenid), punct("-")
+        collapse (max) parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased, by(case_id gardenid)
+        merge 1:1 case_id gardenid using `area', keep(master match) nogen
+        egen parcel_id = concat(case_id gardenid), punct("-")
     }
     replace n_fields = 0 if missing(n_fields)
 
     *==========================================================================
-    * (C) weights / design / identifiers
+    * (C) weights / identifiers
     *==========================================================================
-    merge m:1 `hhid' using `hhattr', keep(master match) keepusing(weight ea_id strataid) nogen
-
+    merge m:1 case_id using `hhattr', keep(master match) keepusing(weight ea_id strataid) nogen
     gen str20 country = "Malawi"
-    gen int  wave  = `w'
+    gen int  wave  = `wv'
     gen int  year  = `year'
-    rename `hhid' hh_id
-    capture confirm string variable hh_id
-    if _rc tostring hh_id, replace force
+    gen byte season = 1
+    rename case_id hh_id
 
     _mwifinal
-    tempfile mwi`w'
-    save `mwi`w'', replace
+    tempfile mwi`k'
+    save `mwi`k'', replace
 }
 
 *================================================================================
-* APPEND waves 1-4
+* APPEND rounds
 *================================================================================
 use `mwi1', clear
-forvalues w = 2/4 {
-    append using `mwi`w''
-}
-label data "Malawi IHPS w1-4: PARCEL-level rental/tenure descriptives (built `c(current_date)')"
+append using `mwi2'
+append using `mwi3'
+label data "Malawi IHS cross-sections (2010/2016/2019): parcel-level rental/tenure (built `c(current_date)')"
 compress
-* top-code implausible plot areas (data-entry outliers); threshold in MASTER
 if "${area_max}"=="" global area_max 40
 replace parcel_area_ha = . if parcel_area_ha > ${area_max} & !missing(parcel_area_ha)
 save "${Final}/rental_MWI.dta", replace
 
 *================================================================================
-* QC SUMMARY
+* QC  (expect household renting-in ~10% all rounds)
 *================================================================================
-di as txt _n "================  MALAWI QC (parcel level)  ================"
-tab country wave
+di as txt _n "================  MALAWI IHS QC  ================"
+tab year
 egen _psu   = group(wave ea_id)
 egen _strat = group(wave strataid)
 svyset _psu [pw=weight], strata(_strat) singleunit(centered)
-di as txt "-- design-weighted participation rates by year (one var per call) --"
 foreach v in parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased {
-    svy: mean `v', over(year)
+    di as txt _n ">> `v'"
+    capture svy: mean `v', over(year)
+    if _rc di as error "   (not estimable)"
 }
-di as txt _n "-- cultivated parcel area (ha) by wave --"
-table wave, stat(mean parcel_area_ha) stat(p50 parcel_area_ha) stat(count parcel_area_ha) nformat(%7.3f)
-di as txt _n "-- missingness --"
-capture mdesc parcel_rentedin parcel_rentedout parcel_certificate parcel_purchased parcel_area_ha weight
+table year, stat(mean parcel_area_ha) stat(p50 parcel_area_ha) stat(count parcel_area_ha) nformat(%7.3f)
+
+exit

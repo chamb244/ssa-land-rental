@@ -54,7 +54,7 @@ country-years from the *other* variables too.
 | Country | Variable | Missing year(s) | Why |
 |---------|--------------------|-----------------|--------------------------------------------------|
 | Ethiopia | `parcel_purchased` | 2012, 2014 | ESS11/ESS13 acquisition question had **no "purchased" category**; "Purchased" (code 7) is first offered in wave 3 (2016). |
-| Malawi | `parcel_certificate` | 2010 | IHPS 2010 has **no title/ownership-document question** for the plot. |
+| Malawi | `parcel_certificate` | 2010 | IHS3 (2010) has **no title/ownership-document question** for the plot. |
 | Malawi | `parcel_certificate` | 2019 | The 2019 round **dropped** the title/document question. |
 | Malawi | `parcel_purchased` | 2019 | The 2019 round **dropped the categorical "how acquired" question** entirely (only "from whom" and "year acquired" remain), so acquisition mode - including purchase - is not identifiable. |
 | Mali | `parcel_rentedout` | 2014, 2017 | EACI surveys only the parcels a household **operates**, so land rented/lent **out** is out of frame (no rented-out code in 2014; the 2017 "Louee/Pretee" code flags only 5 of ~24,250 parcels). |
@@ -257,76 +257,78 @@ area and `n_fields==0`.
 
 ---
 
-## MALAWI — Integrated Household Panel Survey (IHPS)
+## MALAWI — Integrated Household Survey (IHS) cross-sections
 
-Source: the four-wave IHPS **panel** release `MWI_2010-2019_IHPS_v06`, extracted
-flat to `Malawi/IHPS_panel_v6/MWI_2010-2019_IHPS_v06_M_Stata/` (all waves point at
-this one folder; filenames carry the year suffix).
+Source: the nationally-representative **IHS repeated cross-sections** (not the IHPS
+panel), three rounds with land data: **IHS3 2010/11** (`IHS3 2010/.../Full_Sample`),
+**IHS4 2016/17** (`IHS4 2016/...`), and **IHS5 2019/20** (`IHS5 2019/...`). There is
+no IHS round in 2013, so the Malawi series is **2010 / 2016 / 2019**. Each round is an
+independent cross-section (no panel attrition) with its own cross-sectional weight
+`hh_wgt`; household id = `case_id` throughout.
 
-> **Unit note.** The survey's land unit changed: in 2010/2013 tenure is asked at the
-> **plot** level (no garden grouping), so `parcel` := plot; in 2016/2019 tenure is
-> asked at the **garden** level and `parcel` := garden (area summed from its plots).
+> **Why the switch from IHPS.** The earlier build used the long-term IHPS panel
+> subsample (~102 EAs), which is small and subject to cumulative attrition. The IHS
+> cross-sections are full nationally-representative samples (≈9,600-10,400 households
+> per round) and give the most representative population figures.
+
+> **Unit note.** The land unit differs by round: in **2010** tenure is asked at the
+> **plot** level (`ag_mod_d`), so `parcel` := plot; in **2016/2019** tenure is asked at
+> the **garden** level (`ag_mod_b2`) and `parcel` := garden (area summed from its plots).
 
 ### 1. Survey & wave key
 
 | Wave | Round | Year | HH id | Tenure module (unit) | Area module |
 |------|--------|--------|----------------|--------------------------|----------------------------|
-| 1 | IHS3/IHPS | 2010 | `case_id` | `ag_mod_d_10` (plot) | `ag_mod_c_10` |
-| 2 | IHPS | 2013 | `y2_hhid` | `ag_mod_d_13` (plot) | `ag_mod_c_13` + `ag_mod_o2_13` |
-| 3 | IHPS | 2016 | `y3_hhid` | `ag_mod_b2_16` (garden) | `ag_mod_c_16` + `ag_mod_o2_16` |
-| 4 | IHPS | 2019/20 | `y4_hhid` | `ag_mod_b2_19` (garden) | `ag_mod_c_19` + `ag_mod_o2_19` |
+| 1 | IHS3 (Full_Sample) | 2010 | `case_id` | `ag_mod_d` (plot) | `ag_mod_c` |
+| 2 | IHS4 | 2016 | `case_id` | `ag_mod_b2` (garden) | `ag_mod_c` + `ag_mod_o2` |
+| 3 | IHS5 | 2019 | `case_id` | `ag_mod_b2` (garden, restructured) | `ag_mod_c` + `ag_mod_o2` |
 
-Household cover (weight, `ea_id`, strata): `hh_mod_a_filt_<yy>.dta`.
+Household cover (weight, `ea_id`, strata): `hh_mod_a_filt.dta`.
 
 ### 2. Tenure indicators
 
 | Variable | Wave | Source file | Source var | Construction |
 |------------------|------|----------------|--------------|--------------------------------|
-| `parcel_rentedin` | 1 | `ag_mod_d_10` | `ag_d03` | `inlist(ag_d03,6,7,8)` — leasehold/rent/tenant |
-| `parcel_rentedin` | 2 | `ag_mod_d_13` | `ag_d03` | `inlist(ag_d03,6,7,8)` |
-| `parcel_rentedin` | 3 | `ag_mod_b2_16` | `ag_b203` | `inlist(ag_b203,6,7,8)` |
-| `parcel_rentedin` | 4 | `ag_mod_b2_19` | `ag_brentedin`, `ag_b211a/b` | `ag_brentedin==1` OR paid owner `ag_b211a/b>0` (no acq. question in 2019) |
-| `parcel_rentedout` | 1-2 | `ag_mod_d_<yy>` | `ag_d19a-d` | rent received >0 (cash/in-kind, already/still) |
-| `parcel_rentedout` | 3 | `ag_mod_b2_16` | `ag_b219a-d` | rent received >0 |
-| `parcel_rentedout` | 4 | `ag_mod_b2_19` | `ag_brentedout`, `ag_b219a-d` | `ag_brentedout==1` OR `ag_b219a-d>0` |
-| `parcel_certificate` | 1 | — | — | **missing** — not asked |
-| `parcel_certificate` | 2 | `ag_mod_d_13` | `ag_d03_1` | `ag_d03_1==1` (has title) |
-| `parcel_certificate` | 3 | `ag_mod_b2_16` | `ag_b204_1` | `inlist(ag_b204_1,1,2,3)` (lease offer / title deed / lease cert) |
-| `parcel_certificate` | 4 | — | — | **missing** — not asked |
-| `parcel_purchased` | 1-2 | `ag_mod_d_<yy>` | `ag_d03` | `inlist(ag_d03,4,5)` — purchased w/ or w/o title |
-| `parcel_purchased` | 3 | `ag_mod_b2_16` | `ag_b203` | `ag_b203==4` — purchased |
-| `parcel_purchased` | 4 | — | — | **missing** — acquisition question dropped in 2019 |
+| `parcel_rentedin` | 1 (2010) | `ag_mod_d` | `ag_d03` | `inlist(ag_d03,6,7,8)` — leasehold/rent/tenant |
+| `parcel_rentedin` | 2 (2016) | `ag_mod_b2` | `ag_b203` | `inlist(ag_b203,6,7,8)` |
+| `parcel_rentedin` | 3 (2019) | `ag_mod_b2` | `ag_b209a`, `ag_b208b` | rent **paid** in cash `ag_b209a>0` OR output given as rent `ag_b208b>0` (no acquisition question in 2019) |
+| `parcel_rentedout` | 1 (2010) | `ag_mod_d` | `ag_d19a-d` | rent received >0 (cash/in-kind) |
+| `parcel_rentedout` | 2 (2016) | `ag_mod_b2` | `ag_b217a` | cash received from renting out >0 |
+| `parcel_rentedout` | 3 (2019) | `ag_mod_b2` | `ag_b217a`, `ag_b216a` | cash received `ag_b217a>0` OR output received as rent `!mi(ag_b216a)` |
+| `parcel_certificate` | 1 (2010) | — | — | **missing** — not asked |
+| `parcel_certificate` | 2 (2016) | `ag_mod_b2` | `ag_b204_1` | `inlist(ag_b204_1,1,2,3)` (lease offer / title deed / lease cert) |
+| `parcel_certificate` | 3 (2019) | — | — | **missing** — title question dropped |
+| `parcel_purchased` | 1 (2010) | `ag_mod_d` | `ag_d03` | `inlist(ag_d03,4,5)` — purchased w/ or w/o title |
+| `parcel_purchased` | 2 (2016) | `ag_mod_b2` | `ag_b203` | `ag_b203==4` — purchased |
+| `parcel_purchased` | 3 (2019) | — | — | **missing** — acquisition question dropped |
 
 ### 3. Parcel area (`parcel_area_ha`)
 
-Field roster `ag_mod_c_<yy>` (+ perennial `ag_mod_o2_<yy>` for w2-4). Field area =
+Plot roster `ag_mod_c` (+ perennial `ag_mod_o2` for 2016/2019). Plot area =
 GPS (`ag_c04c`) where measured, else self-reported (`ag_c04a`, unit `ag_c04b`:
 1=acre, 2=ha, 3=m²); acres→ha via ×0.404686. No model-based imputation (the published
 pipeline pmm-imputes missing GPS; we use the deterministic GPS-else-self-reported
-measure for cross-language reproducibility). Summed to the parcel: garden in w3-4;
-in w1-2 each plot is its own parcel. `n_fields` = cultivated fields per parcel.
+measure for cross-language reproducibility). Summed to the parcel: garden in 2016/2019;
+in 2010 each plot is its own parcel. `n_fields` = plots aggregated per parcel. Mean
+parcel area is ≈0.40-0.45 ha across rounds.
 
 ### 4. Design variables & identifiers
 
 | Variable | Wave | Source file | Source var(s) | Construction |
 |----------------|------|----------------|----------------|------------------------------|
-| `weight` | 1 | `hh_mod_a_filt_10` | `hh_wgt` | baseline sampling weight |
-| `weight` | 2 | `hh_mod_a_filt_13` | `panelweight` | panel weight 2013 |
-| `weight` | 3 | `hh_mod_a_filt_16` | `panelweight_2016` | panel weight 2016 |
-| `weight` | 4 | `hh_mod_a_filt_19` | `panelweight_2019` | panel weight 2019 |
-| `ea_id` | 1-4 | `hh_mod_a_filt_<yy>` | `ea_id` | enumeration area (PSU) |
-| `strataid` | 1-2 | `hh_mod_a_filt_<yy>` | `stratum` | baseline stratum (region × urban/rural) |
-| `strataid` | 3-4 | `hh_mod_a_filt_<yy>` | `region`, `reside` | `group(region reside)` (no `stratum` in cover) |
-| `parcel_id` | 1-2 | tenure module | `hh_id` + plot no. (`ag_d00`) | concatenated |
-| `parcel_id` | 3-4 | tenure module | `hh_id` + `gardenid` | concatenated |
-| `year` | 1-4 | — | — | 2010 / 2013 / 2016 / 2019 |
+| `weight` | 1-3 | `hh_mod_a_filt` | `hh_wgt` | cross-sectional household weight |
+| `ea_id` | 1-3 | `hh_mod_a_filt` | `ea_id` | enumeration area (PSU), where present |
+| `strataid` | 1-3 | `hh_mod_a_filt` | `region`, `reside` | `group(region reside)` (region × urban/rural) |
+| `parcel_id` | 1 | tenure module | `case_id` + plot no. (`ag_c00`/`ag_d00`) | concatenated |
+| `parcel_id` | 2-3 | tenure module | `case_id` + `gardenid` | concatenated |
+| `year` | 1-3 | — | — | 2010 / 2016 / 2019 |
 
 ### 5. Value labels of key source variables (verified)
 
-**Acquisition** — `ag_d03` (w1-2) / `ag_b203` (w3): *"How did your household acquire this [plot/garden]?"*
+**Acquisition** — `ag_d03` (2010) / `ag_b203` (2016): *"How did your household acquire this [plot/garden]?"*
 
-| Code | w1-2 (ag_d03) | w3 (ag_b203) |
-|------|---------------|--------------|
+| Code | 2010 (ag_d03) | 2016 (ag_b203) |
+|------|---------------|----------------|
 | 1 | Granted by local leaders | Granted by local leaders |
 | 2 | Inherited | Inherited |
 | 3 | Bride price | Bride price |
@@ -337,41 +339,43 @@ in w1-2 each plot is its own parcel. `n_fields` = cultivated fields per parcel.
 | 8 | Farming as a tenant | Farming as a tenant |
 | 9 | Borrowed for free | Borrowed for free |
 | 10 | Moved in w/o permission | Moved in w/o permission |
-| 11 | Other | Other |
-| 12 / 13 | — | Allocated by family / Gift from non-HH |
+| 96 | Other | Other |
 
-*(Wave 4 has no acquisition-method question — only "from whom" and "year acquired".)*
+*(2019 has no acquisition-method question; rent is identified from the rent-paid /
+rent-received amount items instead.)*
 
-**Rented out / in (w4 flags)** — `ag_brentedin` ("gave output as rent" → rented in),
-`ag_brentedout` ("received output as rent" → rented out): `1 = Yes`, `2 = No`.
-Rent amounts `ag_d19a-d` / `ag_b219a-d` = cash/in-kind received (already / still due).
+**Rent (2019, restructured module)** — `ag_b209a` cash paid for use of the garden
+(>0 → rented in), `ag_b208b` output given as rent (>0 → sharecropped in), `ag_b217a`
+cash received from renting out (>0 → rented out), `ag_b216a` output received as rent
+(non-missing → rented out). Rent amounts `ag_d19a-d` (2010) = cash/in-kind received.
 
-**Certificate** — `ag_d03_1` (w2, has title): `1 = Yes`, `2 = No`.
-`ag_b204_1` (w3): `1` offer of lease · `2` title deed · `3` certificate of lease · `4` no · `96` other.
+**Certificate** — `ag_b204_1` (2016): `1` offer of lease · `2` title deed ·
+`3` certificate of lease · `4` no · `96` other. Not collected in 2010 or 2019.
 
 ### 6. Harmonization decisions & caveats (Malawi)
 
-- **Rental variables were derived here, not inherited** — the upstream pipeline never
-  built `plot_rentedin/out` for Malawi. They are constructed from the acquisition
-  question (rented-in) and the rent-received variables (rented-out).
-- **Land unit changes across waves** — plot (2010/2013) vs garden (2016/2019). Counts
-  and mean areas are not strictly unit-comparable across that break.
-- **Wave 4 (2019)**: the categorical acquisition question was dropped, so
-  `parcel_purchased` and `parcel_certificate` are **missing** in 2019, and rented-in
-  uses a payment-based proxy (`ag_brentedin` / paid-owner) rather than an acquisition code.
-- **Rented-in** = leasehold/rent/tenant (codes 6,7,8); "borrowed for free" (9) is
-  excluded as non-market access.
-- **Rented-out is NOT comparable across waves - do not read the trend.** It is captured
-  differently by wave: 2010 and 2013 identify rented-out only via positive rent
-  *received* (`ag_d19a-d`), with heavy skip/missing on those amount items, whereas 2019
-  has an explicit yes/no flag (`ag_brentedout`). As a result the weighted rate is ~0.2%
-  in 2010 versus ~1.3-1.5% in 2016/2019. The early levels almost certainly understate
-  rented-out, so the apparent increase over time is largely a measurement artifact
-  rather than a real change in behavior.
-- **Purchase** is genuinely measurable here (codes 4-5), unlike Ethiopia w1-2.
-- **Strata**: baseline `stratum` (w1-2) vs `group(region reside)` (w3-4).
-- **Year map** follows the IHPS rounds (2010/2013/2016/2019); the shocks do-file used
-  2017/2020 for w3/w4 — change `year` in `extract_MWI.do` if you prefer that labeling.
+- **IHS cross-sections, not the IHPS panel** — switched for representativeness; each
+  round is a fresh nationally-representative sample weighted by `hh_wgt`. No 2013 round
+  exists in the IHS series, so the Malawi series is 2010/2016/2019.
+- **Rental variables were derived here** — constructed from the acquisition question
+  (2010/2016 rented-in) and the rent-paid/received amount items (2019 rented-in, and
+  rented-out in all rounds).
+- **Land unit changes across rounds** — plot (2010) vs garden (2016/2019). Counts and
+  mean areas are not strictly unit-comparable across that break.
+- **2019 (IHS5) restructured the garden module**: the categorical "how acquired" and the
+  title questions were dropped, so `parcel_purchased` and `parcel_certificate` are
+  **missing** in 2019, and rented-in is a payment-based measure (cash rent paid / output
+  given as rent) rather than an acquisition code.
+- **Certificate is collected only in 2016** (the formal-title item); it is missing in
+  2010 (not asked) and 2019 (dropped). The 2016 rate is very low (~1%).
+- **Rented-in** = leasehold/rent/tenant (codes 6,7,8) in 2010/2016, payment-based in
+  2019; "borrowed for free" is excluded as non-market access. The weighted household
+  rented-in rate is stable at ≈10% across all three rounds.
+- **Rented-out is captured differently by round** (rent received in 2010 vs explicit
+  cash/output items in 2016/2019) and is low throughout (~0.1% in 2010, ~1% in
+  2016/2019); read levels with caution.
+- **Purchase** is measurable in 2010/2016 (~3-4% of households) but not 2019.
+- **Strata** = `group(region reside)`; PSU = `ea_id` where present.
 
 ---
 
@@ -947,8 +951,78 @@ as a formal title** (set to 0) so the series stays comparable with 2012; set
 
 ---
 
-*Built from `Reproduction_v2/Code/Cleaning_code/` (ETH ESS1-5, MWI IHPS1-4, MLI EACI1-2,
-NER ECVMA1-2, NGA GHS1-5, TZA NPS1-5 incl. refresh, UGA UNPS1-5/7/8) plus the non-LSMS
-Zambia RALS 2012/2015/2019, and the raw survey modules, with source variables, codes, and
-value labels verified against the data. Extend with one new country section (1-6) per
+## TANZANIA (ASC) — Agricultural Sample Census (NBS)  *(non-LSMS-ISA)*
+
+Source: the **Tanzania Agricultural Sample Census (ASC)**, smallholder component, fielded by
+the National Bureau of Statistics. Two rounds: **2009** and **2019**. Kept as a distinct series
+("Tanzania (ASC)") from the LSMS NPS panel ("Tanzania") so the two can be compared. The
+large-scale-farm component is intentionally excluded (a separate commercial frame).
+
+> **Unit note.** The ASC has **no cultivated-plot unit.** Module R041 records, per household,
+> the **area held under each land-tenure category**. We treat each household x category holding
+> (area > 0) as a "parcel" (a tenure-homogeneous holding). Only the **household-share** and
+> **area-share** statistics are meaningful; the ASC is **excluded from the plot-level table** and
+> the trend figures because these are land-category holdings, not plots.
+
+### 1. Survey & wave key
+
+| Wave | Year | File | HH id | Category var | Area var | Weight |
+|------|------|------|-------|--------------|----------|--------|
+| 2009 | 2009 | `R041.DTA` | region-district-ward-village-hhnumber | `Q041C1` | `Q041C2` (acres) | `Wt_adjust` |
+| 2019 | 2019 | `R041_LAND_OWNERSHIP.dta` | `HHID` | `q4_1_c0` | `q4_1_c2` (acres) | `finalweight_hh` |
+
+Rented-out is read from the parallel **land-USE** module: `R042.DTA` (2009) / `R051_LAND_USE.dta`
+(2019), same household ids and weights.
+
+### 2. Tenure indicators
+
+| Variable | Construction |
+|---|---|
+| `parcel_rentedin` | `category == 4` ("Rented from others"). Set `global asc_sharecrop 1` to also count `category == 6` (share-cropped in), matching the rent+sharecrop convention used elsewhere. |
+| `parcel_purchased` | `category == 3` ("Bought from others"). |
+| `parcel_certificate` | `category == 1` ("Leased / Certificate of ownership"). |
+| `parcel_rentedout` | From the **land-USE module** ("Area Rented to others", area>0): **2009** `R042` `Q042C1==10`; **2019** `R051_LAND_USE` `q5_1_c0==11`. These holdings are appended as extra parcels (rented-in/purchased/certificate set to `.`). |
+| `parcel_area_ha` | category acres x 0.404686; top-coded at 40 ha. |
+
+### 3. Value labels — land-tenure & land-use categories
+
+**Ownership** `Q041C1` (2009) / `q4_1_c0` (2019): `1` Leased / Certificate of ownership ·
+`2` Owned under customary law · **`3` Bought from others** · **`4` Rented from others** ·
+`5` Borrowed from others · `6` Share-cropped from others · `7` Other.
+
+**Land use** `Q042C1` (2009) / `q5_1_c0` (2019), rented-out code only: temporary/permanent
+crops, pasture, fallow, natural bush, planted trees, **"Area Rented to others"
+(2009 = `10`, 2019 = `11`)**, unusable, uncultivated. (The 2019 list inserts "Fish farming",
+shifting the rented-out code from 10 to 11.)
+
+### 4. Design variables & identifiers
+
+`weight` = household survey weight; `strataid` = `group(district)`; `ea_id` = "" (the ASC public
+file carries no PSU variable, so design-based variance uses strata only — and for the household and
+area shares reported here, point estimates are what we display). `hh_id` and `parcel_id` are
+concatenated keys; `n_fields` = 1 (each record is one category holding).
+
+### 5. Harmonization decisions & caveats (ASC)
+
+- **Household id must be full-precision.** The 2019 `HHID` is a 14-digit number stored with a
+  `%10.0g` display format. Stata `egen concat()` applies that format and would truncate it,
+  collapsing ~30,650 households into ~100 groups and massively inflating household-level shares.
+  The extractor forces each numeric id component to a full-precision string (`%17.0f`) before
+  concatenating. Validated household rented-in: **2009 ~10.8%, 2019 ~20.1%**; area share rented-in
+  **2009 ~4.5%, 2019 ~8.5%** (matching the source do-files).
+- **Rented-out comes from the land-USE module** (2009 `R042`, 2019 `R051_LAND_USE`), category
+  "Area Rented to others" with positive area; these holdings are appended as extra parcels.
+  Weighted household rented-out: **2009 ~2.8%, 2019 ~2.9%**. (R041 itself records only land held
+  *from others*, so rented-out is taken from the parallel land-use roster.) For the area share,
+  the rented-out area enters both numerator and the area denominator.
+- **Not plot-comparable.** ASC holdings are tenure categories, not cultivated plots; do not read
+  ASC against the LSMS plot table.
+- **Smallholder component only.**
+
+---
+
+*Built from the raw survey modules (ETH ESS1-5, MWI IHS3/IHS4/IHS5 cross-sections, MLI
+EACI1-2, NER ECVMA1-2, NGA GHS1-5, TZA NPS1-5 incl. refresh, UGA UNPS1-5/7/8) plus the
+non-LSMS Zambia RALS 2012/2015/2019 and the Tanzania ASC 2009/2019, with source variables,
+codes, and value labels verified against the data. Extend with one new country section (1-6) per
 country as the workflow grows.*

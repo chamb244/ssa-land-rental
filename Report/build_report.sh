@@ -10,6 +10,7 @@ SRC=consolidated_report.md
 # temp copy so the build needs no special fonts (the GitHub .md keeps the arrows).
 sed -e 's/\xe2\x86\x94/<->/g' -e 's/\xe2\x86\x92/->/g' \
     -e 's/\xe2\x89\xa5/>=/g' -e 's/\xe2\x89\xa4/<=/g' \
+    -e 's/\xe2\x89\x88/~/g' -e 's/\xc2\xb2/2/g' -e 's/\xce\xa3/Sum/g' \
     -e 's/\xe2\x88\x88/ in /g' -e 's/\xc3\x97/x/g' "$SRC" > .pdf_src.md
 pandoc .pdf_src.md -o consolidated_report.pdf --pdf-engine=xelatex --toc \
   -V geometry:margin=1in -V fontsize=10pt -V colorlinks=true || \

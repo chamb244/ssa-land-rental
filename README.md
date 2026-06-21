@@ -62,7 +62,7 @@ auto-installed by `MASTER.do`.
 | Country | Survey | Waves | Status |
 |---|---|---|---|
 | Ethiopia | ESS (LSMS-ISA) | 1-5 (2012-2022) | ✅ built & validated |
-| Malawi | IHPS (LSMS-ISA) | 1-4 (2010-2019) | ✅ built & validated |
+| Malawi | IHS cross-sections (LSMS-ISA) | 2010, 2016, 2019 | ✅ built & validated |
 | Mali | EACI (LSMS-ISA) | 2014, 2017 | ✅ built & validated |
 | Niger | ECVMA (LSMS-ISA) | 2011, 2014 | ✅ built & validated |
 | Nigeria | GHS-Panel (LSMS-ISA) | 1-5 (2011-2023) | ✅ built & validated |

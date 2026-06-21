@@ -23,6 +23,16 @@ IND=["parcel_rentedin","parcel_rentedout","parcel_purchased","parcel_certificate
 NICE={"parcel_rentedin":"Rented-in","parcel_rentedout":"Rented-out",
       "parcel_purchased":"Purchased","parcel_certificate":"Has certificate"}
 CORDER=["Ethiopia","Malawi","Mali","Niger","Nigeria","Tanzania","Uganda","Zambia"]
+ASC="Tanzania (ASC)"                          # household tenure-category frame
+ALLC=CORDER+[ASC]                             # all countries (rows computed for all)
+# household + area tables show ASC immediately after the Tanzania (LSMS) rows;
+# the plot table and the trend figures use CORDER (no ASC).
+HH_AREA_ORDER=["Ethiopia","Malawi","Mali","Niger","Nigeria","Tanzania",ASC,"Uganda","Zambia"]
+# Display labels for the share tables: append the dataset-family name. (Tables only;
+# the figures keep the plain country names.)
+FAMILY={"Ethiopia":"Ethiopia (LSMS)","Malawi":"Malawi (LSMS)","Mali":"Mali (LSMS)",
+        "Niger":"Niger (LSMS)","Nigeria":"Nigeria (LSMS)","Tanzania":"Tanzania (LSMS)",
+        "Uganda":"Uganda (LSMS)","Zambia":"Zambia (RALS)",ASC:"Tanzania (ASC)"}
 
 df,_=pyreadstat.read_dta(f"{FINAL}/rental_tenure_ALL.dta")
 df=df[df["season"]==1].copy()                       # report season 1
@@ -81,7 +91,7 @@ def hh_frame(d):
 HH=hh_frame(df)
 
 rows=[]
-for c in CORDER:
+for c in ALLC:
     for yr in sorted(df.loc[df.country==c,"year"].unique()):
         cell_p=df[(df.country==c)&(df.year==yr)]
         cell_h=HH[(HH.country==c)&(HH.year==yr)]
@@ -96,13 +106,16 @@ R=pd.DataFrame(rows)
 R.to_csv(f"{TAB}/shares_long_with_CIs.csv",index=False)
 
 # ---- wide tables (rows country-year, cols 4 indicators) per level ----
-def wide(level):
-    t=R.pivot_table(index=["country","year"],columns="indicator",values=level,sort=False)
+def wide(level,countries):
+    rr=R[R.country.isin(countries)]
+    t=rr.pivot_table(index=["country","year"],columns="indicator",values=level,sort=False)
     t=t.reindex(columns=IND); t.columns=[NICE[c] for c in IND]
     t=t.reset_index()
-    t["country"]=pd.Categorical(t["country"],categories=CORDER,ordered=True)
+    t["country"]=pd.Categorical(t["country"],categories=countries,ordered=True)
     return t.sort_values(["country","year"]).reset_index(drop=True)
-T={lvl:wide(lvl) for lvl in ["hh","plot","area"]}
+# ASC is a household tenure-category frame, not a plot frame -> include it in the
+# household and area tables, but exclude it from the plot table (and the figures).
+T={"hh":wide("hh",HH_AREA_ORDER),"plot":wide("plot",CORDER),"area":wide("area",HH_AREA_ORDER)}
 TITLES={"hh":"Share of households with one or more plot",
         "plot":"Share of plots","area":"Share of farm area (ha)"}
 # Presentation view: country labelled once per group (blank on repeat rows),
@@ -111,6 +124,7 @@ TITLES={"hh":"Share of households with one or more plot",
 def present(t):
     t=t.copy()
     t["country"]=t["country"].astype(str)          # drop Categorical so "" is allowed
+    t["country"]=t["country"].map(lambda c: FAMILY.get(c,c))   # append dataset family
     for col in [NICE[i] for i in IND]:
         t[col]=t[col].map(lambda x:"-" if pd.isna(x) else f"{x:.3f}")   # "-" = not asked that round
     t["year"]=t["year"].astype(int).astype(str)
