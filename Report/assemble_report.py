@@ -23,6 +23,10 @@ def between(text,start,end):
 defs   = between(prov,"**Final variables (unit = parcel):**","## Missing by design")
 missing= between(prov,"## Missing by design","## Rented-in: sharecropping")
 share  = between(prov,"## Rented-in: sharecropping","## ETHIOPIA")
+missing = missing.replace("| Country | Variable | Missing year(s) | Why |",
+    "**Table 3. Structurally missing variables** - items not collected in particular country-years.\n\n| Country | Variable | Missing year(s) | Why |")
+share = share.replace("| Country | Sharecropping in `rented_in`? | Basis |",
+    "**Table 4. Sharecropping coverage in `rented_in`**, by survey.\n\n| Country | Sharecropping in `rented_in`? | Basis |")
 # appendix = all per-country sections, minus the closing italic note
 appx   = prov[prov.index("## ETHIOPIA"):]
 appx   = appx[:appx.index("*Built from")].rstrip()
@@ -46,16 +50,16 @@ shutil.copyfile(f"{FIG}/trends_by_country_plot.png", f"{HERE}/figure_trends.png"
 shutil.copyfile(f"{FIG}/trends_by_country_hh.png", f"{HERE}/figure_trends_hh.png")
 
 today=datetime.date.today().isoformat()
-COVERAGE="""| Country | Survey (source) | Survey years | Spatial unit |
+COVERAGE="""| Country | Survey (source) | Survey years | Spatial unit (reporting unit) |
 |---|---|---|---|
-| Ethiopia | ESS (LSMS-ISA) | 2012, 2014, 2016, 2019, 2022 | parcel -> field |
-| Malawi | IHPS (LSMS-ISA) | 2010, 2013, 2016, 2019 | garden / plot |
-| Mali | EACI (LSMS-ISA) | 2014, 2017 | parcelle |
-| Niger | ECVMA (LSMS-ISA) | 2011, 2014 | parcelle |
-| Nigeria | GHS-Panel (LSMS-ISA) | 2011, 2013, 2016, 2019, 2023 | plot |
-| Tanzania | NPS (LSMS-ISA) | 2009, 2011, 2013, 2015, 2019 | plot |
-| Uganda | UNPS (LSMS-ISA) | 2009, 2010, 2011, 2013, 2015, 2018, 2019 | parcel -> plot (season 1 reported) |
-| Zambia | RALS (IAPRI-MSU) | 2012, 2015, 2019 | field |
+| Ethiopia | ESS (LSMS-ISA) | 2012, 2014, 2016, 2019, 2022 | parcel (subdivided into fields) |
+| Malawi | IHPS (LSMS-ISA) | 2010, 2013, 2016, 2019 | garden (subdivided into plots) |
+| Mali | EACI (LSMS-ISA) | 2014, 2017 | parcelle (single land unit) |
+| Niger | ECVMA (LSMS-ISA) | 2011, 2014 | parcelle (single land unit) |
+| Nigeria | GHS-Panel (LSMS-ISA) | 2011, 2013, 2016, 2019, 2023 | plot (single land unit) |
+| Tanzania | NPS (LSMS-ISA) | 2009, 2011, 2013, 2015, 2019 | plot (single land unit) |
+| Uganda | UNPS (LSMS-ISA) | 2009, 2010, 2011, 2013, 2015, 2018, 2019 | parcel (subdivided into plots); season 1 reported |
+| Zambia | RALS (IAPRI-MSU) | 2012, 2015, 2019 | field (single land unit) |
 | Tanzania (ASC) | Agric. Sample Census (NBS) | 2009, 2019 | household (land by tenure category) |"""
 
 DRAFT=lambda s: f"> **[DRAFT - Jordan]** _{s}_\n"
@@ -88,6 +92,8 @@ header-includes:
 Eight farm-household surveys across Sub-Saharan Africa, seven from the World Bank
 LSMS-ISA program and one (Zambia RALS) from IAPRI-MSU.
 
+**Table 1. Survey coverage** - countries, source surveys, survey years, and the spatial unit. The reporting unit is the *parcel*: in some surveys it is subdivided into fields/plots, in others a single land unit.
+
 {COVERAGE}
 
 # 3. Definitions and methods
@@ -95,6 +101,8 @@ LSMS-ISA program and one (Zambia RALS) from IAPRI-MSU.
 The unit of analysis is the **parcel** (the tenure-bearing land unit in each
 survey; this is the *field* in single-level surveys and the *parcel* above
 fields/plots in Ethiopia, Uganda and Malawi). For every parcel we record:
+
+**Table 2. Output variables** - the variables constructed for each unit.
 
 {defs}
 
@@ -127,19 +135,19 @@ structurally missing items (question not asked that round; see Section 4).
 
 ## 5.1 Share of households with one or more plot
 
-**Table 1.** Share of households with at least one plot that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
+**Table 5.** Share of households with at least one plot that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
 
 {tbl_hh}
 
 ## 5.2 Share of plots
 
-**Table 2.** Share of plots that are rented-in, rented-out, purchased, or hold a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
+**Table 6.** Share of plots that are rented-in, rented-out, purchased, or hold a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round.
 
 {tbl_plot}
 
 ## 5.3 Share of farm area (hectares)
 
-**Table 3.** Share of farm area (hectares) that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round; for rented-out it can also denote that the rented-out parcels carry no measured area (they are uncultivated, so no field area is recorded - e.g. Ethiopia 2019, 2022), making the area share undefined rather than zero.
+**Table 7.** Share of farm area (hectares) that is rented-in, rented-out, purchased, or holds a land certificate, by country and survey year (season 1; survey-weighted). A dash (`-`) denotes an item not collected that round; for rented-out it can also denote that the rented-out parcels carry no measured area (they are uncultivated, so no field area is recorded - e.g. Ethiopia 2019, 2022), making the area share undefined rather than zero.
 
 {tbl_area}
 
@@ -177,6 +185,8 @@ reads (the complete per-wave file list is in Appendix A). Catalog links are show
 stable URL is available; entries marked _(pending)_ can be located in the World Bank
 Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 
+**Table 8. Primary source file and data catalog, by survey wave.**
+
 | Country | Year | Main source file | Data catalog |
 |---|---|---|---|
 | Ethiopia | 2012 | `sect2_pp_w1.dta` | [ESS 2011/12](https://microdata.worldbank.org/index.php/catalog/2053) |
@@ -196,7 +206,7 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 |  | 2013 | `sect11b1_plantingw2.dta` | [GHS 2012/13](https://microdata.worldbank.org/index.php/catalog/1952) |
 |  | 2016 | `sect11b1_plantingw3.dta` | [GHS 2015/16](https://microdata.worldbank.org/index.php/catalog/2734) |
 |  | 2019 | `sect11b1_plantingw4.dta` | [GHS 2018/19](https://microdata.worldbank.org/index.php/catalog/3557) |
-|  | 2023 | `sect11b1_plantingw5.dta` | _(pending)_ |
+|  | 2023 | `sect11b1_plantingw5.dta` | [GHS-Panel 2023 (W5)](https://microdata.worldbank.org/index.php/catalog/6410) |
 | Tanzania | 2009 | `SEC_3A.dta` | [NPS 2008/09](https://microdata.worldbank.org/index.php/catalog/76) |
 |  | 2011 | `AG_SEC3A.dta` | [NPS 2010/11](https://microdata.worldbank.org/index.php/catalog/1050) |
 |  | 2013 | `AG_SEC_3A.dta` | [NPS 2012/13](https://microdata.worldbank.org/index.php/catalog/2252) |
@@ -209,9 +219,9 @@ Microdata Library (LSMS-ISA) or, for Zambia, obtained from IAPRI.
 |  | 2015 | `AGSEC2A.dta` | [UNPS 2015/16](https://microdata.worldbank.org/index.php/catalog/3460) |
 |  | 2018 | `AGSEC2A.dta` | [UNPS 2018/19](https://microdata.worldbank.org/index.php/catalog/3795) |
 |  | 2019 | `agsec2a.dta` | [UNPS 2019/20](https://microdata.worldbank.org/index.php/catalog/3902) |
-| Zambia | 2012 | `field.dta` | _(pending; IAPRI)_ |
-|  | 2015 | `field.dta` | _(pending; IAPRI)_ |
-|  | 2019 | `field.dta` | _(pending; IAPRI)_ |
+| Zambia | 2012 | `field.dta` | [RALS 2012 (IHSN)](https://catalog.ihsn.org/catalog/7201) |
+|  | 2015 | `field.dta` | [RALS 2015 (IHSN)](https://catalog.ihsn.org/catalog/7200) |
+|  | 2019 | `field.dta` | request from IAPRI (info@iapri.org.zm) |
 | Tanzania (ASC) | 2009 | `R041.DTA` (smallholder) | [ASC 2008/09 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/5) |
 |  | 2019 | `R041_LAND_OWNERSHIP.dta` | [ASC 2019/20 (NBS)](https://microdata.nbs.go.tz/index.php/catalog/31) |
 
