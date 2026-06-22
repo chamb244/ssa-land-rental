@@ -37,3 +37,8 @@ __pycache__/
 
 # Local session handoff notes (not for the public repo)
 SESSION_NOTES.md
+
+# EXCEPTION: ship the compressed pooled parcel-level dataset so the tables can be
+# reproduced without the raw microdata (this negation must stay after *.zip and
+# Output/Final/* above so it wins). The uncompressed .dta stays ignored.
+!Output/Final/rental_tenure_ALL.dta.zip

@@ -10,14 +10,28 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-import os as _os
+import os as _os, zipfile as _zip
+# Repo root is resolved RELATIVE to this script (Code/ -> repo root) so anyone who
+# clones the repo can run this without editing paths; a couple of absolute fallbacks
+# follow for the author's local machines.
 _cands=[
+ _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))),   # portable: repo root
  "/Users/jchamberlin/Library/CloudStorage/Dropbox/SSA-pooled-survey-data/ssa-land-rental",
  "/Users/jchamberlin/Library/CloudStorage/Dropbox/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare/ssa-land-rental",
 ]
-ROOT=next((c for c in _cands if _os.path.exists(c+"/Output/Final/rental_tenure_ALL.dta")), _cands[-1])
+def _has_pooled(root):
+    f=root+"/Output/Final/rental_tenure_ALL.dta"
+    return _os.path.exists(f) or _os.path.exists(f+".zip")
+ROOT=next((c for c in _cands if _has_pooled(c)), _cands[0])
 FINAL=f"{ROOT}/Output/Final"; TAB=f"{ROOT}/Output/Tables"; FIG=f"{ROOT}/Output/Figures"
 os.makedirs(TAB,exist_ok=True); os.makedirs(FIG,exist_ok=True)
+
+# If only the shipped .zip is present (e.g. a fresh clone), unpack the pooled dataset.
+_dta=f"{FINAL}/rental_tenure_ALL.dta"
+if not _os.path.exists(_dta) and _os.path.exists(_dta+".zip"):
+    with _zip.ZipFile(_dta+".zip") as _z:
+        _z.extract("rental_tenure_ALL.dta", FINAL)   # skip macOS __MACOSX junk
+    print("Unpacked rental_tenure_ALL.dta from .zip")
 
 IND=["parcel_rentedin","parcel_rentedout","parcel_purchased","parcel_certificate"]
 NICE={"parcel_rentedin":"Rented-in","parcel_rentedout":"Rented-out",

@@ -27,6 +27,11 @@ if "${Final}"=="" {
     capture confirm file "${root}/ssa-land-rental/Code/MASTER.do"
     if _rc global root "/Users/jchamberlin/Library/CloudStorage/Dropbox/LSMS-ISA-harmonised-dataset-on-agricultural-productivity-and-welfare"
     global Final "${root}/ssa-land-rental/Output/Final"
+    * Portable fallback: if the pooled file isn't at the author paths, assume Stata's
+    * working directory is the repo root (cd to the clone, then run this do-file).
+    * Unzip Output/Final/rental_tenure_ALL.dta.zip first if you only have the .zip.
+    capture confirm file "${Final}/rental_tenure_ALL.dta"
+    if _rc global Final "`c(pwd)'/Output/Final"
 }
 global Tables  "`=subinstr("${Final}","/Final","/Tables",1)'"
 global Figures "`=subinstr("${Final}","/Final","/Figures",1)'"

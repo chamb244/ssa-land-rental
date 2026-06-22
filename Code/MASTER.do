@@ -90,3 +90,17 @@ foreach c in ETH MWI MLI NER NGA TZA UGA ZMB TZA_ASC {
     if _rc == 0 append using "${Final}/rental_`c'.dta"
 }
 save "${Final}/rental_tenure_ALL.dta", replace
+
+*--------------------------------------------------------------------------------
+* Compress the pooled file for sharing. The .zip is committed to the repo so the
+* tables can be reproduced without the raw microdata (see README); it is regenerated
+* on every run so it never goes stale. Stata's zipfile stores the path as given, so
+* we cd into Output/Final first to keep a clean archive (bare filename inside, no
+* leading directories and no macOS resource-fork junk).
+*--------------------------------------------------------------------------------
+local _cwd "`c(pwd)'"
+quietly cd "${Final}"
+capture erase "rental_tenure_ALL.dta.zip"
+zipfile "rental_tenure_ALL.dta", saving("rental_tenure_ALL.dta.zip", replace)
+quietly cd "`_cwd'"
+di as result "Wrote ${Final}/rental_tenure_ALL.dta.zip (share-ready)"

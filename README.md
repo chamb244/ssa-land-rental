@@ -57,6 +57,24 @@ DATA_SOURCES.md      # where to obtain the raw microdata (not stored here)
 Requires Stata 16+ (`table … , stat()` and `svy` syntax) plus the SSC packages
 auto-installed by `MASTER.do`.
 
+### Quick reproduction from the shared dataset (no raw microdata needed)
+
+The pooled **parcel-level** dataset is shipped compressed at
+[`Output/Final/rental_tenure_ALL.dta.zip`](Output/Final/rental_tenure_ALL.dta.zip),
+so the summary tables and figures can be rebuilt without downloading any survey
+microdata or running the extractors:
+
+- **Python:** `python Code/tables_graphs.py` - it auto-unzips the dataset, then writes
+  the three weighted share tables (household / plot / area) to `Output/Tables/` and the
+  faceted trend figures to `Output/Figures/`. Requires `pyreadstat`, `pandas`, `numpy`,
+  `matplotlib`, `python-docx`, `openpyxl`.
+- **Stata:** unzip `Output/Final/rental_tenure_ALL.dta.zip` in place, then run
+  `Code/tables_graphs.do`.
+
+Both read `Output/Final/rental_tenure_ALL.dta` (one row per parcel; household- and
+area-level shares are derived from it), apply each round's survey weights, and compute
+design-based 95% confidence intervals.
+
 ## Status
 
 | Country | Survey | Waves | Status |
@@ -69,6 +87,7 @@ auto-installed by `MASTER.do`.
 | Tanzania | NPS (LSMS-ISA) | 1-5 (2009-2019) | ✅ built & validated |
 | Uganda | UNPS (LSMS-ISA) | 1-5, 7, 8 (2009-2019) | ✅ built (parcel × season; reports season 1) |
 | Zambia | RALS (IAPRI-MSU) | 2012, 2015, 2019 | ✅ built (field-level) |
+| Tanzania (ASC) | Agric. Sample Census (NBS) | 2009, 2019 | ✅ built (household land-by-tenure; HH + area shares only) |
 
 Construction choices, exact source variables, and value-label codes for every
 variable are documented per country and wave in
