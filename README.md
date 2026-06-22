@@ -7,6 +7,8 @@ Reproducible Stata workflow that builds parcel-level land-tenure and rental-mark
 
 Coverage is currently based on the World Bank **LSMS-ISA** surveys (Ethiopia, Malawi, Mali, Niger, Nigeria, Tanzania, Uganda); plus nationally representative agricultural sample census data from Tanzania and nationally representative household panel data from Zambia.
 
+A document summarizing the main descriptive statistics, together with detailed notes on data sources, variable definitions, and methods, is available here: [Report/consolidated_report.pdf](https://github.com/chamb244/ssa-land-rental/blob/main/Report/consolidated_report.pdf).
+
 
 ## Output variables (unit = parcel)
 
