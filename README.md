@@ -2,13 +2,11 @@
 
 **Land rental market descriptive statistics for Sub-Saharan Africa.**
 
+
 Reproducible Stata workflow that builds parcel-level land-tenure and rental-market descriptive statistics from farm-household surveys, as reported in a manuscript currently being prepared for the *Annual Review of Resource Economics* (ARRE). The workflow is designed to enable full replication of the summary statistics used in our paper.
 
-Coverage is currently based on the World Bank **LSMS-ISA** surveys (Ethiopia, Malawi, Mali, Niger, Nigeria, Tanzania, Uganda); plus nationally representative panel data from Zambia.
+Coverage is currently based on the World Bank **LSMS-ISA** surveys (Ethiopia, Malawi, Mali, Niger, Nigeria, Tanzania, Uganda); plus nationally representative agricultural sample census data from Tanzania and nationally representative household panel data from Zambia.
 
-The workflow is deliberately **slim**: rather than reproducing the full
-harmonized panel, it extracts only the variables needed for the tenure
-descriptives, country by country, directly from the raw survey files.
 
 ## Output variables (unit = parcel)
 
