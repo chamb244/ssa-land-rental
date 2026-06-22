@@ -34,3 +34,6 @@ Report/.pdf_src.md
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# Local session handoff notes (not for the public repo)
+SESSION_NOTES.md
